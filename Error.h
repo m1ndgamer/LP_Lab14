@@ -30,7 +30,9 @@ namespace Error
 		} inext;
 	};
 
+	// Создать экземпляр ошибки.
 	ERROR getError(int id);
 	ERROR getErrorIn(int id, int line, int col, unsigned char symbol);
-	std::string getErrorInfo(ERROR e);
+	/// Получить информацию об ошибке.
+	std::string getErrorInfo(ERROR e); 
 };

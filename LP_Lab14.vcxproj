@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Analysis.cpp" />
     <ClCompile Include="Error.cpp" />
     <ClCompile Include="FST.cpp" />
     <ClCompile Include="In.cpp" />
@@ -27,9 +28,9 @@
     <ClCompile Include="LPLab14.cpp" />
     <ClCompile Include="LT.cpp" />
     <ClCompile Include="Parm.cpp" />
-    <ClCompile Include="TokenHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Analysis.h" />
     <ClInclude Include="Error.h" />
     <ClInclude Include="FST.h" />
     <ClInclude Include="In.h" />
@@ -37,6 +38,7 @@
     <ClInclude Include="Log.h" />
     <ClInclude Include="LT.h" />
     <ClInclude Include="Parm.h" />
+    <ClInclude Include="RegularExpessions.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TokenHandler.h" />
   </ItemGroup>

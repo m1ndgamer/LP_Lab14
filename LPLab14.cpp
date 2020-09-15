@@ -8,6 +8,8 @@
 #include "Parm.h"
 #include "Log.h"
 #include "In.h"
+#include "Analysis.h"
+#include "LT.h"
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -18,6 +20,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		Parm::PARM parm = Parm::getparm(argc, argv);
 		log = Log::getlog(parm.log);
 		In::IN in = In::getIn(parm.in);
+		LT::LexTable lexTable;
+		Lex(in);
 		Log::WriteInsideOutFile(parm, in);
 		Log::WriteLine(log, (wchar_t*)L"Тест: ", (wchar_t*)L"без ошибок ", L"");
 		Log::WriteLog(log);
@@ -35,10 +39,12 @@ int _tmain(int argc, _TCHAR* argv[])
 	{	
 		if (log.stream != NULL && log.stream->is_open())
 		{
+			// Вывод информации об ошибке в консоль и закрытие потока.
 			Log::WriteLine(log, (wchar_t*)L"Тест: ", L"обнаружна ошибка ", L"");
 			Log::WriteLine(log, (char*)getErrorInfo(e).c_str(), "");
 			Log::Close(log);
-		} 
+		}
+		// Вывод информации об ошибке в консоль.
 		std::cout << getErrorInfo(e);
 	}
 

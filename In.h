@@ -9,11 +9,11 @@
 	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	'|',	IN::T,	IN::T,	IN::I,	IN::T,	IN::T,\
 	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,\
 	IN::A,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::A,	IN::A,	IN::A,	IN::A,	IN::A,	IN::A,	IN::T,	IN::A,\
-	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::A,	IN::T,	IN::A,	IN::T,	IN::T,\
-	IN::T,	IN::F,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,\
-	IN::T,	IN::F,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,\
-	IN::T,	IN::F,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,\
-	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,\
+	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::A,	IN::T,	IN::A,	IN::T,	IN::T,\
+	IN::T,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,\
+	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::T,	IN::T,	IN::T,	IN::T,	IN::N,\
+	IN::T,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,\
+	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::N,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,\
 	\
 	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::A,	IN::T,	IN::A,	IN::T,	IN::T,\
 	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,	IN::T,\
@@ -30,7 +30,7 @@ namespace In
 	
 	struct IN
 	{
-		enum {T = 1024, A = 1025, F = 2048, I = 4096};
+		enum {T = 1024, A = 1025, N = 1026, F = 2048, I = 4096};
 		int size;
 		int lines;
 		int ignor;

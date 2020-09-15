@@ -2,6 +2,7 @@
 #include "Parm.h"
 #include "Error.h"
 
+// проверка на нахождение ключа key
 #define KEY_IS_FOUNDED(key) wcsstr(argv[i], key) != nullptr
 
 namespace Parm

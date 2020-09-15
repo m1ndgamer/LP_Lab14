@@ -67,8 +67,8 @@ namespace Log
 		char buffer[8];
 		LABEL("------- Исходные данные -------") EOL
 		LABEL("Количество символов: ") log.stream->write(buffer, strlen(_itoa(in.size, buffer, 10))); EOL
-		LABEL("Проигнорировано: ")log.stream->write(buffer, strlen(_itoa(in.ignor, buffer, 10))); EOL
 		LABEL("Количество строк: ") log.stream->write(buffer, strlen(_itoa(in.lines, buffer, 10))); EOL
+		LABEL("Проигнорировано: ")log.stream->write(buffer, strlen(_itoa(in.ignor, buffer, 10))); EOL
 	}
 
 	// Записать в выходной файл.

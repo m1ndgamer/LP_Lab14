@@ -15,13 +15,14 @@ namespace Error
 		ERROR_ENTRY(100, "Параметр -in: должен быть задан (-in: первый параметр)"),
 		ERROR_ENTRY(101, "Не удается создать выходной файл"),
 		ERROR_ENTRY_NODEF(102), ERROR_ENTRY_NODEF(103),
-		ERROR_ENTRY(104, "Превышена длина входящего параметра"),
+		ERROR_ENTRY(104, "Превышена длина входящего параметра\n максимальная длина 300 символов" ),
 		ERROR_ENTRY_NODEF(105), ERROR_ENTRY_NODEF(106), ERROR_ENTRY_NODEF(107),
 		ERROR_ENTRY_NODEF(108), ERROR_ENTRY_NODEF(109),
 		ERROR_ENTRY(110, "Ошибка при открытии файла с исходным кодом (-in:)"),
 		ERROR_ENTRY(111, "Недопустимый символ в исходном файле (-in:)"),
 		ERROR_ENTRY(112, "Ошибка при создании файла протокола (-log:)"),
-		ERROR_ENTRY_NODEF(113), ERROR_ENTRY_NODEF(114), ERROR_ENTRY_NODEF(115),
+		ERROR_ENTRY_NODEF(113, "Превашен маскимальный размер таблицы лексем"), 
+		ERROR_ENTRY_NODEF(114), ERROR_ENTRY_NODEF(115),
 		ERROR_ENTRY_NODEF(116), ERROR_ENTRY_NODEF(117), ERROR_ENTRY_NODEF(118), ERROR_ENTRY_NODEF(119),
 		ERROR_ENTRY_NODEF10(120), ERROR_ENTRY_NODEF10(130), ERROR_ENTRY_NODEF10(140), ERROR_ENTRY_NODEF10(150),
 		ERROR_ENTRY_NODEF10(160), ERROR_ENTRY_NODEF10(170), ERROR_ENTRY_NODEF10(180), ERROR_ENTRY_NODEF10(190),
@@ -53,7 +54,7 @@ namespace Error
 	std::string getErrorInfo(ERROR e)
 	{
 		std::string errorInfo = "Ошибка " + std::to_string(e.id) + ": " + e.message + "\n";
-		if (e.inext.col != -1 && e.inext.col != -1)
+		if (e.inext.col != -1 && e.inext.line != -1 && e.inext.symbol != 'H')
 		{
 			errorInfo += "cимвол '" + std::string(sizeof(char), (char)e.inext.symbol) + "', ";
 			errorInfo += "строка " + std::to_string(e.inext.line) + " ";

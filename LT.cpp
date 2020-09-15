@@ -3,83 +3,29 @@
 #include "In.h"
 #include <fstream>
 
-
-LT::Entry::Entry()
+namespace LT
 {
-	lexem = '\0';
-	lineNumber = LT_TI_NULLXDX;
-	idxTI = LT_TI_NULLXDX;
-}
-
-LT::Entry::Entry(const char lex, int lineNum, int id)
-{
-	lexem = lex;
-	lineNumber = lineNum;
-	idxTI = id;
-}
-
-LT::LexTable::LexTable()
-{
-	maxSize = LT_MAXSIZE;
-	currentSize = 0;
-	table = new Entry[LT_MAXSIZE];
-}
-
-void LT::LexTable::Add(Entry entry)
-{
-	(currentSize < maxSize) ? table[currentSize++] = entry : throw ERROR_THROW(121);	
-}
-
-LT::Entry LT::LexTable::GetEntry(int number)
-{
-	if (number < maxSize && number >= 0) return table[number];
-	throw ERROR_THROW(121); // to do error;
-}
-
-void LT::LexTable::PrintTableInFile(const wchar_t* inFile)
-{
-	// создания имя файла
-	// 2 варианта с расшир. и без
-	int i = 0; wchar_t lex[300];
-	for (; inFile[i] != IN_CODE_ENDL; i++)
-		lex[i] = inFile[i];
-	lex[i] = IN_CODE_ENDL;
-	wcscat_s(lex, PARM_LEX_DEFAULT_EXT);
-
-
-	std::ofstream* lexStream = new std::ofstream;
-	lexStream->open(lex);
-
-	if (lexStream->is_open())
+	// Создать таблицу
+	LexTable LexTable::Create(int size = LT_MAXSIZE)
 	{
-		int currentString = 0;
-		(*lexStream) << IN_CODE_ENDL << currentString + 1 << IN_CODE_TAB;
-		for (int i = 0; i < currentSize;)
-		{
-			if (currentString == table[i].lineNumber)
-				(*lexStream) << table[i++].lexem;
-			else
-			{
-				(*lexStream) << IN_CODE_ENDL << currentString++ + 2 << IN_CODE_TAB;
-
-				if (currentString == table[i].lineNumber)
-					(*lexStream) << table[i++].lexem;
-			}
-
-
-		}
+		if (size >= LT_MAXSIZE) throw ERROR_THROW(113);
+		return { size, 0, new Entry[size] };
 	}
-	else
-		throw ERROR_THROW(125);
-	lexStream->close();
-	delete lexStream;
+	// добавить запись
+	void LexTable::Add(Entry entry)
+	{
+		(currentSize < maxSize) ? table[currentSize++] = entry : throw ERROR_THROW(121);
+	}
+	// получить запись
+	Entry LexTable::GetEntry(LexTable& lextable, int n)
+	{
+		if (n < maxSize && n >= 0) throw ERROR_THROW(121); // to do error;
+		return table[n];
+	}
+	// удалить таблицу
+	void LexTable::Delete(LexTable& lextable)
+	{
+		delete[] lextable.table;
+		lextable.table = nullptr;
+	}
 }
-
-void LT::LexTable::Delete()
-{
-	delete[] table;
-	table = nullptr;
-}
-
-
-

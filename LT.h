@@ -1,6 +1,6 @@
 #pragma once
 
-#define LEXEM_SIZE		1			// размер лексемы
+#define LEXEM_FIXSIZE		1		// размер лексемы
 #define	LT_MAXSIZE		4096		// максимальное количество строк в таблице
 #define	LT_TI_NULLXDX	0xffffffff	// нет элемента таблицы идентификаторов				
 #define	LEX_INTEGER		't'			// integer
@@ -31,11 +31,11 @@ namespace LT
 {
 	struct Entry						// строка
 	{
-		char lexem;						// лесема
+		char lexem[LEXEM_FIXSIZE];		// лесема
 		int lineNumber;					// номер строки в исходном тексте
 		int idxTI;						// индекс в таблице или LT_TI_NULLIDX
 		Entry();
-		Entry(const char lex, int str_n, int idxTI);
+		Entry(const char lex, int str_n, int id);
 	};
 
 	struct LexTable						// таблица лексем
@@ -45,11 +45,9 @@ namespace LT
 		Entry* table;					// строки таблицы
 
 		// создать таблицу
-		LexTable();
-
-		void Add(Entry entry);						// добавить строку
-		Entry GetEntry(int n);						// получить строку по номеру
-		void PrintTableInFile(const wchar_t* in);	// вывод таблицы в файл
-		void Delete();								// удалить таблицу
+		LexTable Create(int size = LT_MAXSIZE);
+		void Add(Entry entry);	// добавить строку
+		Entry GetEntry(LexTable& lextable, int n);	// получить строку по номеру
+		void Delete(LexTable& lextable);			// удалить таблицу
 	};
 }

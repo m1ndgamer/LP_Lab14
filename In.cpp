@@ -20,7 +20,7 @@ namespace In
 			while (fileReader.get(symbol))
 			{
 				un_symbol = (unsigned char)symbol;
-				if (in.code[un_symbol] == IN::T || in.code[un_symbol] == IN::A)
+				if (in.code[un_symbol] == IN::T || in.code[un_symbol] == IN::A || in.code[un_symbol] == IN::N)
 				{
 					in.text[in.size++] = un_symbol; position++;
 				}

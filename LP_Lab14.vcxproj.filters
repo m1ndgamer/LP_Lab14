@@ -45,7 +45,7 @@
     <ClCompile Include="LT.cpp">
       <Filter>Исходные файлы\Namespaces</Filter>
     </ClCompile>
-    <ClCompile Include="TokenHandler.cpp">
+    <ClCompile Include="Analysis.cpp">
       <Filter>Исходные файлы\Namespaces</Filter>
     </ClCompile>
   </ItemGroup>
@@ -75,6 +75,12 @@
       <Filter>Файлы заголовков\Namespaces</Filter>
     </ClInclude>
     <ClInclude Include="TokenHandler.h">
+      <Filter>Файлы заголовков\Namespaces</Filter>
+    </ClInclude>
+    <ClInclude Include="RegularExpessions.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Analysis.h">
       <Filter>Файлы заголовков\Namespaces</Filter>
     </ClInclude>
   </ItemGroup>
