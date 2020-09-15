@@ -6,7 +6,7 @@
 #include "RegularExpessions.h"
 #include "IT.h"
 
-bool tokenAnaliz(const char* token, int strNumber, LT::LexTable& lexTable)
+bool tokenAnaliz(const char* token, int strNumber, LT::LexTable& lexTable, IT::IdTable& idTable)
 {
 	static flagForTypeOfVar FlagForTypeOfVar;
 	// первая буква в токене
@@ -269,7 +269,7 @@ bool tokenAnaliz(const char* token, int strNumber, LT::LexTable& lexTable)
 }
 
 
-void Lex(In::IN& source, LT::LexTable& lexTable)
+void Lex(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTable)
 {
 	char* buffer = new char[64]{};
 	int lineNumber = 0;
@@ -293,7 +293,6 @@ void Lex(In::IN& source, LT::LexTable& lexTable)
 				{
 					buffer[0] = '\0'; j = 0;
 					continue;
-				}
 				}
 				/*else
 					throw ERROR_THROW_IN(121, strNum, posInStr);*/
@@ -321,11 +320,11 @@ void Lex(In::IN& source, LT::LexTable& lexTable)
 							buffer[0] = '\0'; j = 0;
 							continue;
 						}
-						else
-							throw ERROR_THROW_IN(121, lineNumber, positionInLine);
+						else {}
+							//throw ERROR_THROW_IN(121, lineNumber, positionInLine);
 					}
-					else
-						throw ERROR_THROW_IN(127, lineNumber, positionInLine);
+					else {}
+						//throw ERROR_THROW_IN(127, lineNumber, positionInLine);
 				}
 				// пробелы
 				if (source.text[i] != '\n')
@@ -337,12 +336,14 @@ void Lex(In::IN& source, LT::LexTable& lexTable)
 					}
 
 					buffer[0] = source.text[i]; buffer[1] = '\0';
-					if (tokenAnaliz(temp, lineNumber, lexTable, idTable))
+					if (tokenAnaliz(buffer, lineNumber, lexTable, idTable))
 						positionInLine++;
 					else
-						throw ERROR_THROW_IN(121, lineNumber, positionInLine);
+					{
+					}
+						//throw ERROR_THROW_IN(121, lineNumber, positionInLine);
 
-					temp[0] = '/0'; j = 0;
+					buffer[0] = '/0'; j = 0; // хмммммм?
 				}
 			}
 		}
@@ -356,153 +357,164 @@ void Lex(In::IN& source, LT::LexTable& lexTable)
 	delete[] buffer;
 }
 
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="token"></param>
+/// <param name="strNumber"></param>
+/// <param name="lexTable"></param>
+/// <param name="idTable"></param>
+/// <param name="FlagForTypeOfVar"></param>
+/// <returns></returns>
 bool a_func_var(const char* token, const int strNumber, LT::LexTable& lexTable, IT::IdTable& idTable, flagForTypeOfVar& FlagForTypeOfVar)
 {
-	std::cout << "test";
-	//FST::FST* identificator = new FST::FST(A_IDENTIFICATOR(token));
-	//if (FST::execute(*identificator))
-	//{
-	//	bool alreadyChecked = false;
-	//	//для функций
-	//	if (strcmp(token, "main") == 0 ||
-	//		((lexTable.GetEntry(lexTable.current_size - 1).lexema == LEX_FUNCTION &&
-	//			lexTable.GetEntry(lexTable.current_size - 2).lexema == 't') &&
-	//			FlagForTypeOfVar.posInLT == lexTable.current_size - 2))
-	//	{
-	//		if (idTable.IsId(token) == -1)
-	//		{
-	//			if (FlagForTypeOfVar.type == flagForTypeOfVar::INT)
-	//				idTable.Add({ "\0", token, IT::IDDATATYPE::INT, IT::IDTYPE::F });
+	FST::FST* identificator = new FST::FST(A_IDENTIFICATOR(token));
+	if (FST::execute(*identificator))
+	{
+		bool alreadyChecked = false;
+		//для функций
+		if (strcmp(token, "main") == 0 ||
+			((lexTable.GetEntry(lexTable.current_size - 1).lexema == LEX_FUNCTION &&
+				lexTable.GetEntry(lexTable.current_size - 2).lexema == 't') &&
+				FlagForTypeOfVar.posInLT == lexTable.current_size - 2))
+		{
+			if (idTable.IsId(token) == -1)
+			{
+				if (FlagForTypeOfVar.type == flagForTypeOfVar::INT)
+					idTable.Add({ "\0", token, IT::IDDATATYPE::INT, IT::IDTYPE::F });
 
-	//			if (FlagForTypeOfVar.type == flagForTypeOfVar::STR)
-	//				idTable.Add({ "\0", token, IT::IDDATATYPE::STR, IT::IDTYPE::F });
+				if (FlagForTypeOfVar.type == flagForTypeOfVar::STR)
+					idTable.Add({ "\0", token, IT::IDDATATYPE::STR, IT::IDTYPE::F });
 
-	//			if (strcmp(token, "main") == 0)
-	//				idTable.Add({ "\0", token, IT::IDDATATYPE::INT, IT::IDTYPE::F });
+				if (strcmp(token, "main") == 0)
+					idTable.Add({ "\0", token, IT::IDDATATYPE::INT, IT::IDTYPE::F });
 
-	//			FlagForTypeOfVar.posInLT = -1;
-	//			FlagForTypeOfVar.type = flagForTypeOfVar::DEF;
+				FlagForTypeOfVar.posInLT = -1;
+				FlagForTypeOfVar.type = flagForTypeOfVar::DEF;
 
-	//			lexTable.Add({ LEX_ID, strNumber, idTable.current_size - 1 });
-	//			alreadyChecked = true;
-	//		}
-	//		else
-	//			throw ERROR_THROW_IN(123, strNumber, -1);
-	//	}
+				lexTable.Add({ LEX_ID, strNumber, idTable.current_size - 1 });
+				alreadyChecked = true;
+			}
+			else
+			{
+			}
+				//throw ERROR_THROW_IN(123, strNumber, -1);
+		}
 
-	//	//для переменной(с проверкой переопределения)
-	//	if (!alreadyChecked &&
-	//		(lexTable.GetEntry(lexTable.current_size - 1).lexema == 't' &&
-	//			lexTable.GetEntry(lexTable.current_size - 2).lexema == LEX_DECLARE &&
-	//			FlagForTypeOfVar.posInLT == lexTable.current_size - 1))
-	//	{
-	//		bool isLeftBraceWas = false;
-	//		for (int i = lexTable.current_size - 1; i > 0; i--)
-	//		{
-	//			if (lexTable.GetEntry(i).lexema == LEX_LEFTBRACE)
-	//				isLeftBraceWas = true;
+		//для переменной(с проверкой переопределения)
+		if (!alreadyChecked &&
+			(lexTable.GetEntry(lexTable.current_size - 1).lexema == 't' &&
+				lexTable.GetEntry(lexTable.current_size - 2).lexema == LEX_DECLARE &&
+				FlagForTypeOfVar.posInLT == lexTable.current_size - 1))
+		{
+			bool isLeftBraceWas = false;
+			for (int i = lexTable.current_size - 1; i > 0; i--)
+			{
+				if (lexTable.GetEntry(i).lexema == LEX_LEFTBRACE)
+					isLeftBraceWas = true;
 
-	//			if (isLeftBraceWas &&
-	//				lexTable.GetEntry(i).lexema == LEX_ID &&
-	//				idTable.GetEntry(lexTable.GetEntry(i).idxTI).idtype == IT::IDTYPE::F)
-	//			{
-	//				if (idTable.IsId(token, idTable.GetEntry(lexTable.GetEntry(i).idxTI).id) == -1)
-	//				{
-	//					if (FlagForTypeOfVar.type == flagForTypeOfVar::INT)
-	//						idTable.Add({ idTable.GetEntry(lexTable.GetEntry(i).idxTI).id, token, IT::IDDATATYPE::INT, IT::IDTYPE::V });
+				if (isLeftBraceWas &&
+					lexTable.GetEntry(i).lexema == LEX_ID &&
+					idTable.GetEntry(lexTable.GetEntry(i).idxTI).idtype == IT::IDTYPE::F)
+				{
+					if (idTable.IsId(token, idTable.GetEntry(lexTable.GetEntry(i).idxTI).id) == -1)
+					{
+						if (FlagForTypeOfVar.type == flagForTypeOfVar::INT)
+							idTable.Add({ idTable.GetEntry(lexTable.GetEntry(i).idxTI).id, token, IT::IDDATATYPE::INT, IT::IDTYPE::V });
 
-	//					if (FlagForTypeOfVar.type == flagForTypeOfVar::STR)
-	//						idTable.Add({ idTable.GetEntry(lexTable.GetEntry(i).idxTI).id, token, IT::IDDATATYPE::STR, IT::IDTYPE::V });
+						if (FlagForTypeOfVar.type == flagForTypeOfVar::STR)
+							idTable.Add({ idTable.GetEntry(lexTable.GetEntry(i).idxTI).id, token, IT::IDDATATYPE::STR, IT::IDTYPE::V });
 
-	//					FlagForTypeOfVar.posInLT = -1;
-	//					FlagForTypeOfVar.type = flagForTypeOfVar::DEF;
+						FlagForTypeOfVar.posInLT = -1;
+						FlagForTypeOfVar.type = flagForTypeOfVar::DEF;
 
-	//					lexTable.Add({ LEX_ID, strNumber, idTable.current_size - 1 });
-	//					alreadyChecked = true;
-	//					break;
-	//				}
-	//				else
-	//					throw ERROR_THROW_IN(123, strNumber, -1);
+						lexTable.Add({ LEX_ID, strNumber, idTable.current_size - 1 });
+						alreadyChecked = true;
+						break;
+					}
+					else
+						throw ERROR_THROW_IN(123, strNumber, -1);
 
-	//			}
-	//		}
-	//	}
+				}
+			}
+		}
 
-	//	//для параметра функции
-	//	if (!alreadyChecked &&
-	//		(lexTable.GetEntry(lexTable.current_size - 1).lexema == 't' && FlagForTypeOfVar.posInLT == lexTable.current_size - 1))
-	//		for (int i = lexTable.current_size - 1; i > 0; i--)
-	//		{
-	//			if (lexTable.GetEntry(i).lexema == LEX_ID &&
-	//				idTable.GetEntry(lexTable.GetEntry(i).idxTI).idtype == IT::IDTYPE::F)
-	//			{
-	//				if (lexTable.GetEntry(i - 1).lexema == LEX_FUNCTION && lexTable.GetEntry(i - 2).lexema == 't')
-	//				{
-	//					if (idTable.IsId(token, idTable.GetEntry(lexTable.GetEntry(i).idxTI).id) == -1)
-	//					{
-	//						if (FlagForTypeOfVar.type == flagForTypeOfVar::INT)
-	//							idTable.Add({ idTable.GetEntry(lexTable.GetEntry(i).idxTI).id, token, IT::IDDATATYPE::INT, IT::IDTYPE::P });
+		//для параметра функции
+		if (!alreadyChecked &&
+			(lexTable.GetEntry(lexTable.current_size - 1).lexema == 't' && FlagForTypeOfVar.posInLT == lexTable.current_size - 1))
+			for (int i = lexTable.current_size - 1; i > 0; i--)
+			{
+				if (lexTable.GetEntry(i).lexema == LEX_ID &&
+					idTable.GetEntry(lexTable.GetEntry(i).idxTI).idtype == IT::IDTYPE::F)
+				{
+					if (lexTable.GetEntry(i - 1).lexema == LEX_FUNCTION && lexTable.GetEntry(i - 2).lexema == 't')
+					{
+						if (idTable.IsId(token, idTable.GetEntry(lexTable.GetEntry(i).idxTI).id) == -1)
+						{
+							if (FlagForTypeOfVar.type == flagForTypeOfVar::INT)
+								idTable.Add({ idTable.GetEntry(lexTable.GetEntry(i).idxTI).id, token, IT::IDDATATYPE::INT, IT::IDTYPE::P });
 
-	//						if (FlagForTypeOfVar.type == flagForTypeOfVar::STR)
-	//							idTable.Add({ idTable.GetEntry(lexTable.GetEntry(i).idxTI).id, token, IT::IDDATATYPE::STR, IT::IDTYPE::P });
+							if (FlagForTypeOfVar.type == flagForTypeOfVar::STR)
+								idTable.Add({ idTable.GetEntry(lexTable.GetEntry(i).idxTI).id, token, IT::IDDATATYPE::STR, IT::IDTYPE::P });
 
-	//						FlagForTypeOfVar.posInLT = -1;
-	//						FlagForTypeOfVar.type = flagForTypeOfVar::DEF;
+							FlagForTypeOfVar.posInLT = -1;
+							FlagForTypeOfVar.type = flagForTypeOfVar::DEF;
 
-	//						lexTable.Add({ LEX_ID, strNumber, idTable.current_size - 1 });
-	//						alreadyChecked = true;
-	//						break;
-	//					}
-	//					else
-	//						throw ERROR_THROW_IN(123, strNumber, -1);
-	//				}
-	//			}
-	//		}
+							lexTable.Add({ LEX_ID, strNumber, idTable.current_size - 1 });
+							alreadyChecked = true;
+							break;
+						}
+						else
+							throw ERROR_THROW_IN(123, strNumber, -1);
+					}
+				}
+			}
 
-	//	//добавление идентификаторов с учетом области видимости
-	//	if (!alreadyChecked)
-	//	{
-	//		bool isLeftBraceWas = false;
-	//		for (int i = lexTable.current_size - 1; i > 0; i--)
-	//		{
-	//			if (lexTable.GetEntry(i).lexema == LEX_LEFTBRACE)
-	//				isLeftBraceWas = true;
+		//добавление идентификаторов с учетом области видимости
+		if (!alreadyChecked)
+		{
+			bool isLeftBraceWas = false;
+			for (int i = lexTable.current_size - 1; i > 0; i--)
+			{
+				if (lexTable.GetEntry(i).lexema == LEX_LEFTBRACE)
+					isLeftBraceWas = true;
 
-	//			if (isLeftBraceWas &&
-	//				lexTable.GetEntry(i).lexema == LEX_ID &&
-	//				idTable.GetEntry(lexTable.GetEntry(i).idxTI).idtype == IT::IDTYPE::F)
-	//			{
-	//				int tempIndex = idTable.IsId(token, idTable.GetEntry(lexTable.GetEntry(i).idxTI).id);
-	//				if (tempIndex != -1)
-	//				{
-	//					lexTable.Add({ LEX_ID, strNumber, tempIndex });
-	//					break;
-	//				}
-	//				else
-	//				{
-	//					tempIndex = idTable.IsId(token);
-	//					if (tempIndex != -1 &&
-	//						idTable.GetEntry(tempIndex).idtype == IT::IDTYPE::F)
-	//					{
-	//						lexTable.Add({ LEX_ID, strNumber, tempIndex });
-	//						break;
-	//					}
-	//					else
-	//						throw ERROR_THROW_IN(129, strNumber, -1);
-	//				}
+				if (isLeftBraceWas &&
+					lexTable.GetEntry(i).lexema == LEX_ID &&
+					idTable.GetEntry(lexTable.GetEntry(i).idxTI).idtype == IT::IDTYPE::F)
+				{
+					int tempIndex = idTable.IsId(token, idTable.GetEntry(lexTable.GetEntry(i).idxTI).id);
+					if (tempIndex != -1)
+					{
+						lexTable.Add({ LEX_ID, strNumber, tempIndex });
+						break;
+					}
+					else
+					{
+						tempIndex = idTable.IsId(token);
+						if (tempIndex != -1 &&
+							idTable.GetEntry(tempIndex).idtype == IT::IDTYPE::F)
+						{
+							lexTable.Add({ LEX_ID, strNumber, tempIndex });
+							break;
+						}
+						else
+							throw ERROR_THROW_IN(129, strNumber, -1);
+					}
 
-	//			}
-	//		}
-	//	}
+				}
+			}
+		}
 
-	//	delete identificator;
-	//	identificator = NULL;
-	//	return true;
-	//}
-	//else
-	//{
-	//	delete identificator;
-	//	identificator = NULL;
-	//	return false;
-	//}
+		delete identificator;
+		identificator = NULL;
+		return true;
+	}
+	else
+	{
+		delete identificator;
+		identificator = NULL;
+		return false;
+	}
 }
