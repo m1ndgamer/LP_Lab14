@@ -374,21 +374,22 @@ bool a_func_var(const char* token, const int strNumber, LT::LexTable& lexTable, 
 	{
 		bool alreadyChecked = false;
 		//для функций
-		if (strcmp(token, "main") == 0 ||
-			((lexTable.GetEntry(lexTable.current_size - 1).lexema == LEX_FUNCTION &&
-				lexTable.GetEntry(lexTable.current_size - 2).lexema == 't') &&
-				FlagForTypeOfVar.posInLT == lexTable.current_size - 2))
+		if (!strcmp(token, "main") || // 0 вернуть
+			(((char)lexTable.GetEntry(lexTable, lexTable.currentSize - 1).lexem == LEX_FUNCTION &&
+				(char)lexTable.GetEntry(lexTable, lexTable.currentSize - 2).lexem == 't') &&
+				FlagForTypeOfVar.posInLT == lexTable.currentSize - 2))
 		{
-			if (idTable.IsId(token) == -1)
+			///////////////////////////////////////////////
+			if (idTable.IsId(idTable, (char*)token) == -1)
 			{
 				if (FlagForTypeOfVar.type == flagForTypeOfVar::INT)
-					idTable.Add({ "\0", token, IT::IDDATATYPE::INT, IT::IDTYPE::F });
+					idTable.Add(idTable, { 0, (char)token, IT::IDDATATYPE::INT, IT::IDTYPE::F });
 
 				if (FlagForTypeOfVar.type == flagForTypeOfVar::STR)
-					idTable.Add({ "\0", token, IT::IDDATATYPE::STR, IT::IDTYPE::F });
+					idTable.Add(idTable, { 0, (char)token, IT::IDDATATYPE::STR, IT::IDTYPE::F });
 
 				if (strcmp(token, "main") == 0)
-					idTable.Add({ "\0", token, IT::IDDATATYPE::INT, IT::IDTYPE::F });
+					idTable.Add(idTable, { 0, (char)token, IT::IDDATATYPE::INT, IT::IDTYPE::F });
 
 				FlagForTypeOfVar.posInLT = -1;
 				FlagForTypeOfVar.type = flagForTypeOfVar::DEF;
@@ -396,6 +397,7 @@ bool a_func_var(const char* token, const int strNumber, LT::LexTable& lexTable, 
 				lexTable.Add({ LEX_ID, strNumber, idTable.current_size - 1 });
 				alreadyChecked = true;
 			}
+			/////////////////////////////////////////////////
 			else
 			{
 			}
@@ -404,27 +406,27 @@ bool a_func_var(const char* token, const int strNumber, LT::LexTable& lexTable, 
 
 		//для переменной(с проверкой переопределения)
 		if (!alreadyChecked &&
-			(lexTable.GetEntry(lexTable.current_size - 1).lexema == 't' &&
-				lexTable.GetEntry(lexTable.current_size - 2).lexema == LEX_DECLARE &&
-				FlagForTypeOfVar.posInLT == lexTable.current_size - 1))
+			(lexTable.GetEntry(lexTable, lexTable.currentSize - 1).lexem == 't' &&
+				lexTable.GetEntry(lexTable, lexTable.currentSize - 2).lexem == LEX_DECLARE &&
+				FlagForTypeOfVar.posInLT == lexTable.currentSize - 1))
 		{
 			bool isLeftBraceWas = false;
-			for (int i = lexTable.current_size - 1; i > 0; i--)
+			for (int i = lexTable.currentSize - 1; i > 0; i--)
 			{
-				if (lexTable.GetEntry(i).lexema == LEX_LEFTBRACE)
+				if (lexTable.GetEntry(i).lexem == LEX_LEFTBRACE)
 					isLeftBraceWas = true;
 
 				if (isLeftBraceWas &&
-					lexTable.GetEntry(i).lexema == LEX_ID &&
+					lexTable.GetEntry(i).lexem == LEX_ID &&
 					idTable.GetEntry(lexTable.GetEntry(i).idxTI).idtype == IT::IDTYPE::F)
 				{
 					if (idTable.IsId(token, idTable.GetEntry(lexTable.GetEntry(i).idxTI).id) == -1)
 					{
 						if (FlagForTypeOfVar.type == flagForTypeOfVar::INT)
-							idTable.Add({ idTable.GetEntry(lexTable.GetEntry(i).idxTI).id, token, IT::IDDATATYPE::INT, IT::IDTYPE::V });
+							idTable.Add(idTable, { idTable.GetEntry(lexTable.GetEntry(i).idxTI).id, token, IT::IDDATATYPE::INT, IT::IDTYPE::V });
 
 						if (FlagForTypeOfVar.type == flagForTypeOfVar::STR)
-							idTable.Add({ idTable.GetEntry(lexTable.GetEntry(i).idxTI).id, token, IT::IDDATATYPE::STR, IT::IDTYPE::V });
+							idTable.Add(idTable, { idTable.GetEntry(lexTable.GetEntry(i).idxTI).id, token, IT::IDDATATYPE::STR, IT::IDTYPE::V });
 
 						FlagForTypeOfVar.posInLT = -1;
 						FlagForTypeOfVar.type = flagForTypeOfVar::DEF;
@@ -442,13 +444,13 @@ bool a_func_var(const char* token, const int strNumber, LT::LexTable& lexTable, 
 
 		//для параметра функции
 		if (!alreadyChecked &&
-			(lexTable.GetEntry(lexTable.current_size - 1).lexema == 't' && FlagForTypeOfVar.posInLT == lexTable.current_size - 1))
-			for (int i = lexTable.current_size - 1; i > 0; i--)
+			(lexTable.GetEntry(lexTable.currentSize - 1).lexem == 't' && FlagForTypeOfVar.posInLT == lexTable.currentSize - 1))
+			for (int i = lexTable.currentSize - 1; i > 0; i--)
 			{
-				if (lexTable.GetEntry(i).lexema == LEX_ID &&
+				if (lexTable.GetEntry(i).lexem == LEX_ID &&
 					idTable.GetEntry(lexTable.GetEntry(i).idxTI).idtype == IT::IDTYPE::F)
 				{
-					if (lexTable.GetEntry(i - 1).lexema == LEX_FUNCTION && lexTable.GetEntry(i - 2).lexema == 't')
+					if (lexTable.GetEntry(i - 1).lexem == LEX_FUNCTION && lexTable.GetEntry(i - 2).lexem == 't')
 					{
 						if (idTable.IsId(token, idTable.GetEntry(lexTable.GetEntry(i).idxTI).id) == -1)
 						{
@@ -475,13 +477,13 @@ bool a_func_var(const char* token, const int strNumber, LT::LexTable& lexTable, 
 		if (!alreadyChecked)
 		{
 			bool isLeftBraceWas = false;
-			for (int i = lexTable.current_size - 1; i > 0; i--)
+			for (int i = lexTable.currentSize - 1; i > 0; i--)
 			{
-				if (lexTable.GetEntry(i).lexema == LEX_LEFTBRACE)
+				if (lexTable.GetEntry(i).lexem == LEX_LEFTBRACE)
 					isLeftBraceWas = true;
 
 				if (isLeftBraceWas &&
-					lexTable.GetEntry(i).lexema == LEX_ID &&
+					lexTable.GetEntry(i).lexem == LEX_ID &&
 					idTable.GetEntry(lexTable.GetEntry(i).idxTI).idtype == IT::IDTYPE::F)
 				{
 					int tempIndex = idTable.IsId(token, idTable.GetEntry(lexTable.GetEntry(i).idxTI).id);
