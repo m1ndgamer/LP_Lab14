@@ -1,8 +1,9 @@
 #pragma once
 #define IN_MAX_LEN_TEXT 1024*1024
-#define IN_CODE_ENDL '\n'
+#define IN_CODE_ENDLINE '\n'
 #define IN_CODE_TAB '\t'
-#define IN_CODE_ENDLINE '\0'
+#define IN_CODE_SPACE ' '
+#define IN_CODE_ENDSTRING '\0'
 
 //Symbols
 #define IN_CODE_TABLE {\

@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
 #define ERROR_THROW(id) Error::getError(id);
-#define ERROR_THROW_IN(id, l, c, s) Error::getErrorIn(id, l, c, s);
-#define ERROR_ENTRY(id, m)	 { id, m, { -1, -1}}
+#define ERROR_THROW_IN(id, l, c) Error::getErrorIn(id, l, c);
+#define ERROR_ENTRY(id, m)	 { id, m, { -1, -1, 'H'}}
 #define ERROR_MAXSIZE_MESSAGE 200
 #define ERROR_ENTRY_NODEF(id) ERROR_ENTRY(-id, "Heопределенная ошибка")
 
@@ -32,7 +32,7 @@ namespace Error
 
 	// Создать экземпляр ошибки.
 	ERROR getError(int id);
-	ERROR getErrorIn(int id, int line, int col, unsigned char symbol);
+	ERROR getErrorIn(int id, int line, int col);
 	/// Получить информацию об ошибке.
 	std::string getErrorInfo(ERROR e); 
 };

@@ -28,7 +28,7 @@ namespace In
 				else if (in.code[un_symbol] == IN::F) { throw ERROR_THROW_IN(111, in.lines, position, un_symbol); }
 				else
 				{
-					if (un_symbol == IN_CODE_ENDL)
+					if (un_symbol == IN_CODE_ENDLINE)
 					{
 						in.text[in.size++] = in.code[un_symbol];
 						in.lines++;
@@ -37,7 +37,7 @@ namespace In
 				}
 			}
 		else throw ERROR_THROW(110);
-		in.text[in.size] = IN_CODE_ENDLINE;
+		in.text[in.size] = IN_CODE_ENDSTRING;
 		fileReader.close();	
 		InHandler(&in);
 		return in;
@@ -52,6 +52,6 @@ namespace In
 			if (!(in->text[i] == ' ' && (in->code[in->text[i - 1]] == IN::A || in->code[in->text[i + 1]] == IN::A)))
 				in->text[position++] = in->text[i];
 		}
-		in->text[position] = IN_CODE_ENDLINE;
+		in->text[position] = IN_CODE_ENDSTRING;
 	}
 }

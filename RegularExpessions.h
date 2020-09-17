@@ -71,6 +71,15 @@
 			FST::NODE()	
 #pragma endregion
 
+#pragma region main
+#define A_MAIN(string) string, 4,				  \
+			FST::NODE(1, FST::RELATION('m', 1)),  \
+			FST::NODE(1, FST::RELATION('a', 2)),  \
+			FST::NODE(1, FST::RELATION('i', 3)),  \
+			FST::NODE(1, FST::RELATION('n', 4)),  \
+			FST::NODE()	
+#pragma endregion
+
 #pragma region indentificator
 #define A_IDENTIFICATOR(string) string, 1,	\
 			FST::NODE(27,	FST::RELATION('a', 0),	\

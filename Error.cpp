@@ -24,7 +24,18 @@ namespace Error
 		ERROR_ENTRY_NODEF(113, "Превашен маскимальный размер таблицы лексем"), 
 		ERROR_ENTRY_NODEF(114), ERROR_ENTRY_NODEF(115),
 		ERROR_ENTRY_NODEF(116), ERROR_ENTRY_NODEF(117), ERROR_ENTRY_NODEF(118), ERROR_ENTRY_NODEF(119),
-		ERROR_ENTRY_NODEF10(120), ERROR_ENTRY_NODEF10(130), ERROR_ENTRY_NODEF10(140), ERROR_ENTRY_NODEF10(150),
+		ERROR_ENTRY_NODEF10(120), 
+		ERROR_ENTRY(130, "Не распознана лексема"),
+		ERROR_ENTRY_NODEF(131),
+		ERROR_ENTRY_NODEF(132),
+		ERROR_ENTRY_NODEF(133),
+		ERROR_ENTRY_NODEF(134),
+		ERROR_ENTRY_NODEF(135),
+		ERROR_ENTRY_NODEF(136),
+		ERROR_ENTRY_NODEF(137),
+		ERROR_ENTRY_NODEF(138),
+		ERROR_ENTRY(139, "Превышен допустимый размер строки"),
+		ERROR_ENTRY_NODEF10(140), ERROR_ENTRY_NODEF10(150),
 		ERROR_ENTRY_NODEF10(160), ERROR_ENTRY_NODEF10(170), ERROR_ENTRY_NODEF10(180), ERROR_ENTRY_NODEF10(190),
 		ERROR_ENTRY_NODEF100(200), ERROR_ENTRY_NODEF100(300), ERROR_ENTRY_NODEF100(400), ERROR_ENTRY_NODEF100(500),
 		ERROR_ENTRY_NODEF100(600), ERROR_ENTRY_NODEF100(700), ERROR_ENTRY_NODEF100(800), ERROR_ENTRY_NODEF100(900)
@@ -38,14 +49,14 @@ namespace Error
 		return e;
 	}
 	// Получить ошибку входного файла.
-	ERROR getErrorIn(int id, int line = -1, int col = -1, unsigned char symbol = 'H')
+	ERROR getErrorIn(int id, int line = -1, int col = -1)
 	{
 		ERROR e;
 		if (id <= 0 || id > ERROR_MAX_ENTRY) e = errors[0];
 		else 
 		{
 			e = errors[id];
-			e.inext = { (short)line, (short)col, (unsigned char) symbol};
+			e.inext = { (short)line, (short)col};
 
 		}
 		return e;
@@ -56,7 +67,6 @@ namespace Error
 		std::string errorInfo = "Ошибка " + std::to_string(e.id) + ": " + e.message + "\n";
 		if (e.inext.col != -1 && e.inext.line != -1 && e.inext.symbol != 'H')
 		{
-			errorInfo += "cимвол '" + std::string(sizeof(char), (char)e.inext.symbol) + "', ";
 			errorInfo += "строка " + std::to_string(e.inext.line) + " ";
 			errorInfo += "позиция " + std::to_string(e.inext.col) + "\n";
 		}

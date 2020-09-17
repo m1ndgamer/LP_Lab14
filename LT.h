@@ -8,6 +8,7 @@
 #define	LEX_ID			'i'			// идентификатор
 #define	LEX_LITERAL		'l'			// литерал
 #define	LEX_FUNCTION	'f'			// function
+#define	LEX_MAIN		'm'			// declare
 #define	LEX_DECLARE		'd'			// declare
 #define	LEX_RETURN		'r'			// return
 #define	LEX_PRINT		'p'			// print
