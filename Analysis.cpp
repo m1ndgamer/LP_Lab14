@@ -25,7 +25,26 @@ bool tokenAnaliz(const char* token, int strNumber, LT::LexTable& lexTable, IT::I
 	// первая буква в токене
 	switch (*token)
 	{
-	case LEX_SEMICOLON: ADD_LEXEM(LEX_SEMICOLON)
+	case 'f':
+	{
+		FST::FST* a_function = new FST::FST(A_FUNCTION(token));
+		if (FST::execute(*a_function))
+		{
+			lexTable.Add({ LEX_FUNCTION, strNumber, LT_TI_NULLXDX });
+
+			delete a_function;
+			a_function = NULL;
+			return true;
+		}
+		else
+		{
+			delete a_function;
+			a_function = NULL;
+
+			return a_func_var(token, strNumber, lexTable, idTable, FlagForTypeOfVar);
+		}
+	}
+	/*case LEX_SEMICOLON: ADD_LEXEM(LEX_SEMICOLON)
 	case LEX_COMMA: ADD_LEXEM(LEX_SEMICOLON)
 	case LEX_LEFTBRACE: ADD_LEXEM(LEX_LEFTBRACE)
 	case LEX_RIGHTBRACE: ADD_LEXEM(LEX_RIGHTBRACE)
@@ -51,55 +70,93 @@ bool tokenAnaliz(const char* token, int strNumber, LT::LexTable& lexTable, IT::I
 		{
 			DELETE_AUTOMAT
 			lexTable.Add({ LEX_STRING, strNumber, LT_TI_NULLXDX });
-
-			
 			FlagForTypeOfVar.posInLT = lexTable.currentSize - 1;
 			FlagForTypeOfVar.type = flagForTypeOfVar::STR;
 			return true;
 		}
 		else { DELETE_AUTOMAT IS_FUNC_VARIABLE }
-	}
+	}*/
 	
-	case '\"':
-	{
-		CREATE_AUTOMAT(A_STRING_LITERAL)
-			IS_CORRECT
-		{
-			int i = idTable.IsLit(token);
-			if (i != LT_TI_NULLXDX)
-				lexTable.Add({ LEX_LITERAL, strNumber, i });
-			else
-			{
-				idTable.Add({ "\0", "\0", IT::IDDATATYPE::STR,  IT::IDTYPE::L });
 
-				idTable.table[idTable.currentSize - 1].value.vstr.len = 0;
-				int i = 0, j = 0;
-				for (; token[i] != '\0'; i++)
-				{
-					if (token[i] != '\"')
-					{
-						idTable.table[idTable.current_size - 1].value.vstr.str[j] = token[i];
-						idTable.table[idTable.current_size - 1].value.vstr.len++;
-						j++;
-					}
-				}
-				idTable.table[idTable.current_size - 1].value.vstr.str[j] = '\0';
 
-				lexTable.Add({ LEX_LITERAL, strNumber, idTable.current_size - 1 });
-			}
-			DELETE_AUTOMAT return true;
-		}
-	}
+	//int IT::IdTable::IsLit(const char lit[TI_STR_MAXSIZE])
+	//{
+	//	char* temp = new char[TI_STR_MAXSIZE];
+	//	int j = 0;
+	//	for (int i = 0; lit[i] != '\0'; i++)
+	//	{
+	//		if (lit[i] != '\"')
+	//		{
+	//			temp[j] = lit[i];
+	//			j++;
+	//		}
+	//	}
+	//	temp[j] = '\0';
+
+	//	for (int i = 0; i < this->current_size; i++)
+	//	{
+	//		if (this->table[i].idtype == IT::IDTYPE::L)
+	//		{
+	//			if (this->table[i].value.vint == atoi(lit))
+	//			{
+	//				delete[] temp;
+	//				return i;
+	//			}
+
+	//			if (strcmp(this->table[i].value.vstr.str, temp) == 0)
+	//			{
+	//				delete[] temp;
+	//				return i;
+	//			}
+	//		}
+	//	}
+
+	//	delete[] temp;
+	//	return TI_NULLIDX;
+	//}
+
+
+
+	//case '\'':
+	//{
+	//	CREATE_AUTOMAT(A_STRING_LITERAL)
+	//	IS_CORRECT
+	//	{
+	//		int i = idTable.IsLit(token);
+	//		if (i != LT_TI_NULLXDX)
+	//			lexTable.Add({ LEX_LITERAL, strNumber, i });
+	//		else
+	//		{
+	//			idTable.Add({ "\0", "\0", IT::IDDATATYPE::STR,  IT::IDTYPE::L });
+
+	//			idTable.table[idTable.currentSize - 1].value.vstr.len = 0;
+	//			int i = 0, j = 0;
+	//			for (; token[i] != '\0'; i++)
+	//			{
+	//				if (token[i] != '\"')
+	//				{
+	//					idTable.table[idTable.current_size - 1].value.vstr.str[j] = token[i];
+	//					idTable.table[idTable.current_size - 1].value.vstr.len++;
+	//					j++;
+	//				}
+	//			}
+	//			idTable.table[idTable.current_size - 1].value.vstr.str[j] = '\0';
+
+	//			lexTable.Add({ LEX_LITERAL, strNumber, idTable.current_size - 1 });
+	//		}
+	//		DELETE_AUTOMAT return true;
+	//	}
+	//}
 
 	/*delete string_literal;
 	string_literal = NULL;
 	return false;*/
 
-		default:
-		{
-		CREATE_AUTOMAT(A_INTEGER_LITERAL)
-		IS_CORRECT
-		{}
+		//default:
+		//{
+		//CREATE_AUTOMAT(A_INTEGER_LITERAL)
+		//IS_CORRECT
+		//{}
 		//{
 		//	int i = idTable.IsLit(token);
 		//	if (i != LT_TI_NULLXDX)
@@ -121,7 +178,7 @@ bool tokenAnaliz(const char* token, int strNumber, LT::LexTable& lexTable, IT::I
 		//	integer_literal = NULL;
 
 			//return a_func_var(token, strNumber, lexTable, idTable, FlagForTypeOfVar);
-		}
+		//}
 	}
 }
 

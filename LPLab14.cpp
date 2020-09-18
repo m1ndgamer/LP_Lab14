@@ -21,8 +21,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		Parm::PARM parm = Parm::getparm(argc, argv);
 		log = Log::getlog(parm.log);
 		In::IN in = In::getIn(parm.in);
-		IT::IdTable idTable;
-		LT::LexTable lexTable;
+		IT::IdTable idTable = idTable.Create();
+		LT::LexTable lexTable = lexTable.Create();
 		Lex(in, lexTable, idTable);
 		Log::WriteInsideOutFile(parm, in);
 		Log::WriteLine(log, (wchar_t*)L"Тест: ", (wchar_t*)L"без ошибок ", L"");
