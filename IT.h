@@ -18,7 +18,7 @@ namespace IT	// таблица идентификатов
 	struct Entry
 	{
 		int idxfirstLE;					// индекс первой записи в таблице
-		char id[ID_MAXSIZE];			// идентификатор (автоматически усекается до ID_MAXSIZE)
+		char* id;						// идентификатор (автоматически усекается до ID_MAXSIZE)
 		IDDATATYPE iddatatype;			// тип данных
 		IDTYPE idtype;					// тип идентикатора
 		union
@@ -36,13 +36,13 @@ namespace IT	// таблица идентификатов
 	struct IdTable
 	{
 		int maxsize;				// максимальный размер таблицы
-		int current_size;			// текущий размер таблицы
+		int currentSize;			// текущий размер таблицы
 		Entry* table;				// массив строк таблицы
 	
 		IdTable Create(int size = TI_MAXSIZE);
 		void Add(IdTable& idtable, Entry entry);
 		Entry GetEntry(IdTable& idtable, int n);
-		int IsId(IdTable& idtable, char id[ID_MAXSIZE]);
+		int IsId(IdTable& idtable, char* id);
 		void Delete();
 	};
 }

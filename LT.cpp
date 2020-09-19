@@ -6,9 +6,9 @@
 namespace LT
 {
 	// Создать таблицу
-	LexTable LexTable::Create(int size = LT_MAXSIZE)
+	LexTable LexTable::Create(int size)
 	{
-		if (size >= LT_MAXSIZE) throw ERROR_THROW(113);
+		if (size > LT_MAXSIZE) throw ERROR_THROW(113);
 		return { size, 0, new Entry[size] };
 	}
 	// добавить запись
@@ -19,7 +19,7 @@ namespace LT
 	// получить запись
 	Entry LexTable::GetEntry(LexTable& lextable, int n)
 	{
-		if (n < maxSize && n >= 0) throw ERROR_THROW(121); // to do error;
+		if (n >= maxSize || n < 0) throw ERROR_THROW(121); // to do error;
 		return table[n];
 	}
 	// удалить таблицу

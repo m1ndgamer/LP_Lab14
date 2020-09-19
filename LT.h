@@ -32,7 +32,8 @@ namespace LT
 {
 	struct Entry						// строка
 	{
-		char lexem[LEXEM_FIXSIZE];		// лесема
+		// в строку .......................
+		char lexem;						// лесема
 		int lineNumber;					// номер строки в исходном тексте
 		int idxTI;						// индекс в таблице или LT_TI_NULLIDX
 	};
