@@ -1,6 +1,6 @@
 #pragma once
 
-#define ID_MAXSIZE		5				// допустимая длина идентификатора
+#define ID_MAXSIZE		64				// допустимая длина идентификатора
 #define TI_MAXSIZE		4096			// максимальное количество строк в таблице идентификаторов 
 #define TI_INT_DEFAULT	0x00000000		// значение по умолчанию для типа integer 
 #define TI_STR_DEFAULT	0x00			// значение по умолчанию для типа string 
@@ -18,7 +18,7 @@ namespace IT	// таблица идентификатов
 	struct Entry
 	{
 		int idxfirstLE;					// индекс первой записи в таблице
-		char* id;						// идентификатор (автоматически усекается до ID_MAXSIZE)
+		char* id;			// идентификатор (автоматически усекается до ID_MAXSIZE)
 		IDDATATYPE iddatatype;			// тип данных
 		IDTYPE idtype;					// тип идентикатора
 		union
@@ -30,6 +30,8 @@ namespace IT	// таблица идентификатов
 				char str[TI_STR_MAXSIZE - 1];	// символы string
 			} vstr[TI_STR_MAXSIZE];				// значение string
 		} value;	// значение идентификатора
+		Entry();
+		Entry(int first, char* i, IDDATATYPE datatype, IDTYPE type);
 	};
 
 	// экземпляр таблицы идентификаторов
@@ -39,10 +41,10 @@ namespace IT	// таблица идентификатов
 		int currentSize;			// текущий размер таблицы
 		Entry* table;				// массив строк таблицы
 	
-		IdTable Create(int size = TI_MAXSIZE);
-		void Add(IdTable& idtable, Entry entry);
-		Entry GetEntry(IdTable& idtable, int n);
-		int IsId(IdTable& idtable, char* id);
+		IdTable(int size = TI_MAXSIZE);
+		void Add(Entry entry);
+		Entry GetEntry(int n);
+		int IsId(char* id);
 		void Delete();
 	};
 }

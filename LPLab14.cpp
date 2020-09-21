@@ -13,6 +13,8 @@
 #include "LT.h"
 #include "IT.h"
 
+static flagForTypeOfVar FlagForTypeOfVar;
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	setlocale(LC_ALL, "rus");
@@ -23,8 +25,9 @@ int _tmain(int argc, _TCHAR* argv[])
 		log = Log::getlog(parm.log);
 		In::IN in = In::getIn(parm.in);
 		LT::LexTable lexTable = lexTable.Create();
-		IT::IdTable idTable = idTable.Create();
+		IT::IdTable idTable;
 		Lex(in, lexTable, idTable);
+
 		int current = 0;
 		for (int i = 0; i < lexTable.currentSize; i++)
 		{
@@ -40,7 +43,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		std::cout << std::endl;
 		for (int i = 0; i < idTable.currentSize; i++)
 		{
-			IT::Entry e = idTable.GetEntry(idTable, i);
+			IT::Entry e = idTable.GetEntry(i);
 			//if (entry.lineNumber != current)
 			//{
 			//	std::cout << '\n';

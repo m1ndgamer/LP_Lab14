@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include "IT.h"
 #include "Error.h"
 #include <string.h>
@@ -7,29 +8,48 @@
 
 namespace IT
 {
-	IdTable IdTable::Create(int size)
+	IT::Entry::Entry()
 	{
-		if (size > ID_MAXSIZE) // исключение
-			return { size, 0, new Entry[size] };
+		idxfirstLE = 0;
+		id = new char[64];
+		strcpy(id, "undef");
+		iddatatype = INT;
+		idtype = V;
 	}
 
-	void IdTable::Add(IdTable& idTable, Entry entry)
+	IT::Entry::Entry(int first, char* i, IDDATATYPE datatype, IDTYPE type)
 	{
-		if (idTable.currentSize < idTable.maxsize) idTable.table[currentSize++] = entry;
-
+		idxfirstLE = first;
+		id = new char[64];
+		strcpy(id, i);
+		iddatatype = datatype;
+		idtype = type;
 	}
 
-	Entry IdTable::GetEntry(IdTable& idTable, int n)
+	IdTable::IdTable(int size)
 	{
-		if (n < idTable.maxsize && n >= 0)
-			return idTable.table[n];
+		if (size > ID_MAXSIZE); // исключение
+		maxsize = TI_MAXSIZE;
+		currentSize = 0;
+		table = new Entry[TI_MAXSIZE];
 	}
 
-	int IdTable::IsId(IdTable& idtable, char* id)
+	void IdTable::Add(Entry entry)
 	{
-		for (int i = 0; i < idtable.currentSize; i++)
+		(currentSize < maxsize) ? table[currentSize++] = entry : throw ERROR_THROW(121);
+	}
+
+	Entry IdTable::GetEntry(int n)
+	{
+		if (n < maxsize && n >= 0)
+			return table[n];
+	}
+
+	int IdTable::IsId(char* id)
+	{
+		for (int i = 0; i < currentSize; i++)
 		{
-			if (!strcmp(idtable.table[i].id, id))
+			if (!strcmp(table[i].id, id))
 				return i;
 		}
 		return TI_NULLIDX;

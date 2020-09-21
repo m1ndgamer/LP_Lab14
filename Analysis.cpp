@@ -7,7 +7,7 @@
 #include "IT.h"
 #include "Error.h"
 
-#define RESET_BUFFER buffer[0] = '\0'; j = 0;
+#define RESET_BUFFER *buffer = '\0'; j = 0;
 #define NEXT_LINE lineNumber++; positionInLine = 0;
 #define CREATE_AUTOMAT(expression) FST::FST* automat = new FST::FST(expression(token));
 #define ADD_LEXEM(lexem) lexTable.Add({ lexem, strNumber, LT_TI_NULLXDX }); \
@@ -17,65 +17,67 @@
 #define IS_FUNC_VARIABLE return isVar(token, strNumber, lexTable, idTable, FlagForTypeOfVar);
 #define TOKEN_PROCESS(automat, lexem) 		CREATE_AUTOMAT(automat); \
 								IS_CORRECT{ DELETE_AUTOMAT ADD_LEXEM(lexem) } \
-								else { DELETE_AUTOMAT IS_FUNC_VARIABLE }
+								//else { DELETE_AUTOMAT IS_FUNC_VARIABLE }
 static flagForTypeOfVar FlagForTypeOfVar;
 
 bool tokenAnaliz(const char* token, int strNumber, LT::LexTable& lexTable, IT::IdTable& idTable)
 {
+	
 	// первая буква в токене
-	switch (*token)
+	/*switch (*token)
 	{
-	case LEX_SEMICOLON: ADD_LEXEM(LEX_SEMICOLON)
-	case LEX_COMMA: ADD_LEXEM(LEX_COMMA)
-	case LEX_LEFTBRACE: ADD_LEXEM(LEX_LEFTBRACE)
-	case LEX_RIGHTBRACE: ADD_LEXEM(LEX_RIGHTBRACE)
-	case LEX_LEFTHESIS: ADD_LEXEM(LEX_LEFTHESIS)
-	case LEX_RIGHTHESIS: ADD_LEXEM(LEX_RIGHTHESIS)
-	case LEX_PLUS: ADD_LEXEM(LEX_PLUS)
-	case LEX_MINUS: ADD_LEXEM(LEX_MINUS)
-	case LEX_STAR: ADD_LEXEM(LEX_STAR)
-	case LEX_DIRSLASH: ADD_LEXEM(LEX_DIRSLASH)
-	case LEX_EQUAL_SIGN: ADD_LEXEM(LEX_EQUAL_SIGN)
-	case LEX_FUNCTION: { TOKEN_PROCESS(A_FUNCTION, LEX_FUNCTION) }
-	case LEX_DECLARE: { TOKEN_PROCESS(A_DECLARE, LEX_DECLARE) }
-	case LEX_RETURN: { TOKEN_PROCESS(A_RETURN, LEX_RETURN) }
-	case LEX_PRINT: { TOKEN_PROCESS(A_PRINT, LEX_PRINT) }
-	case LEX_MAIN: { TOKEN_PROCESS(A_MAIN, LEX_MAIN) }
+		
+		case LEX_SEMICOLON: ADD_LEXEM(LEX_SEMICOLON)
+		case LEX_COMMA: ADD_LEXEM(LEX_COMMA)
+		case LEX_LEFTBRACE: ADD_LEXEM(LEX_LEFTBRACE)
+		case LEX_RIGHTBRACE: ADD_LEXEM(LEX_RIGHTBRACE)
+		case LEX_LEFTHESIS: ADD_LEXEM(LEX_LEFTHESIS)
+		case LEX_RIGHTHESIS: ADD_LEXEM(LEX_RIGHTHESIS)
+		case LEX_PLUS: ADD_LEXEM(LEX_PLUS)
+		case LEX_MINUS: ADD_LEXEM(LEX_MINUS)
+		case LEX_STAR: ADD_LEXEM(LEX_STAR)
+		case LEX_DIRSLASH: ADD_LEXEM(LEX_DIRSLASH)
+		case LEX_EQUAL_SIGN: ADD_LEXEM(LEX_EQUAL_SIGN)
+		case LEX_FUNCTION: { TOKEN_PROCESS(A_FUNCTION, LEX_FUNCTION) }
+		case LEX_DECLARE: { TOKEN_PROCESS(A_DECLARE, LEX_DECLARE) }
+		case LEX_RETURN: { TOKEN_PROCESS(A_RETURN, LEX_RETURN) }
+		case LEX_PRINT: { TOKEN_PROCESS(A_PRINT, LEX_PRINT) }
+		case LEX_MAIN: { TOKEN_PROCESS(A_MAIN, LEX_MAIN) }
 	
 	
-	case 's':
-	{
-		CREATE_AUTOMAT(A_STRING);
-		IS_CORRECT
+		case 's':
 		{
-			DELETE_AUTOMAT
-			lexTable.Add({ LEX_STRING, strNumber, LT_TI_NULLXDX });
-			FlagForTypeOfVar.posInLT = lexTable.currentSize - 1;
-			FlagForTypeOfVar.type = flagForTypeOfVar::STR;
-			return true;
+			CREATE_AUTOMAT(A_STRING);
+			IS_CORRECT
+			{
+				DELETE_AUTOMAT
+				lexTable.Add({ LEX_STRING, strNumber, LT_TI_NULLXDX });
+				FlagForTypeOfVar.posInLT = lexTable.currentSize - 1;
+				FlagForTypeOfVar.type = flagForTypeOfVar::STR;
+				return true;
+			}
+			else { DELETE_AUTOMAT IS_FUNC_VARIABLE }
 		}
-		else { DELETE_AUTOMAT IS_FUNC_VARIABLE }
-	}
 	
-	case 'i':
-	{
-		CREATE_AUTOMAT(A_INTEGER);
-		IS_CORRECT
+		case 'i':
 		{
-			DELETE_AUTOMAT
-			lexTable.Add({ LEX_INTEGER, strNumber, LT_TI_NULLXDX });	
-			FlagForTypeOfVar.posInLT = lexTable.currentSize - 1;
-			FlagForTypeOfVar.type = flagForTypeOfVar::INT;
-			return true;
+			CREATE_AUTOMAT(A_INTEGER);
+			IS_CORRECT
+			{
+				DELETE_AUTOMAT
+				lexTable.Add({ LEX_INTEGER, strNumber, LT_TI_NULLXDX });	
+				FlagForTypeOfVar.posInLT = lexTable.currentSize - 1;
+				FlagForTypeOfVar.type = flagForTypeOfVar::INT;
+				return true;
+			}
+			else { DELETE_AUTOMAT IS_FUNC_VARIABLE }
 		}
-		else { DELETE_AUTOMAT IS_FUNC_VARIABLE }
-	}
-	default:
-	{
-		lexTable.Add({ LEX_ID, strNumber, LT_TI_NULLXDX });
-	}
-	
-	}
+		default:
+		{
+			lexTable.Add({ LEX_ID, strNumber, LT_TI_NULLXDX });
+		}
+	}*/
+	return 1;
 }
 
 
@@ -102,6 +104,7 @@ void Lex(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTable)
 			{
 				i--; buffer[j] = IN_CODE_ENDSTRING;
 				/////////// если токен распознан - добавляем ////////////
+				isVar(buffer, j, lexTable, idTable, FlagForTypeOfVar);
 				if (tokenAnaliz(buffer, lineNumber, lexTable, idTable)) { RESET_BUFFER continue; }
 				else throw ERROR_THROW_IN(130, lineNumber, positionInLine);
 			}
@@ -147,12 +150,17 @@ void Lex(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTable)
 	delete[] buffer;
 }
 
+int Random(int min, int max) {
+	return min + rand() % (max - min);
+}
+
 bool isVar(const char* token, const int strNumber, LT::LexTable& lexTable, IT::IdTable& idTable, flagForTypeOfVar& FlagForTypeOfVar)
 {
 	FST::FST* identificator = new FST::FST(A_IDENTIFICATOR(token));
 	if (FST::execute(*identificator))
 	{
-			idTable.Add(idTable, { 0, (char*)token, IT::INT, IT::V });
+		//std::cout << token << std::endl;
+			idTable.Add({ strNumber, (char*)token, IT::INT, IT::V });
 		/*if (strcmp(token, "main") == 0)
 		{
 			idTable.Add(idTable, { token,  })
