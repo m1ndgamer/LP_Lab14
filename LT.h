@@ -23,6 +23,7 @@
 #define	LEX_STAR		'*'			// *
 #define	LEX_DIRSLASH	'/'			// /
 #define	LEX_EQUAL_SIGN	'='			// =
+#define	BACKTICK		'\''			// =
 
 #define PARM_LEX_DEFAULT_EXT L".lex.txt" //расширение файла с итогом лексического анализa
 
@@ -47,7 +48,7 @@ namespace LT
 		// создать таблицу
 		LexTable Create(int size = LT_MAXSIZE);
 		void Add(Entry entry);	// добавить строку
-		Entry GetEntry(LexTable& lextable, int n);	// получить строку по номеру
+		Entry GetEntry(int n);	// получить строку по номеру
 		void Delete(LexTable& lextable);			// удалить таблицу
 	};
 }

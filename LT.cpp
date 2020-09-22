@@ -17,7 +17,7 @@ namespace LT
 		(currentSize < maxSize) ? table[currentSize++] = entry : throw ERROR_THROW(121);
 	}
 	// получить запись
-	Entry LexTable::GetEntry(LexTable& lextable, int n)
+	Entry LexTable::GetEntry(int n)
 	{
 		if (n >= maxSize || n < 0) throw ERROR_THROW(121); // to do error;
 		return table[n];

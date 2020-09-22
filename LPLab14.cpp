@@ -31,7 +31,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		int current = 0;
 		for (int i = 0; i < lexTable.currentSize; i++)
 		{
-			LT::Entry entry = lexTable.GetEntry(lexTable, i);
+			LT::Entry entry = lexTable.GetEntry(i);
 			if (entry.lineNumber != current)
 			{
 				std::cout << '\n';

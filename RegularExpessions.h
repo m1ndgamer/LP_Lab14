@@ -114,7 +114,7 @@
 
 #pragma region stringLiteral
 #define A_STRING_LITERAL(string) string, 1,	\
-	FST::NODE(1, FST::RELATION('\"', 1)),	\
+	FST::NODE(1, FST::RELATION('\'', 1)),	\
 	FST::NODE(85,	FST::RELATION(' ', 1),	\
 					FST::RELATION('a', 1),	\
 					FST::RELATION('b', 1),	\

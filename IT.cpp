@@ -48,10 +48,7 @@ namespace IT
 	int IdTable::IsId(char* id)
 	{
 		for (int i = 0; i < currentSize; i++)
-		{
-			if (!strcmp(table[i].id, id))
-				return i;
-		}
+			if (!strcmp(table[i].id, id)) return i;
 		return TI_NULLIDX;
 	}
 
