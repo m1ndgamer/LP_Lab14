@@ -14,10 +14,10 @@
 					return true;
 #define DELETE_AUTOMAT delete automat; automat = NULL;
 #define IS_CORRECT if (FST::execute(*automat))
-#define IS_FUNC_VARIABLE return isVar(token, strNumber, lexTable, idTable, FlagForTypeOfVar);
+#define IS_VARIABLE isVar(token, strNumber, lexTable, idTable, FlagForTypeOfVar);
 #define TOKEN_PROCESS(automat, lexem) 		CREATE_AUTOMAT(automat); \
 								IS_CORRECT{ DELETE_AUTOMAT ADD_LEXEM(lexem) } \
-								//else { DELETE_AUTOMAT IS_FUNC_VARIABLE }
+								else { DELETE_AUTOMAT IS_VARIABLE ADD_LEXEM(LEX_ID) return true; }
 ///////////////////////////////////////////////////////////////////////////////////////////////
 #define IS_MAIN strcmp(token, "main") == 0 
 #define PREVIOUS_LEXEM lexTable.GetEntry(lexTable.currentSize - 1).lexem
@@ -64,10 +64,10 @@ bool tokenAnaliz(const char* token, int strNumber, LT::LexTable& lexTable, IT::I
 			IS_CORRECT
 			{
 				DELETE_AUTOMAT
-				lexTable.Add({ LEX_STRING, strNumber, LT_TI_NULLXDX });
+				ADD_LEXEM(LEX_STRING)
 				return true;
 			}
-			else { DELETE_AUTOMAT IS_FUNC_VARIABLE }
+			else { DELETE_AUTOMAT IS_VARIABLE ADD_LEXEM(LEX_ID) return true;  }
 		}
 	
 		case 'i':
@@ -76,10 +76,10 @@ bool tokenAnaliz(const char* token, int strNumber, LT::LexTable& lexTable, IT::I
 			IS_CORRECT
 			{
 				DELETE_AUTOMAT
-				lexTable.Add({ LEX_INTEGER, strNumber, LT_TI_NULLXDX });
+				ADD_LEXEM(LEX_INTEGER)
 				return true;
 			}
-			else { DELETE_AUTOMAT IS_FUNC_VARIABLE }
+			else { DELETE_AUTOMAT return IS_VARIABLE }
 		}
 		default:
 		{
@@ -96,9 +96,9 @@ bool tokenAnaliz(const char* token, int strNumber, LT::LexTable& lexTable, IT::I
 			else
 			{
 				
-				IS_FUNC_VARIABLE
-					lexTable.Add({ LEX_ID, strNumber, LT_TI_NULLXDX });
-					return true;
+				IS_VARIABLE 
+				ADD_LEXEM(LEX_ID)
+				return true;
 			}
 			
 			
