@@ -14,10 +14,10 @@
 					return true;
 #define DELETE_AUTOMAT delete automat; automat = NULL;
 #define IS_CORRECT if (FST::execute(*automat))
-#define IS_VARIABLE isVar(token, strNumber, lexTable, idTable, FlagForTypeOfVar);
+#define IS_VARIABLE isVar(token, strNumber, lexTable, idTable, FlagForTypeOfVar); ADD_LEXEM(LEX_ID) return true;
 #define TOKEN_PROCESS(automat, lexem) 		CREATE_AUTOMAT(automat); \
 								IS_CORRECT{ DELETE_AUTOMAT ADD_LEXEM(lexem) } \
-								else { DELETE_AUTOMAT IS_VARIABLE ADD_LEXEM(LEX_ID) return true; }
+								else { DELETE_AUTOMAT IS_VARIABLE }
 ///////////////////////////////////////////////////////////////////////////////////////////////
 #define IS_MAIN strcmp(token, "main") == 0 
 #define PREVIOUS_LEXEM lexTable.GetEntry(lexTable.currentSize - 1).lexem
@@ -48,14 +48,13 @@ bool tokenAnaliz(const char* token, int strNumber, LT::LexTable& lexTable, IT::I
 		case LEX_MAIN: { TOKEN_PROCESS(A_MAIN, LEX_MAIN) }
 		case BACKTICK: 
 		{
-			// 
 			CREATE_AUTOMAT(A_STRING_LITERAL)
-			//IS_CORRECT
-			//{
+			IS_CORRECT
+			{
 				DELETE_AUTOMAT
-				//lexTable.Add({ LEX_INTEGER, strNumber, LT_TI_NULLXDX });
+				lexTable.Add({ LEX_LITERAL, strNumber, LT_TI_NULLXDX });
 				return true;
-			//}
+			}
 		}
 
 		case 's':
@@ -67,7 +66,7 @@ bool tokenAnaliz(const char* token, int strNumber, LT::LexTable& lexTable, IT::I
 				ADD_LEXEM(LEX_STRING)
 				return true;
 			}
-			else { DELETE_AUTOMAT IS_VARIABLE ADD_LEXEM(LEX_ID) return true;  }
+			else { IS_VARIABLE }
 		}
 	
 		case 'i':
@@ -79,29 +78,21 @@ bool tokenAnaliz(const char* token, int strNumber, LT::LexTable& lexTable, IT::I
 				ADD_LEXEM(LEX_INTEGER)
 				return true;
 			}
-			else { DELETE_AUTOMAT return IS_VARIABLE }
+			else { IS_VARIABLE }
 		}
 		default:
 		{
 			if (isdigit(*token))
 			{
 				CREATE_AUTOMAT(A_INTEGER_LITERAL);
-				IS_CORRECT
-				{
-
+				IS_CORRECT 
+				{ 
 					DELETE_AUTOMAT
-					return true;
+					lexTable.Add({ LEX_LITERAL, strNumber, LT_TI_NULLXDX });
+					return true; 
 				}
 			}
-			else
-			{
-				
-				IS_VARIABLE 
-				ADD_LEXEM(LEX_ID)
-				return true;
-			}
-			
-			
+			else { IS_VARIABLE }	
 		}
 	}
 }
