@@ -97,7 +97,6 @@ bool tokenAnaliz(const char* token, int strNumber, LT::LexTable& lexTable, IT::I
 	}
 }
 
-
 void Lex(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTable)
 {
 	char* buffer = new char[64]{};

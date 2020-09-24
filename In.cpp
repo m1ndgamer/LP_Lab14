@@ -49,7 +49,7 @@ namespace In
 		int position = 0;
 		for (int i = 0; in->text[i]; i++)
 		{
-			if (!(in->text[i] == ' ' && (in->code[in->text[i - 1]] == IN::A || in->code[in->text[i + 1]] == IN::A)))
+			if (!(in->text[i] == IN_CODE_SPACE && (in->code[in->text[i - 1]] == IN::A || in->code[in->text[i + 1]] == IN::A)))
 				in->text[position++] = in->text[i];
 		}
 		in->text[position] = IN_CODE_ENDSTRING;
