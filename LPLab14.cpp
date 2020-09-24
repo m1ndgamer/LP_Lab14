@@ -60,7 +60,22 @@ int _tmain(int argc, _TCHAR* argv[])
 			{
 				std::cout << std::setw(4) << "STR";
 			}
-			std::cout << std::setw(4) << e.idtype << std::endl;
+			if (e.idtype == 1)
+			{
+				std::cout << std::setw(12) << "переменная" << std::endl;
+			}
+			if (e.idtype == 2)
+			{
+				std::cout << std::setw(12) << "функция" << std::endl;
+			}
+			if (e.idtype == 3)
+			{
+				std::cout << std::setw(12) << "параметр" << std::endl;
+			}
+			if (e.idtype == 4)
+			{
+				std::cout << std::setw(12) << "лексема" << std::endl;
+			}
 		}
 		
 

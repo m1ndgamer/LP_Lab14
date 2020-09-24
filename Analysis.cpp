@@ -23,6 +23,16 @@
 #define PREVIOUS_LEXEM lexTable.GetEntry(lexTable.currentSize - 1).lexem
 #define BEFORE_PREVIOUS_LEXEM lexTable.GetEntry(lexTable.currentSize - 2).lexem
 
+IT::IDDATATYPE getType(char lexem)
+{
+	switch (lexem)
+	{
+		case 't': return IT::INT;
+		case 's': return IT::STR;
+		default: return IT::INT;
+	}
+}
+
 bool tokenAnaliz(const char* token, int strNumber, LT::LexTable& lexTable, IT::IdTable& idTable)
 {
 	// первая буква в токене
@@ -176,45 +186,34 @@ bool isVar(const char* token, const int strNumber, LT::LexTable& lexTable, IT::I
 	{		
 		if (IS_MAIN || (PREVIOUS_LEXEM == LEX_FUNCTION))
 		{
-			IT::IDDATATYPE dataType;
-			switch (BEFORE_PREVIOUS_LEXEM)
-			{
-			case 't':
-				dataType = IT::INT;
-				break;
-			case 's':
-				dataType = IT::STR;
-				break;
-			default:
-				dataType = IT::INT;
-				break;
-			}
-			idTable.Add({ strNumber, (char*)token, dataType, IT::F });
+			idTable.Add({ strNumber, (char*)token, getType(BEFORE_PREVIOUS_LEXEM), IT::F });
 			alreadyChecked = true;
 		}
 		//else
 		//	throw ERROR_THROW_IN(123, strNumber, -1);
 		//для переменной(с проверкой переопределения)
-		if (!alreadyChecked && (PREVIOUS_LEXEM == 't' && BEFORE_PREVIOUS_LEXEM == LEX_DECLARE))
+		if (!alreadyChecked && (BEFORE_PREVIOUS_LEXEM == LEX_DECLARE))
 		{
-			if (idTable.IsId((char*)token) != -1)
-			{
-				idTable.Add({ strNumber, (char*)token, IT::INT, IT::F });
-			}
-			else
-			{
-				idTable.Add({ strNumber, (char*)token, IT::INT, IT::F });
-			}
-			
+			//if (idTable.IsId((char*)token) != -1)
+			//{
+			//	idTable.Add({ strNumber, (char*)token, getType(PREVIOUS_LEXEM), IT::F });
+			//}
+			//else
+			//{
+			//	//idTable.Add({ strNumber, (char*)token, getType(PREVIOUS_LEXEM), IT::F });
+			//}
+			idTable.Add({ strNumber, (char*)token, getType(PREVIOUS_LEXEM), IT::V });
 			alreadyChecked = true;
 
 		}
 		/*else
 			throw ERROR_THROW_IN(123, strNumber, -1);*/
 		//для параметра функции
-		if (!alreadyChecked && PREVIOUS_LEXEM == 't')
+		if	(!alreadyChecked && 
+			(BEFORE_PREVIOUS_LEXEM == LEX_LEFTHESIS || 
+			 BEFORE_PREVIOUS_LEXEM == LEX_COMMA)) // ПРОВЕРКА НА ТО ЧТО ПРЕД ЭТО ПАРАМЕТР
 		{
-			idTable.Add({ strNumber, (char*)token, IT::INT, IT::F });
+			idTable.Add({ strNumber, (char*)token, getType(PREVIOUS_LEXEM), IT::P });
 			
 		}
 		/*else
@@ -222,6 +221,7 @@ bool isVar(const char* token, const int strNumber, LT::LexTable& lexTable, IT::I
 		//добавление идентификаторов с учетом области видимости
 		if (!alreadyChecked)
 		{
+			
 			//bool isLeftBraceWas = false;
 			//for (int i = lexTable.currentSize - 1; i > 0; i--)
 			//{

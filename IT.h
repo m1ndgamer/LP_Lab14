@@ -18,7 +18,7 @@ namespace IT	// таблица идентификатов
 	struct Entry
 	{
 		int idxfirstLE;					// индекс первой записи в таблице
-		char* id;			// идентификатор (автоматически усекается до ID_MAXSIZE)
+		char* id;						// идентификатор (автоматически усекается до ID_MAXSIZE)
 		IDDATATYPE iddatatype;			// тип данных
 		IDTYPE idtype;					// тип идентикатора
 		union
