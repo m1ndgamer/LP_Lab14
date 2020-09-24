@@ -50,9 +50,16 @@ int _tmain(int argc, _TCHAR* argv[])
 			//	current++;
 			//	std::cout << std::setw(4) << entry.lineNumber << " | ";
 			//}
-			std::cout << e.idxfirstLE << "  ";
-			std::cout << e.id << "  ";
-			std::cout << std::setw(4) << e.iddatatype;
+			std::cout << std::setw(4) << e.idxfirstLE << "  ";
+			std::cout << std::setw(10) << e.id << "  ";
+			if (e.iddatatype == 1)
+			{
+				std::cout << std::setw(4) << "INT";
+			}
+			if (e.iddatatype == 2)
+			{
+				std::cout << std::setw(4) << "STR";
+			}
 			std::cout << std::setw(4) << e.idtype << std::endl;
 		}
 		

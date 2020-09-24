@@ -4,7 +4,7 @@
 #define	LT_MAXSIZE		4096		// максимальное количество строк в таблице
 #define	LT_TI_NULLXDX	-1			// нет элемента таблицы идентификаторов				
 #define	LEX_INTEGER		't'			// integer
-#define	LEX_STRING		't'			// string
+#define	LEX_STRING		's'			// string
 #define	LEX_ID			'i'			// идентификатор
 #define	LEX_LITERAL		'l'			// литерал
 #define	LEX_FUNCTION	'f'			// function

@@ -47,11 +47,12 @@ namespace In
 	void InHandler(IN *in)
 	{
 		int position = 0;
-		for (int i = 0; in->text[i]; i++)
+		for (int i = 0; i < in->size; i++)
 		{
 			if (!(in->text[i] == IN_CODE_SPACE && (in->code[in->text[i - 1]] == IN::A || in->code[in->text[i + 1]] == IN::A)))
 				in->text[position++] = in->text[i];
 		}
 		in->text[position] = IN_CODE_ENDSTRING;
+		in->size = position;
 	}
 }

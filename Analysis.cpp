@@ -14,7 +14,7 @@
 					return true;
 #define DELETE_AUTOMAT delete automat; automat = NULL;
 #define IS_CORRECT if (FST::execute(*automat))
-#define IS_VARIABLE isVar(token, strNumber, lexTable, idTable, FlagForTypeOfVar); ADD_LEXEM(LEX_ID) return true;
+#define IS_VARIABLE isVar(token, strNumber, lexTable, idTable); ADD_LEXEM(LEX_ID) return true;
 #define TOKEN_PROCESS(automat, lexem) 		CREATE_AUTOMAT(automat); \
 								IS_CORRECT{ DELETE_AUTOMAT ADD_LEXEM(lexem) } \
 								else { DELETE_AUTOMAT IS_VARIABLE }
@@ -22,7 +22,6 @@
 #define IS_MAIN strcmp(token, "main") == 0 
 #define PREVIOUS_LEXEM lexTable.GetEntry(lexTable.currentSize - 1).lexem
 #define BEFORE_PREVIOUS_LEXEM lexTable.GetEntry(lexTable.currentSize - 2).lexem
-static flagForTypeOfVar FlagForTypeOfVar;
 
 bool tokenAnaliz(const char* token, int strNumber, LT::LexTable& lexTable, IT::IdTable& idTable)
 {
@@ -169,16 +168,28 @@ int Random(int min, int max) {
 	return min + rand() % (max - min);
 }
 
-bool isVar(const char* token, const int strNumber, LT::LexTable& lexTable, IT::IdTable& idTable, flagForTypeOfVar& FlagForTypeOfVar)
+bool isVar(const char* token, const int strNumber, LT::LexTable& lexTable, IT::IdTable& idTable)
 {
 	CREATE_AUTOMAT(A_IDENTIFICATOR)
 	bool alreadyChecked = false; // проверена переменная
 	IS_CORRECT
 	{		
-		if (IS_MAIN || (PREVIOUS_LEXEM == LEX_FUNCTION && BEFORE_PREVIOUS_LEXEM == 't'))
+		if (IS_MAIN || (PREVIOUS_LEXEM == LEX_FUNCTION))
 		{
-
-			idTable.Add({ strNumber, (char*)token, IT::INT, IT::F });
+			IT::IDDATATYPE dataType;
+			switch (BEFORE_PREVIOUS_LEXEM)
+			{
+			case 't':
+				dataType = IT::INT;
+				break;
+			case 's':
+				dataType = IT::STR;
+				break;
+			default:
+				dataType = IT::INT;
+				break;
+			}
+			idTable.Add({ strNumber, (char*)token, dataType, IT::F });
 			alreadyChecked = true;
 		}
 		//else
