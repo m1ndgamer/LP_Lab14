@@ -77,12 +77,23 @@ int _tmain(int argc, _TCHAR* argv[])
 			{
 				std::cout << std::setw(12) << "лексема";
 			}
-			if(e.parentId != TI_NULLIDX)
-				std::cout << std::setw(12) << idTable.GetEntry(e.parentId).id << std::endl;
+			if (e.parentId != TI_NULLIDX)
+				std::cout << std::setw(12) << idTable.GetEntry(e.parentId).id;
 			else
-				std::cout << std::setw(12) << "-" << std::endl;
+				std::cout << std::setw(12) << "-";
+			std::cout << std::setw(4) << i << std::endl;
 		}
 		
+		for (int i = 0; i < lexTable.currentSize; i++)
+		{
+			LT::Entry entry = lexTable.GetEntry(i);
+			std::cout << std::setw(4) << entry.lineNumber << std::setw(14) << entry.lexem;
+			if (entry.idxTI != TI_NULLIDX)
+				std::cout << std::setw(12) << entry.idxTI;
+			else
+				std::cout << std::setw(12) << "-";
+			std::cout << std::endl;
+		}
 
 		std::cout << std::endl;
 		Log::WriteInsideOutFile(parm, in);
