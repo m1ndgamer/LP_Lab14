@@ -78,7 +78,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				std::cout << std::setw(12) << "лексема";
 			}
 			if(e.parentId != TI_NULLIDX)
-			std::cout << std::setw(12) << lexTable.GetEntry(e.parentId).idxTI << std::endl;
+				std::cout << std::setw(12) << idTable.GetEntry(e.parentId).id << std::endl;
 			else
 				std::cout << std::setw(12) << "-" << std::endl;
 		}

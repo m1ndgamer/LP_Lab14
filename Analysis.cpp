@@ -200,6 +200,7 @@ bool isVar(const char* token, const int strNumber, LT::LexTable& lexTable, IT::I
 	{		
 		if (IS_MAIN || (PREVIOUS_LEXEM == LEX_FUNCTION))
 		{
+
 			idTable.Add({ strNumber, (char*)token, getType(BEFORE_PREVIOUS_LEXEM), IT::F, GetParentID(lexTable, idTable) });
 			lexTable.Add({ LEX_ID, strNumber, idTable.currentSize - 1 });
 			alreadyChecked = true;
