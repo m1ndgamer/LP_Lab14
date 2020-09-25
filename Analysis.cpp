@@ -33,13 +33,15 @@ IT::IDDATATYPE getType(char lexem)
 	}
 }
 
-int GetParentID(LT::LexTable& lexTable, IT::IdTable& idTable)
+int GetParentID(LT::LexTable& lexTable, IT::IdTable& idTable, bool isParm = false)
 {
-	bool braceFounded = false;
+	char startFunction;
+	isParm ? startFunction = LEX_LEFTHESIS : startFunction = LEX_LEFTBRACE;
+	bool startSymbolFounded = false;
 	for (int i = lexTable.currentSize - 1; i > 0; i--)
 	{
-		if (lexTable.GetEntry(i).lexem == LEX_LEFTBRACE) braceFounded = true;
-		if (braceFounded && lexTable.GetEntry(i).lexem == LEX_ID &&
+		if (lexTable.GetEntry(i).lexem == startFunction) startSymbolFounded = true;
+		if (startSymbolFounded && lexTable.GetEntry(i).lexem == LEX_ID &&
 			idTable.GetEntry(lexTable.GetEntry(i).idxTI).idtype == IT::IDTYPE::F)
 			return lexTable.GetEntry(i).idxTI;
 	}
@@ -229,7 +231,7 @@ bool isVar(const char* token, const int strNumber, LT::LexTable& lexTable, IT::I
 			(BEFORE_PREVIOUS_LEXEM == LEX_LEFTHESIS || 
 			 BEFORE_PREVIOUS_LEXEM == LEX_COMMA)) // опнбепйю мю рн врн опед щрн оюпюлерп
 		{
-			idTable.Add({ strNumber, (char*)token, getType(PREVIOUS_LEXEM), IT::P, GetParentID(lexTable, idTable) });
+			idTable.Add({ strNumber, (char*)token, getType(PREVIOUS_LEXEM), IT::P, GetParentID(lexTable, idTable, true) });
 			
 		}
 		/*else
