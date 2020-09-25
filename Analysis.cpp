@@ -232,7 +232,7 @@ bool isVar(const char* token, const int strNumber, LT::LexTable& lexTable, IT::I
 			 BEFORE_PREVIOUS_LEXEM == LEX_COMMA)) // опнбепйю мю рн врн опед щрн оюпюлерп
 		{
 			idTable.Add({ strNumber, (char*)token, getType(PREVIOUS_LEXEM), IT::P, GetParentID(lexTable, idTable, true) });
-			
+		
 		}
 		/*else
 			throw ERROR_THROW_IN(123, strNumber, -1);*/
