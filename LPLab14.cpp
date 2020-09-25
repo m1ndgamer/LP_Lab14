@@ -81,6 +81,10 @@ int _tmain(int argc, _TCHAR* argv[])
 				std::cout << std::setw(12) << idTable.GetEntry(e.parentId).id;
 			else
 				std::cout << std::setw(12) << "-";
+			if (e.iddatatype == 1)
+				std::cout << std::setw(20) << e.value.vint;
+			else
+				std::cout << std::setw(20) << e.value.vstr->str;
 			std::cout << std::setw(4) << i << std::endl;
 		}
 		

@@ -14,6 +14,7 @@ return c;
 };
 main
 {
+declare integer test = 243;
 declare integer x;
 declare integer y;
 declare integer z;

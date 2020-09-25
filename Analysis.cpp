@@ -78,11 +78,21 @@ bool tokenAnaliz(const char* token, int strNumber, LT::LexTable& lexTable, IT::I
 			IS_CORRECT
 			{
 				DELETE_AUTOMAT
-				lexTable.Add({ LEX_LITERAL, strNumber, LT_TI_NULLXDX });
-				return true;
+					int num2 = lexTable.GetEntry(lexTable.currentSize - 2).idxTI;
+					int num = lexTable.table[lexTable.currentSize - 2].idxTI;
+					if (num != -1)
+					{
+						strcpy(idTable.table[num2].value.vstr->str, token);
+						idTable.table[num2].value.vstr->len = strlen(token);
+						/////// TO 
+						lexTable.Add({ LEX_LITERAL, strNumber, LT_TI_NULLXDX });
+						
+					}
+					return true;
 			}
 		}
-
+		/// ПУСТОЕ ЗНАЧЕНИЕ СТРОКОВЫХ ИНДЕТИФИКАТОРОВ
+		/// ДОБАВИТЬ.
 		case 's':
 		{
 			CREATE_AUTOMAT(A_STRING);
@@ -109,9 +119,10 @@ bool tokenAnaliz(const char* token, int strNumber, LT::LexTable& lexTable, IT::I
 			if (isdigit(*token))
 			{
 				CREATE_AUTOMAT(A_INTEGER_LITERAL);
-				IS_CORRECT 
-				{ 
+				IS_CORRECT
+				{
 					DELETE_AUTOMAT
+					idTable.table[idTable.currentSize - 1].value.vint = atoi(token);
 					lexTable.Add({ LEX_LITERAL, strNumber, LT_TI_NULLXDX });
 					return true;
 				}
@@ -127,7 +138,7 @@ void Lex(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTable)
 	int lineNumber = 1;
 	int positionInLine = 0;
 
-	// i 
+
 	for (int i = 0, j = 0; i < source.size; i++)
 	{
 		// символы допустимые в идентификаторах и ключевых словах
@@ -189,16 +200,12 @@ void Lex(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTable)
 	delete[] buffer;
 }
 
-int Random(int min, int max) {
-	return min + rand() % (max - min);
-}
-
 bool isVar(const char* token, const int strNumber, LT::LexTable& lexTable, IT::IdTable& idTable)
 {
 	CREATE_AUTOMAT(A_IDENTIFICATOR)
 	bool alreadyChecked = false; // проверена переменная
 	IS_CORRECT
-	{		
+	{
 		if (IS_MAIN || (PREVIOUS_LEXEM == LEX_FUNCTION))
 		{
 			idTable.Add({ strNumber, (char*)token, getType(BEFORE_PREVIOUS_LEXEM), IT::F, GetParentID(lexTable, idTable) });

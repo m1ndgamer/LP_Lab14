@@ -17,7 +17,7 @@ namespace IT	// таблица идентификатов
 	// строка таблицы идентификаторов
 	struct Entry
 	{
-		int idxfirstLE;					// индекс первой записи в таблице
+		int idxfirstLE;					// индекс первой записи в таблице лексем
 		int parentId;					// индекс родительского блока
 		char* id;						// идентификатор (автоматически усекается до ID_MAXSIZE)
 		IDDATATYPE iddatatype;			// тип данных
