@@ -33,6 +33,20 @@ IT::IDDATATYPE getType(char lexem)
 	}
 }
 
+int GetParentID(LT::LexTable& lexTable, IT::IdTable& idTable)
+{
+	bool braceFounded = false;
+	for (int i = lexTable.currentSize - 1; i > 0; i--)
+	{
+		if (lexTable.GetEntry(i).lexem == LEX_LEFTBRACE) braceFounded = true;
+		if (braceFounded && lexTable.GetEntry(i).lexem == LEX_ID &&
+			idTable.GetEntry(lexTable.GetEntry(i).idxTI).idtype == IT::IDTYPE::F)
+			return lexTable.GetEntry(i).idxTI;
+	}
+	return TI_NULLIDX;
+}
+
+
 bool tokenAnaliz(const char* token, int strNumber, LT::LexTable& lexTable, IT::IdTable& idTable)
 {
 	// первая буква в токене
@@ -186,7 +200,8 @@ bool isVar(const char* token, const int strNumber, LT::LexTable& lexTable, IT::I
 	{		
 		if (IS_MAIN || (PREVIOUS_LEXEM == LEX_FUNCTION))
 		{
-			idTable.Add({ strNumber, (char*)token, getType(BEFORE_PREVIOUS_LEXEM), IT::F });
+			idTable.Add({ strNumber, (char*)token, getType(BEFORE_PREVIOUS_LEXEM), IT::F, GetParentID(lexTable, idTable) });
+			lexTable.Add({ LEX_ID, strNumber, idTable.currentSize - 1 });
 			alreadyChecked = true;
 		}
 		//else
@@ -202,7 +217,7 @@ bool isVar(const char* token, const int strNumber, LT::LexTable& lexTable, IT::I
 			//{
 			//	//idTable.Add({ strNumber, (char*)token, getType(PREVIOUS_LEXEM), IT::F });
 			//}
-			idTable.Add({ strNumber, (char*)token, getType(PREVIOUS_LEXEM), IT::V });
+			idTable.Add({ strNumber, (char*)token, getType(PREVIOUS_LEXEM), IT::V, GetParentID(lexTable, idTable)});
 			alreadyChecked = true;
 
 		}
@@ -213,47 +228,52 @@ bool isVar(const char* token, const int strNumber, LT::LexTable& lexTable, IT::I
 			(BEFORE_PREVIOUS_LEXEM == LEX_LEFTHESIS || 
 			 BEFORE_PREVIOUS_LEXEM == LEX_COMMA)) // ПРОВЕРКА НА ТО ЧТО ПРЕД ЭТО ПАРАМЕТР
 		{
-			idTable.Add({ strNumber, (char*)token, getType(PREVIOUS_LEXEM), IT::P });
+			idTable.Add({ strNumber, (char*)token, getType(PREVIOUS_LEXEM), IT::P, GetParentID(lexTable, idTable) });
 			
 		}
 		/*else
 			throw ERROR_THROW_IN(123, strNumber, -1);*/
-		//добавление идентификаторов с учетом области видимости
-		if (!alreadyChecked)
-		{
-			
-			//bool isLeftBraceWas = false;
-			//for (int i = lexTable.currentSize - 1; i > 0; i--)
-			//{
-			//	if (lexTable.GetEntry(i).lexem == LEX_LEFTBRACE)
-			//		isLeftBraceWas = true;
-
-			//	if (isLeftBraceWas &&
-			//		lexTable.GetEntry(i).lexem == LEX_ID &&
-			//		idTable.GetEntry(lexTable.GetEntry(i).idxTI).idtype == IT::IDTYPE::F)
-			//	{
-			//		int tempIndex = idTable.IsId((char*)token);
-			//		if (tempIndex != -1)
-			//		{
-			//			lexTable.Add({ LEX_ID, strNumber, tempIndex });
-			//			break;
-			//		}
-			//		else
-			//		{
-			//			tempIndex = idTable.IsId((char*)token);
-			//			if (tempIndex != -1 &&
-			//				idTable.GetEntry(tempIndex).idtype == IT::IDTYPE::F)
-			//			{
-			//				lexTable.Add({ LEX_ID, strNumber, tempIndex });
-			//				break;
-			//			}
-			//			else
-			//				throw ERROR_THROW_IN(129, strNumber, -1);
-			//		}
-
-			//	}
-			//}
-		}
+			//	//добавление идентификаторов с учетом области видимости
+		//if (!alreadyChecked)
+		//{
+		//	bool braceFounded = false;
+		//	for (int i = lexTable.currentSize - 1; i > 0; i--)
+		//	{
+		//		if (lexTable.GetEntry(i).lexem == LEX_LEFTBRACE)
+		//			braceFounded = true;
+	
+		//		if (braceFounded && lexTable.GetEntry(i).lexem == LEX_ID && 
+		//			idTable.GetEntry(lexTable.GetEntry(i).idxTI).idtype == IT::IDTYPE::F)
+		//		{
+		//			idTable.Add({ 
+		//				strNumber, 
+		//				(char*)token, 
+		//				getType(BEFORE_PREVIOUS_LEXEM), 
+		//				IT::V, 
+		//				idTable.GetEntry(lexTable.GetEntry(i).idxTI).idxfirstLE 
+		//				});
+		//			/*idTable.IsId(token, idTable.GetEntry(lexTable.GetEntry(i).idxTI).id);
+		//			if (tempIndex != -1)
+		//			{
+		//				lexTable.Add({ LEX_ID, strNumber, tempIndex });
+		//				break;
+		//			}
+		//			else
+		//			{
+		//				tempIndex = idTable.IsId(token);
+		//				if (tempIndex != -1 &&
+		//					idTable.GetEntry(tempIndex).idtype == IT::IDTYPE::F)
+		//				{
+		//					lexTable.Add({ LEX_ID, strNumber, tempIndex });
+		//					break;
+		//				}
+		//				else
+		//					throw ERROR_THROW_IN(129, strNumber, -1);
+		//			}*/
+	
+		//		}
+		//	}
+		//}
 		DELETE_AUTOMAT
 		return true;
 	}

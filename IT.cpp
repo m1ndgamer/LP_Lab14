@@ -17,9 +17,10 @@ namespace IT
 		idtype = V;
 	}
 
-	IT::Entry::Entry(int first, char* i, IDDATATYPE datatype, IDTYPE type)
+	IT::Entry::Entry(int first, char* i, IDDATATYPE datatype, IDTYPE type, int parent)
 	{
 		idxfirstLE = first;
+		parentId = parent;
 		id = new char[64];
 		strcpy(id, i);
 		iddatatype = datatype;

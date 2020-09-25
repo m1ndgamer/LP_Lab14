@@ -18,6 +18,7 @@ namespace IT	// таблица идентификатов
 	struct Entry
 	{
 		int idxfirstLE;					// индекс первой записи в таблице
+		int parentId;					// индекс родительского блока
 		char* id;						// идентификатор (автоматически усекаетс€ до ID_MAXSIZE)
 		IDDATATYPE iddatatype;			// тип данных
 		IDTYPE idtype;					// тип идентикатора
@@ -31,7 +32,7 @@ namespace IT	// таблица идентификатов
 			} vstr[TI_STR_MAXSIZE];				// значение string
 		} value;	// значение идентификатора
 		Entry();
-		Entry(int first, char* i, IDDATATYPE datatype, IDTYPE type);
+		Entry(int first, char* i, IDDATATYPE datatype, IDTYPE type, int parentId = TI_NULLIDX);
 	};
 
 	// экземпл€р таблицы идентификаторов

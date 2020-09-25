@@ -62,20 +62,25 @@ int _tmain(int argc, _TCHAR* argv[])
 			}
 			if (e.idtype == 1)
 			{
-				std::cout << std::setw(12) << "переменная" << std::endl;
+				std::cout << std::setw(12) << "переменная";
 			}
 			if (e.idtype == 2)
 			{
-				std::cout << std::setw(12) << "функция" << std::endl;
+				std::cout << std::setw(12) << "функция";
 			}
 			if (e.idtype == 3)
 			{
-				std::cout << std::setw(12) << "параметр" << std::endl;
+				std::cout << std::setw(12) << "параметр";
 			}
+
 			if (e.idtype == 4)
 			{
-				std::cout << std::setw(12) << "лексема" << std::endl;
+				std::cout << std::setw(12) << "лексема";
 			}
+			if(e.parentId != TI_NULLIDX)
+			std::cout << std::setw(12) << lexTable.GetEntry(e.parentId).idxTI << std::endl;
+			else
+				std::cout << std::setw(12) << "-" << std::endl;
 		}
 		
 
