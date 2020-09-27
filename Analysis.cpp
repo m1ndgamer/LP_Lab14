@@ -7,6 +7,9 @@
 #include "IT.h"
 #include "Error.h"
 
+// Анализ лексемы.
+#define LEXEM_ANALYSIS	if (LexemAnalysis(buffer, lineNumber, lexTable, idTable)) { RESET_BUFFER continue; } \
+						else throw ERROR_THROW_IN(130, lineNumber, positionInLine);
 /////////////////  LEXEM ANALYSIS  /////////////////
 #define RESET_BUFFER *buffer = '\0'; j = 0;
 #define NEXT_LINE lineNumber++; positionInLine = 0;
@@ -23,7 +26,6 @@
 #define IS_MAIN strcmp(token, "main") == 0 
 #define PREVIOUS_LEXEM lexTable.GetEntry(lexTable.currentSize - 1).lexem
 #define BEFORE_PREVIOUS_LEXEM lexTable.GetEntry(lexTable.currentSize - 2).lexem
-
 
 /// <summary>
 /// Получить тип лексемы.
@@ -180,9 +182,7 @@ void parsingIntoLexems(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTa
 			{
 				i--;
 				buffer[j] = IN_CODE_ENDSTRING;
-				// Попытка лексического анализа.
-				if (LexemAnalysis(buffer, lineNumber, lexTable, idTable)) { RESET_BUFFER continue; }
-				else throw ERROR_THROW_IN(130, lineNumber, positionInLine);
+				LEXEM_ANALYSIS
 			}
 			else
 			{
@@ -195,18 +195,13 @@ void parsingIntoLexems(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTa
 					// c длина строкового литерала.
 					for (int c = 0; source.text[i] != BACKTICK; c++)
 					{
+						if (c == source.size - 1) throw ERROR_THROW_IN(138, lineNumber, positionInLine);
 						// Читать строку в буффер, если не превышен макс. размер строкового литерала.
 						if (c <= TI_STR_MAXSIZE) buffer[j++] = source.text[i++];
 						else throw ERROR_THROW_IN(139, lineNumber, positionInLine);
 					}	
 					// Добавление в конец буффера закрывающей кавычки.
-					if (source.text[i] == BACKTICK)
-					{
-						buffer[j] = source.text[i];
-						// Попытка лексического анализа.
-						if (LexemAnalysis(buffer, lineNumber, lexTable, idTable)) { RESET_BUFFER continue; }
-						else throw ERROR_THROW_IN(130, lineNumber, positionInLine);
-					}
+					if (source.text[i] == BACKTICK) { buffer[j] = source.text[i]; LEXEM_ANALYSIS }
 					else throw ERROR_THROW_IN(130, lineNumber, positionInLine);
 				}
 				if (source.text[i] != ANALYSIS_ENDLINE)
@@ -216,8 +211,7 @@ void parsingIntoLexems(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTa
 					// Обработка знаковых операторов.
 					buffer[0] = source.text[i]; 
 					buffer[1] = IN_CODE_ENDSTRING;
-					if (LexemAnalysis(buffer, lineNumber, lexTable, idTable)) positionInLine++;
-					else throw ERROR_THROW_IN(130, lineNumber, positionInLine);
+					LEXEM_ANALYSIS
 					RESET_BUFFER
 				}
 				// Переход на следующую строку исхожного текста.
@@ -245,15 +239,22 @@ bool isIdentificator(const char* token, const int strNumber, LT::LexTable& lexTa
 		// Это main или функция?
 		if (IS_MAIN || (PREVIOUS_LEXEM == LEX_FUNCTION))
 		{
+			for (int i = 0; i < idTable.currentSize; i++)
+			{
+				// проверка на переопредение
+				if (idTable.GetEntry(i).id == token) throw ERROR_THROW(140);
+				if (idTable.GetEntry(i).id == "main") throw ERROR_THROW(141);
+			}
 			idTable.Add({ lexTable.currentSize, (char*)token, getType(BEFORE_PREVIOUS_LEXEM), IT::F, GetParentID(lexTable, idTable) });
 			lexTable.Add({ LEX_ID, strNumber, idTable.currentSize - 1 });		
 			idWasFounded = true;
+			
 		}
-		//else
-		//	throw ERROR_THROW_IN(123, strNumber, -1);
 		// Это переменная?
 		if (!idWasFounded && (BEFORE_PREVIOUS_LEXEM == LEX_DECLARE))
 		{
+			for (int i = 0; i < idTable.currentSize; i++)
+				if (idTable.GetEntry(i).id == token) throw ERROR_THROW(142);
 			idTable.Add({ lexTable.currentSize, (char*)token, getType(PREVIOUS_LEXEM), IT::V, GetParentID(lexTable, idTable)});
 			lexTable.Add({ LEX_ID, strNumber, idTable.currentSize - 1 });
 			idWasFounded = true;

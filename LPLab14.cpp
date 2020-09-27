@@ -46,12 +46,6 @@ int _tmain(int argc, _TCHAR* argv[])
 		for (int i = 0; i < idTable.currentSize; i++)
 		{
 			IT::Entry e = idTable.GetEntry(i);
-			//if (entry.lineNumber != current)
-			//{
-			//	std::cout << '\n';
-			//	current++;
-			//	std::cout << std::setw(4) << entry.lineNumber << " | ";
-			//}
 			std::cout << std::setw(4) << e.idxfirstLE << "  ";
 			std::cout << std::setw(10) << e.id << "  ";
 			if (e.iddatatype == 1)
