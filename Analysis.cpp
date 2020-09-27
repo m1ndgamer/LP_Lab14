@@ -23,6 +23,8 @@
 #define PREVIOUS_LEXEM lexTable.GetEntry(lexTable.currentSize - 1).lexem
 #define BEFORE_PREVIOUS_LEXEM lexTable.GetEntry(lexTable.currentSize - 2).lexem
 
+
+
 IT::IDDATATYPE getType(char lexem)
 {
 	switch (lexem)
@@ -133,70 +135,76 @@ bool tokenAnaliz(const char* token, int strNumber, LT::LexTable& lexTable, IT::I
 	}
 }
 
-void Lex(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTable)
+void ParsingIntoTokens(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTable)
 {
-	char* buffer = new char[64]{};
-	int lineNumber = 1;
-	int positionInLine = 0;
+	char* buffer = new char[512]{}; // буфер для анализуремого текста
+	int lineNumber = 1;				// номер строки в исходном тексте
+	int positionInLine = 1;			// номер символа в строке исходного текста
 
-
+	// Последовательная обработка исходного текста.
+	// i позиция в исходном тексте.
+	// j позиция в буффере.
 	for (int i = 0, j = 0; i < source.size; i++)
 	{
-		// символы допустимые в идентификаторах и ключевых словах
+		// Еимволы допустимые в идентификаторе и зарезервированном слове.
 		if (source.code[source.text[i]] == In::IN::N)
 		{
 			buffer[j++] = source.text[i];
 			positionInLine++;
 			continue;
 		}
-		// если знак без лексемы
+		// Если встречен символ недопустимый в идентификаторе и зарезервированном слове.
 		else
 		{
+			// Если в буфере содержатся символы.
 			if (j != 0)
 			{
-				i--; buffer[j] = IN_CODE_ENDSTRING;
-				/////////// если токен распознан - добавляем ////////////
+				i--;
+				buffer[j] = IN_CODE_ENDSTRING;
+				// Попытка лексического анализа.
 				if (tokenAnaliz(buffer, lineNumber, lexTable, idTable)) { RESET_BUFFER continue; }
 				else throw ERROR_THROW_IN(130, lineNumber, positionInLine);
 			}
 			else
 			{
-				// скобки
-				if (source.text[i] == '\'')
+				if (source.text[i] == BACKTICK)
 				{
-					// открывающая скобка
+					// Добавление в начало буффера открывающией кавычки.
 					buffer[j++] = source.text[i++];
-					// читаю строку до закрывающей
-					// to do: если конец входного файла
-					for (int c = 0; source.text[i] != '\''; c++)
+					// TO DO: если конец входного файла
+					// Чтение в буффер до закрывающей кавычики.
+					// c длина строкового литерала.
+					for (int c = 0; source.text[i] != BACKTICK; c++)
 					{
+						// Читать строку в буффер, если не превышен макс. размер строкового литерала.
 						if (c <= TI_STR_MAXSIZE) buffer[j++] = source.text[i++];
 						else throw ERROR_THROW_IN(139, lineNumber, positionInLine);
-					}			
-					if (source.text[i] == '\'')
+					}	
+					// Добавление в конец буффера закрывающей кавычки.
+					if (source.text[i] == BACKTICK)
 					{
-						// закрывающая скобка
 						buffer[j] = source.text[i];
+						// Попытка лексического анализа.
 						if (tokenAnaliz(buffer, lineNumber, lexTable, idTable)) { RESET_BUFFER continue; }
 						else throw ERROR_THROW_IN(130, lineNumber, positionInLine);
 					}
 					else throw ERROR_THROW_IN(130, lineNumber, positionInLine);
 				}
-				// пробелы
 				if (source.text[i] != ANALYSIS_ENDLINE)
 				{ 
-					// пустое пространство
+					// Обработка пробельных символов.
 					if (source.text[i] == IN_CODE_SPACE || source.text[i] == IN_CODE_TAB ) { positionInLine++; continue; }
-
+					// Обработка знаковых операторов.
 					buffer[0] = source.text[i]; 
 					buffer[1] = IN_CODE_ENDSTRING;
 					if (tokenAnaliz(buffer, lineNumber, lexTable, idTable)) positionInLine++;
-					//else throw ERROR_THROW_IN(130, lineNumber, positionInLine);
-					RESET_BUFFER // хмммммм?
+					else throw ERROR_THROW_IN(130, lineNumber, positionInLine);
+					RESET_BUFFER
 				}
+				// Переход на следующую строку исхожного текста.
+				else { NEXT_LINE }
 			}
 		}
-		if (source.text[i] == ANALYSIS_ENDLINE) NEXT_LINE
 	}
 	delete[] buffer;
 }

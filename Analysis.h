@@ -10,5 +10,5 @@ struct flagForTypeOfVar
 	enum { V = 1, F = 2, P = 3, L = 3 } ;
 	enum { INT = 1, STR = 2 } type = INT;
 };
-void Lex(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTable);
+void ParsingIntoTokens(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTable);
 bool isVar(const char* token, const int strNumber, LT::LexTable& lexTable, IT::IdTable& idTable);

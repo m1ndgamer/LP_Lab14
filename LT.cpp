@@ -23,9 +23,9 @@ namespace LT
 		return table[n];
 	}
 	// удалить таблицу
-	void LexTable::Delete(LexTable& lextable)
+	void LexTable::Delete()
 	{
-		delete[] lextable.table;
-		lextable.table = nullptr;
+		delete[] table;
+		table = nullptr;
 	}
 }

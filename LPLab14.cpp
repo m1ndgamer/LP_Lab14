@@ -19,14 +19,16 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	setlocale(LC_ALL, "rus");
 	Log::LOG log = Log::INITLOG;
+	IT::IdTable idTable;
+	LT::LexTable lexTable;
 	try 
 	{
 		Parm::PARM parm = Parm::getparm(argc, argv);
 		log = Log::getlog(parm.log);
 		In::IN in = In::getIn(parm.in);
-		LT::LexTable lexTable = lexTable.Create();
-		IT::IdTable idTable;
-		Lex(in, lexTable, idTable);
+		lexTable = lexTable.Create();
+		
+		ParsingIntoTokens(in, lexTable, idTable);
 
 		int current = 0;
 		for (int i = 0; i < lexTable.currentSize; i++)
@@ -125,7 +127,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		// Вывод информации об ошибке в консоль.
 		std::cout << getErrorInfo(e);
 	}
-
+	lexTable.Delete();
+	idTable.Delete();
 	system("pause");	
 	return 0;
 }

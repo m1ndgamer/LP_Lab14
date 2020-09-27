@@ -19,7 +19,7 @@ namespace IT	// таблица идентификатов
 	{
 		int idxfirstLE;					// индекс первой записи в таблице лексем
 		int parentId;					// индекс родительского блока
-		char id[ID_MAXSIZE];						// идентификатор (автоматически усекается до ID_MAXSIZE)
+		char id[ID_MAXSIZE];			// идентификатор (автоматически усекается до ID_MAXSIZE)
 		IDDATATYPE iddatatype;			// тип данных
 		IDTYPE idtype;					// тип идентикатора
 		union
