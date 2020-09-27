@@ -23,7 +23,7 @@
 #define	LEX_STAR		'*'			// *
 #define	LEX_DIRSLASH	'/'			// /
 #define	LEX_EQUAL_SIGN	'='			// =
-#define	BACKTICK		'\''			// =
+#define	BACKTICK		'\''		// =
 
 #define PARM_LEX_DEFAULT_EXT L".lex.txt" //расширение файла с итогом лексического анализa
 

@@ -5,13 +5,14 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include "In.h"
 
 namespace IT
 {
 	IT::Entry::Entry()
 	{
 		idxfirstLE = 0;
-		id = new char[64];
+		*id = IN_CODE_ENDSTRING;
 		strcpy(id, "undef");
 		iddatatype = INT;
 		idtype = V;
@@ -21,7 +22,6 @@ namespace IT
 	{
 		idxfirstLE = first;
 		parentId = parent;
-		id = new char[64];
 		strcpy(id, i);
 		iddatatype = datatype;
 		idtype = type;
@@ -37,6 +37,16 @@ namespace IT
 
 	void IdTable::Add(Entry entry)
 	{
+		switch (entry.iddatatype)
+		{
+		case IT::STR:
+			strcpy(entry.value.vstr->str, "\0");
+			entry.value.vstr->len = 0;
+			break;
+		default:
+			entry.value.vint = 0;
+			break;
+		}
 		(currentSize < maxsize) ? table[currentSize++] = entry : throw ERROR_THROW(121);
 	}
 

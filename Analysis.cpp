@@ -85,6 +85,7 @@ bool tokenAnaliz(const char* token, int strNumber, LT::LexTable& lexTable, IT::I
 						strcpy(idTable.table[num2].value.vstr->str, token);
 						idTable.table[num2].value.vstr->len = strlen(token);
 						/////// TO 
+						idTable.table[num2].value.vstr->str[idTable.table[num2].value.vstr->len] = 0;
 						lexTable.Add({ LEX_LITERAL, strNumber, LT_TI_NULLXDX });
 						
 					}
@@ -208,7 +209,7 @@ bool isVar(const char* token, const int strNumber, LT::LexTable& lexTable, IT::I
 	{
 		if (IS_MAIN || (PREVIOUS_LEXEM == LEX_FUNCTION))
 		{
-			idTable.Add({ strNumber, (char*)token, getType(BEFORE_PREVIOUS_LEXEM), IT::F, GetParentID(lexTable, idTable) });
+			idTable.Add({ lexTable.currentSize, (char*)token, getType(BEFORE_PREVIOUS_LEXEM), IT::F, GetParentID(lexTable, idTable) });
 			lexTable.Add({ LEX_ID, strNumber, idTable.currentSize - 1 });		
 			alreadyChecked = true;
 		}
@@ -217,7 +218,7 @@ bool isVar(const char* token, const int strNumber, LT::LexTable& lexTable, IT::I
 		//для переменной(с проверкой переопределения)
 		if (!alreadyChecked && (BEFORE_PREVIOUS_LEXEM == LEX_DECLARE))
 		{
-			idTable.Add({ strNumber, (char*)token, getType(PREVIOUS_LEXEM), IT::V, GetParentID(lexTable, idTable)});
+			idTable.Add({ lexTable.currentSize, (char*)token, getType(PREVIOUS_LEXEM), IT::V, GetParentID(lexTable, idTable)});
 			lexTable.Add({ LEX_ID, strNumber, idTable.currentSize - 1 });
 			alreadyChecked = true;
 
@@ -229,7 +230,7 @@ bool isVar(const char* token, const int strNumber, LT::LexTable& lexTable, IT::I
 			(BEFORE_PREVIOUS_LEXEM == LEX_LEFTHESIS || 
 			 BEFORE_PREVIOUS_LEXEM == LEX_COMMA)) // ПРОВЕРКА НА ТО ЧТО ПРЕД ЭТО ПАРАМЕТР
 		{
-			idTable.Add({ strNumber, (char*)token, getType(PREVIOUS_LEXEM), IT::P, GetParentID(lexTable, idTable, true) });
+			idTable.Add({ lexTable.currentSize, (char*)token, getType(PREVIOUS_LEXEM), IT::P, GetParentID(lexTable, idTable, true) });
 			lexTable.Add({ LEX_ID, strNumber, idTable.currentSize - 1 });
 			alreadyChecked = true;
 		}
