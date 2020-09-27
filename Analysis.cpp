@@ -7,6 +7,7 @@
 #include "IT.h"
 #include "Error.h"
 
+/////////////////  LEXEM ANALYSIS  /////////////////
 #define RESET_BUFFER *buffer = '\0'; j = 0;
 #define NEXT_LINE lineNumber++; positionInLine = 0;
 #define CREATE_AUTOMAT(expression) FST::FST* automat = new FST::FST(expression(token));
@@ -18,7 +19,7 @@
 #define TOKEN_PROCESS(automat, lexem) 		CREATE_AUTOMAT(automat); \
 											IS_CORRECT{ DELETE_AUTOMAT ADD_LEXEM(lexem, LT_TI_NULLXDX) } \
 											else DELETE_AUTOMAT
-///////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////  IDENTIFICATOR ANALYSIS  /////////////////
 #define IS_MAIN strcmp(token, "main") == 0 
 #define PREVIOUS_LEXEM lexTable.GetEntry(lexTable.currentSize - 1).lexem
 #define BEFORE_PREVIOUS_LEXEM lexTable.GetEntry(lexTable.currentSize - 2).lexem
@@ -81,10 +82,10 @@ bool LexemAnalysis(const char* token, int strNumber, LT::LexTable& lexTable, IT:
 		case LEX_RIGHTBRACE: ADD_LEXEM(LEX_RIGHTBRACE, LT_TI_NULLXDX)
 		case LEX_LEFTHESIS: ADD_LEXEM(LEX_LEFTHESIS, LT_TI_NULLXDX)
 		case LEX_RIGHTHESIS: ADD_LEXEM(LEX_RIGHTHESIS, LT_TI_NULLXDX)
-		case LEX_PLUS: ADD_LEXEM(LEX_PLUS, LT_TI_NULLXDX)
-		case LEX_MINUS: ADD_LEXEM(LEX_MINUS, LT_TI_NULLXDX)
-		case LEX_STAR: ADD_LEXEM(LEX_STAR, LT_TI_NULLXDX)
-		case LEX_DIRSLASH: ADD_LEXEM(LEX_DIRSLASH, LT_TI_NULLXDX)
+		case '+': ADD_LEXEM(LEX_PLUS, LT_TI_NULLXDX)
+		case '-': ADD_LEXEM(LEX_MINUS, LT_TI_NULLXDX)
+		case '*': ADD_LEXEM(LEX_STAR, LT_TI_NULLXDX)
+		case '/': ADD_LEXEM(LEX_DIRSLASH, LT_TI_NULLXDX)
 		case LEX_EQUAL_SIGN: ADD_LEXEM(LEX_EQUAL_SIGN, LT_TI_NULLXDX)
 		case LEX_FUNCTION: { TOKEN_PROCESS(A_FUNCTION, LEX_FUNCTION) }
 		case LEX_DECLARE: { TOKEN_PROCESS(A_DECLARE, LEX_DECLARE) }
@@ -97,17 +98,14 @@ bool LexemAnalysis(const char* token, int strNumber, LT::LexTable& lexTable, IT:
 			IS_CORRECT
 			{
 				DELETE_AUTOMAT
-					int num2 = lexTable.GetEntry(lexTable.currentSize - 2).idxTI;
-					int num = lexTable.table[lexTable.currentSize - 2].idxTI;
-					if (num != -1)
+					int identificator = lexTable.GetEntry(lexTable.currentSize - 2).idxTI;
+					if (identificator != -1)
 					{
-						strcpy(idTable.table[num2].value.vstr->str, token);
-						idTable.table[num2].value.vstr->len = strlen(token);
-						/////// TO 
-						idTable.table[num2].value.vstr->str[idTable.table[num2].value.vstr->len] = 0;
-						lexTable.Add({ LEX_LITERAL, strNumber, LT_TI_NULLXDX });
-						
+						strcpy(idTable.table[identificator].value.vstr->str, token);
+						idTable.table[identificator].value.vstr->len = strlen(token);
+						ADD_LEXEM(LEX_LITERAL, LT_TI_NULLXDX)					
 					}
+					// else throw
 					return true;
 			}
 		}
@@ -122,7 +120,6 @@ bool LexemAnalysis(const char* token, int strNumber, LT::LexTable& lexTable, IT:
 				ADD_LEXEM(LEX_STRING, LT_TI_NULLXDX)
 			}
 		}
-	
 		case 'i':
 		{
 			CREATE_AUTOMAT(A_INTEGER);
@@ -141,9 +138,9 @@ bool LexemAnalysis(const char* token, int strNumber, LT::LexTable& lexTable, IT:
 				{
 					DELETE_AUTOMAT
 					idTable.table[idTable.currentSize - 1].value.vint = atoi(token);
-					lexTable.Add({ LEX_LITERAL, strNumber, LT_TI_NULLXDX });
-					return true;
+					ADD_LEXEM(LEX_LITERAL, LT_TI_NULLXDX)
 				}
+				DELETE_AUTOMAT return false;
 			}
 		}
 	}
@@ -283,7 +280,7 @@ bool isIdentificator(const char* token, const int strNumber, LT::LexTable& lexTa
 					lexTable.Add({ LEX_ID, strNumber, i});
 				idWasFounded = true;
 			}
-		}
+		}	
 	}
 	DELETE_AUTOMAT
 	return idWasFounded;

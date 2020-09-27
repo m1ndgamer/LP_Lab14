@@ -74,9 +74,6 @@
     <ClInclude Include="LT.h">
       <Filter>Файлы заголовков\Namespaces</Filter>
     </ClInclude>
-    <ClInclude Include="TokenHandler.h">
-      <Filter>Файлы заголовков\Namespaces</Filter>
-    </ClInclude>
     <ClInclude Include="RegularExpessions.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>

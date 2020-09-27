@@ -41,10 +41,10 @@ namespace IT
 		{
 		case IT::STR:
 			strcpy(entry.value.vstr->str, "\0");
-			entry.value.vstr->len = 0;
+			entry.value.vstr->len = TI_INT_DEFAULT;
 			break;
 		default:
-			entry.value.vint = 0;
+			entry.value.vint = TI_INT_DEFAULT;
 			break;
 		}
 		(currentSize < maxsize) ? table[currentSize++] = entry : throw ERROR_THROW(121);

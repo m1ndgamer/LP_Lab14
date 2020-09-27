@@ -3,7 +3,6 @@
 #include <fstream>
 #include "In.h"
 #include "Error.h"
-#include "TokenHandler.h"
 #include <ctype.h>
 #include <mbstring.h>
 
