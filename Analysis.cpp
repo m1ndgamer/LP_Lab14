@@ -190,11 +190,11 @@ void parsingIntoLexems(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTa
 				{
 					// Добавление в начало буффера открывающией кавычки.
 					buffer[j++] = source.text[i++];
-					// TO DO: если конец входного файла
 					// Чтение в буффер до закрывающей кавычики.
 					// c длина строкового литерала.
 					for (int c = 0; source.text[i] != BACKTICK; c++)
 					{
+						// Проверка на конец входного файла.
 						if (c == source.size - 1) throw ERROR_THROW_IN(138, lineNumber, positionInLine);
 						// Читать строку в буффер, если не превышен макс. размер строкового литерала.
 						if (c <= TI_STR_MAXSIZE) buffer[j++] = source.text[i++];
