@@ -28,7 +28,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		In::IN in = In::getIn(parm.in);
 		lexTable = lexTable.Create();
 		
-		ParsingIntoTokens(in, lexTable, idTable);
+		parsingIntoLexems(in, lexTable, idTable);
 
 		int current = 0;
 		for (int i = 0; i < lexTable.currentSize; i++)

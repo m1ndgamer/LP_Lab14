@@ -14,17 +14,21 @@
 		return true;
 #define DELETE_AUTOMAT delete automat; automat = NULL;
 #define IS_CORRECT if (FST::execute(*automat))
-#define IS_VARIABLE return isVar(token, strNumber, lexTable, idTable);
+#define IS_IDENTIFICATOR return isIdentificator(token, strNumber, lexTable, idTable);
 #define TOKEN_PROCESS(automat, lexem) 		CREATE_AUTOMAT(automat); \
-								IS_CORRECT{ DELETE_AUTOMAT ADD_LEXEM(lexem, LT_TI_NULLXDX) } \
-								else { DELETE_AUTOMAT IS_VARIABLE }
+											IS_CORRECT{ DELETE_AUTOMAT ADD_LEXEM(lexem, LT_TI_NULLXDX) } \
+											else DELETE_AUTOMAT
 ///////////////////////////////////////////////////////////////////////////////////////////////
 #define IS_MAIN strcmp(token, "main") == 0 
 #define PREVIOUS_LEXEM lexTable.GetEntry(lexTable.currentSize - 1).lexem
 #define BEFORE_PREVIOUS_LEXEM lexTable.GetEntry(lexTable.currentSize - 2).lexem
 
 
-
+/// <summary>
+/// Получить тип лексемы.
+/// </summary>
+/// <param name="lexem">Лекема.</param>
+/// <returns>Тип лексемы.</returns>
 IT::IDDATATYPE getType(char lexem)
 {
 	switch (lexem)
@@ -35,6 +39,13 @@ IT::IDDATATYPE getType(char lexem)
 	}
 }
 
+/// <summary>
+/// Получить ID родительского блока.
+/// </summary>
+/// <param name="lexTable">ТЛ.</param>
+/// <param name="idTable">ТИ.</param>
+/// <param name="isParm">Это параметр?</param>
+/// <returns>Возвращает ID родительского блока.</returns>
 int GetParentID(LT::LexTable& lexTable, IT::IdTable& idTable, bool isParm = false)
 {
 	char startFunction;
@@ -51,13 +62,19 @@ int GetParentID(LT::LexTable& lexTable, IT::IdTable& idTable, bool isParm = fals
 	return TI_NULLIDX;
 }
 
-
-bool tokenAnaliz(const char* token, int strNumber, LT::LexTable& lexTable, IT::IdTable& idTable)
+/// <summary>
+/// Лексический анализ.
+/// </summary>
+/// <param name="token"></param>
+/// <param name="strNumber">Номер строки в исходном тексте.</param>
+/// <param name="lexTable">ТЛ.</param>
+/// <param name="idTable">ТИ.</param>
+/// <returns>Лексема распознана?</returns>
+bool LexemAnalysis(const char* token, int strNumber, LT::LexTable& lexTable, IT::IdTable& idTable)
 {
-	// первая буква в токене
+	// Проверка на зараезервированное слово языка и литерал.
 	switch (*token)
 	{
-		
 		case LEX_SEMICOLON: ADD_LEXEM(LEX_SEMICOLON, LT_TI_NULLXDX)
 		case LEX_COMMA: ADD_LEXEM(LEX_COMMA, LT_TI_NULLXDX)
 		case LEX_LEFTBRACE: ADD_LEXEM(LEX_LEFTBRACE, LT_TI_NULLXDX)
@@ -96,7 +113,7 @@ bool tokenAnaliz(const char* token, int strNumber, LT::LexTable& lexTable, IT::I
 		}
 		/// ПУСТОЕ ЗНАЧЕНИЕ СТРОКОВЫХ ИНДЕТИФИКАТОРОВ
 		/// ДОБАВИТЬ.
-		case 's':
+		case LEX_STRING:
 		{
 			CREATE_AUTOMAT(A_STRING);
 			IS_CORRECT
@@ -104,7 +121,6 @@ bool tokenAnaliz(const char* token, int strNumber, LT::LexTable& lexTable, IT::I
 				DELETE_AUTOMAT
 				ADD_LEXEM(LEX_STRING, LT_TI_NULLXDX)
 			}
-			else { IS_VARIABLE }
 		}
 	
 		case 'i':
@@ -115,7 +131,6 @@ bool tokenAnaliz(const char* token, int strNumber, LT::LexTable& lexTable, IT::I
 				DELETE_AUTOMAT
 				ADD_LEXEM(LEX_INTEGER, LT_TI_NULLXDX)
 			}
-			else { IS_VARIABLE }
 		}
 		default:
 		{
@@ -130,12 +145,19 @@ bool tokenAnaliz(const char* token, int strNumber, LT::LexTable& lexTable, IT::I
 					return true;
 				}
 			}
-			else { IS_VARIABLE }
 		}
 	}
+	// Проверка на идентификатор
+	IS_IDENTIFICATOR
 }
 
-void ParsingIntoTokens(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTable)
+/// <summary>
+/// Последовательный анализ исходного текста.
+/// </summary>
+/// <param name="source">Исходный текст.</param>
+/// <param name="lexTable">ТЛ.</param>
+/// <param name="idTable">ТИ.</param>
+void parsingIntoLexems(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTable)
 {
 	char* buffer = new char[512]{}; // буфер для анализуремого текста
 	int lineNumber = 1;				// номер строки в исходном тексте
@@ -162,7 +184,7 @@ void ParsingIntoTokens(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTa
 				i--;
 				buffer[j] = IN_CODE_ENDSTRING;
 				// Попытка лексического анализа.
-				if (tokenAnaliz(buffer, lineNumber, lexTable, idTable)) { RESET_BUFFER continue; }
+				if (LexemAnalysis(buffer, lineNumber, lexTable, idTable)) { RESET_BUFFER continue; }
 				else throw ERROR_THROW_IN(130, lineNumber, positionInLine);
 			}
 			else
@@ -185,7 +207,7 @@ void ParsingIntoTokens(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTa
 					{
 						buffer[j] = source.text[i];
 						// Попытка лексического анализа.
-						if (tokenAnaliz(buffer, lineNumber, lexTable, idTable)) { RESET_BUFFER continue; }
+						if (LexemAnalysis(buffer, lineNumber, lexTable, idTable)) { RESET_BUFFER continue; }
 						else throw ERROR_THROW_IN(130, lineNumber, positionInLine);
 					}
 					else throw ERROR_THROW_IN(130, lineNumber, positionInLine);
@@ -197,7 +219,7 @@ void ParsingIntoTokens(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTa
 					// Обработка знаковых операторов.
 					buffer[0] = source.text[i]; 
 					buffer[1] = IN_CODE_ENDSTRING;
-					if (tokenAnaliz(buffer, lineNumber, lexTable, idTable)) positionInLine++;
+					if (LexemAnalysis(buffer, lineNumber, lexTable, idTable)) positionInLine++;
 					else throw ERROR_THROW_IN(130, lineNumber, positionInLine);
 					RESET_BUFFER
 				}
@@ -209,55 +231,60 @@ void ParsingIntoTokens(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTa
 	delete[] buffer;
 }
 
-bool isVar(const char* token, const int strNumber, LT::LexTable& lexTable, IT::IdTable& idTable)
+/// <summary>
+/// Являентся ли эта лексема идентификатором?
+/// </summary>
+/// <param name="token">Лексема.</param>
+/// <param name="strNumber">Номер строки в исходном тексте.</param>
+/// <param name="lexTable">ТЛ.</param>
+/// <param name="idTable">ТИ.</param>
+/// <returns>Лексема распознана?</returns>
+bool isIdentificator(const char* token, const int strNumber, LT::LexTable& lexTable, IT::IdTable& idTable)
 {
 	CREATE_AUTOMAT(A_IDENTIFICATOR)
-	bool alreadyChecked = false; // проверена переменная
+	bool idWasFounded = false; // Идентификатор найден?
 	IS_CORRECT
 	{
+		// Это main или функция?
 		if (IS_MAIN || (PREVIOUS_LEXEM == LEX_FUNCTION))
 		{
 			idTable.Add({ lexTable.currentSize, (char*)token, getType(BEFORE_PREVIOUS_LEXEM), IT::F, GetParentID(lexTable, idTable) });
 			lexTable.Add({ LEX_ID, strNumber, idTable.currentSize - 1 });		
-			alreadyChecked = true;
+			idWasFounded = true;
 		}
 		//else
 		//	throw ERROR_THROW_IN(123, strNumber, -1);
-		//для переменной(с проверкой переопределения)
-		if (!alreadyChecked && (BEFORE_PREVIOUS_LEXEM == LEX_DECLARE))
+		// Это переменная?
+		if (!idWasFounded && (BEFORE_PREVIOUS_LEXEM == LEX_DECLARE))
 		{
 			idTable.Add({ lexTable.currentSize, (char*)token, getType(PREVIOUS_LEXEM), IT::V, GetParentID(lexTable, idTable)});
 			lexTable.Add({ LEX_ID, strNumber, idTable.currentSize - 1 });
-			alreadyChecked = true;
+			idWasFounded = true;
 
 		}
 		/*else
 			throw ERROR_THROW_IN(123, strNumber, -1);*/
-		//для параметра функции
-		if	(!alreadyChecked && 
+		// Это параметр функции?
+		if	(!idWasFounded && 
 			(BEFORE_PREVIOUS_LEXEM == LEX_LEFTHESIS || 
 			 BEFORE_PREVIOUS_LEXEM == LEX_COMMA)) // ПРОВЕРКА НА ТО ЧТО ПРЕД ЭТО ПАРАМЕТР
 		{
 			idTable.Add({ lexTable.currentSize, (char*)token, getType(PREVIOUS_LEXEM), IT::P, GetParentID(lexTable, idTable, true) });
 			lexTable.Add({ LEX_ID, strNumber, idTable.currentSize - 1 });
-			alreadyChecked = true;
+			idWasFounded = true;
 		}
-		if (!alreadyChecked)
+		// Для обявленной ранее переменной.
+		if (!idWasFounded)
 		{
 			for (int i = idTable.currentSize; i >= 0; i--)
 			{
 				int parentElement = GetParentID(lexTable, idTable);
 				if(!strcmp(token, idTable.GetEntry(i).id) && parentElement == idTable.GetEntry(i).parentId)
 					lexTable.Add({ LEX_ID, strNumber, i});
+				idWasFounded = true;
 			}
-			
 		}
-		DELETE_AUTOMAT
-		return true;
 	}
-	else
-	{
-		DELETE_AUTOMAT
-		return false;
-	}
+	DELETE_AUTOMAT
+	return idWasFounded;
 }
