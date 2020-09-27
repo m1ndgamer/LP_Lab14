@@ -60,7 +60,7 @@ int GetParentID(LT::LexTable& lexTable, IT::IdTable& idTable, bool isParm = fals
 		if (lexTable.GetEntry(i).lexem == startFunction) startSymbolFounded = true;
 		if (startSymbolFounded && lexTable.GetEntry(i).lexem == LEX_ID &&
 			idTable.GetEntry(lexTable.GetEntry(i).idxTI).idtype == IT::IDTYPE::F)
-			return lexTable.GetEntry(i).idxTI;
+				return lexTable.GetEntry(i).idxTI;
 	}
 	return TI_NULLIDX;
 }
@@ -243,8 +243,7 @@ bool isIdentificator(const char* token, const int strNumber, LT::LexTable& lexTa
 			{
 				// проверка на переопредение
 				// to do: main over
-				if (idTable.GetEntry(i).id == "main") throw ERROR_THROW(141);
-				if (idTable.GetEntry(i).id == token) throw ERROR_THROW(140);
+				if (!strcmp(idTable.GetEntry(i).id, token)) throw ERROR_THROW(140);
 			}
 			idTable.Add({ lexTable.currentSize, (char*)token, getType(BEFORE_PREVIOUS_LEXEM), IT::F, GetParentID(lexTable, idTable) });
 			lexTable.Add({ LEX_ID, strNumber, idTable.currentSize - 1 });		
@@ -255,7 +254,7 @@ bool isIdentificator(const char* token, const int strNumber, LT::LexTable& lexTa
 		if (!idWasFounded && (BEFORE_PREVIOUS_LEXEM == LEX_DECLARE))
 		{
 			for (int i = 0; i < idTable.currentSize; i++)
-				if (idTable.GetEntry(i).id == token && idTable.GetEntry(i).parentId == GetParentID(lexTable, idTable)) 
+				if (!strcmp(idTable.GetEntry(i).id, token) && idTable.GetEntry(i).parentId == GetParentID(lexTable, idTable))
 					throw ERROR_THROW(142);
 			idTable.Add({ lexTable.currentSize, (char*)token, getType(PREVIOUS_LEXEM), IT::V, GetParentID(lexTable, idTable)});
 			lexTable.Add({ LEX_ID, strNumber, idTable.currentSize - 1 });
@@ -263,13 +262,18 @@ bool isIdentificator(const char* token, const int strNumber, LT::LexTable& lexTa
 
 		}
 		// Это параметр функции?
-		if	(!idWasFounded && 
+		if	(!idWasFounded &&
 			(BEFORE_PREVIOUS_LEXEM == LEX_LEFTHESIS || 
 			 BEFORE_PREVIOUS_LEXEM == LEX_COMMA)) // ПРОВЕРКА НА ТО ЧТО ПРЕД ЭТО ПАРАМЕТР
 		{
 			for (int i = 0; i < idTable.currentSize; i++)
-				if (idTable.GetEntry(i).id == token && idTable.GetEntry(i).parentId == GetParentID(lexTable, idTable))
-					throw ERROR_THROW(143);
+				if (!strcmp(idTable.GetEntry(i).id, token) && 
+					(idTable.GetEntry(i).parentId == GetParentID(lexTable, idTable, true)))
+					for (int i = 0; i < lexTable.currentSize; i++)
+					{
+						std::cout << lexTable.GetEntry(i).lexem;
+					}
+					//throw ERROR_THROW(143);
 			idTable.Add({ lexTable.currentSize, (char*)token, getType(PREVIOUS_LEXEM), IT::P, GetParentID(lexTable, idTable, true) });
 			lexTable.Add({ LEX_ID, strNumber, idTable.currentSize - 1 });
 			idWasFounded = true;

@@ -9,6 +9,7 @@ string function fs (string a, string b)
 declare string c;
 declare string function substr(string a, integer p,
  integer n);
+declare integer strlen(string p);
 c = substr(a, 3)+ b;
 return c;
 };
