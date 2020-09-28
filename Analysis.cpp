@@ -66,6 +66,18 @@ int GetParentID(LT::LexTable& lexTable, IT::IdTable& idTable, bool isParm = fals
 	return TI_NULLIDX;
 }
 
+char* deleteBacktick(char* source)
+{
+	int length = strlen(source);
+	int currentSize = 0;
+	for (int i = 0; i < length; i++)
+	{
+		if(i != 0 && i != length - 1) source[currentSize++] = source[i];
+	}
+	source[currentSize] = IN_CODE_ENDSTRING;
+	return source;
+}
+
 /// <summary>
 /// Лексический анализ.
 /// </summary>
@@ -110,7 +122,7 @@ bool LexemAnalysis(const char* token, int strNumber, LT::LexTable& lexTable, IT:
 			{
 				DELETE_AUTOMAT
 					idTable.Add({ lexTable.currentSize, (char*)"L", IT::STR, IT::L, GetParentID(lexTable, idTable) });
-					strcpy(idTable.table[idTable.currentSize - 1].value.vstr->str, token);
+					strcpy(idTable.table[idTable.currentSize - 1].value.vstr->str, deleteBacktick((char*)token));
 					idTable.table[idTable.currentSize - 1].value.vstr->len = strlen(token);
 					ADD_LEXEM(LEX_LITERAL, idTable.currentSize)
 						
