@@ -68,7 +68,6 @@ int _tmain(int argc, _TCHAR* argv[])
 			{
 				std::cout << std::setw(12) << "параметр";
 			}
-
 			if (e.idtype == 4)
 			{
 				std::cout << std::setw(12) << "лексема";
@@ -78,9 +77,13 @@ int _tmain(int argc, _TCHAR* argv[])
 			else
 				std::cout << std::setw(12) << "-";
 			if (e.iddatatype == 1)
-				std::cout << std::setw(20) << e.value.vint;
+				std::cout << std::setw(24) << e.value.vint;
 			else
-				std::cout << std::setw(20) << e.value.vstr->str;
+			{
+				//std::cout << " [" << std::setw(4) << e.value.vstr->len << "] ";
+				std::cout << std::setw(24) << e.value.vstr->str;
+			}
+				
 			std::cout << std::setw(4) << i << std::endl;
 		}
 		

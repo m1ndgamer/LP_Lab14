@@ -59,7 +59,8 @@ int GetParentID(LT::LexTable& lexTable, IT::IdTable& idTable, bool isParm = fals
 		if (lexTable.GetEntry(i).lexem == LEX_RIGHTBRACE) break;
 		if (lexTable.GetEntry(i).lexem == startFunction) startSymbolFounded = true;
 		if (startSymbolFounded && lexTable.GetEntry(i).lexem == LEX_ID &&
-			idTable.GetEntry(lexTable.GetEntry(i).idxTI).idtype == IT::IDTYPE::F)
+			(idTable.GetEntry(lexTable.GetEntry(i).idxTI).idtype == IT::IDTYPE::F ||
+			idTable.GetEntry(lexTable.GetEntry(i).idxTI).idtype == IT::IDTYPE::V))
 				return lexTable.GetEntry(i).idxTI;
 	}
 	return TI_NULLIDX;
@@ -84,10 +85,18 @@ bool LexemAnalysis(const char* token, int strNumber, LT::LexTable& lexTable, IT:
 		case LEX_RIGHTBRACE: ADD_LEXEM(LEX_RIGHTBRACE, LT_TI_NULLXDX)
 		case LEX_LEFTHESIS: ADD_LEXEM(LEX_LEFTHESIS, LT_TI_NULLXDX)
 		case LEX_RIGHTHESIS: ADD_LEXEM(LEX_RIGHTHESIS, LT_TI_NULLXDX)
-		case '+': ADD_LEXEM(LEX_PLUS, LT_TI_NULLXDX)
-		case '-': ADD_LEXEM(LEX_MINUS, LT_TI_NULLXDX)
-		case '*': ADD_LEXEM(LEX_STAR, LT_TI_NULLXDX)
-		case '/': ADD_LEXEM(LEX_DIRSLASH, LT_TI_NULLXDX)
+		case '+':
+			idTable.Add({ lexTable.currentSize, (char*)token, IT::INT, IT::L, -1 });
+			ADD_LEXEM(LEX_PLUS, LT_TI_NULLXDX)
+		case '-':
+			idTable.Add({ lexTable.currentSize, (char*)token, IT::INT, IT::L, -1 });
+			ADD_LEXEM(LEX_MINUS, LT_TI_NULLXDX)
+		case '*':
+			idTable.Add({ lexTable.currentSize, (char*)token, IT::INT, IT::L, -1 });
+			ADD_LEXEM(LEX_STAR, LT_TI_NULLXDX)
+		case '/':
+			idTable.Add({ lexTable.currentSize, (char*)token, IT::INT, IT::L, -1 });
+			ADD_LEXEM(LEX_DIRSLASH, LT_TI_NULLXDX)
 		case LEX_EQUAL_SIGN: ADD_LEXEM(LEX_EQUAL_SIGN, LT_TI_NULLXDX)
 		case LEX_FUNCTION: { TOKEN_PROCESS(A_FUNCTION, LEX_FUNCTION) }
 		case LEX_DECLARE: { TOKEN_PROCESS(A_DECLARE, LEX_DECLARE) }
@@ -100,14 +109,15 @@ bool LexemAnalysis(const char* token, int strNumber, LT::LexTable& lexTable, IT:
 			IS_CORRECT
 			{
 				DELETE_AUTOMAT
-					int identificator = lexTable.GetEntry(lexTable.currentSize - 2).idxTI;
-					if (identificator != -1)
-					{
-						strcpy(idTable.table[identificator].value.vstr->str, token);
-						idTable.table[identificator].value.vstr->len = strlen(token);
-						ADD_LEXEM(LEX_LITERAL, LT_TI_NULLXDX)					
-					}
-					// else throw
+					idTable.Add({ lexTable.currentSize, (char*)"L", IT::STR, IT::L, GetParentID(lexTable, idTable) });
+					strcpy(idTable.table[idTable.currentSize - 1].value.vstr->str, token);
+					idTable.table[idTable.currentSize - 1].value.vstr->len = strlen(token);
+					ADD_LEXEM(LEX_LITERAL, idTable.currentSize)
+						
+					/*	strcpy(idTable.table[identificator].value.vstr->str, token);
+					idTable.table[identificator].value.vstr->len = strlen(token);
+					ADD_LEXEM(LEX_LITERAL, LT_TI_NULLXDX)		*/			
+				// else throw
 					return true;
 			}
 		}
@@ -139,8 +149,9 @@ bool LexemAnalysis(const char* token, int strNumber, LT::LexTable& lexTable, IT:
 				IS_CORRECT
 				{
 					DELETE_AUTOMAT
+					idTable.Add({ lexTable.currentSize, (char*)"L", IT::INT, IT::L, GetParentID(lexTable, idTable) });
 					idTable.table[idTable.currentSize - 1].value.vint = atoi(token);
-					ADD_LEXEM(LEX_LITERAL, LT_TI_NULLXDX)
+					ADD_LEXEM(LEX_LITERAL, idTable.currentSize - 1)
 				}
 				DELETE_AUTOMAT return false;
 			}
@@ -250,7 +261,7 @@ bool isIdentificator(const char* token, const int strNumber, LT::LexTable& lexTa
 			idWasFounded = true;
 			
 		}
-		// Это переменная?
+		// Это объявление переменной?
 		if (!idWasFounded && (BEFORE_PREVIOUS_LEXEM == LEX_DECLARE))
 		{
 			for (int i = 0; i < idTable.currentSize; i++)
@@ -266,15 +277,19 @@ bool isIdentificator(const char* token, const int strNumber, LT::LexTable& lexTa
 			(BEFORE_PREVIOUS_LEXEM == LEX_LEFTHESIS || 
 			 BEFORE_PREVIOUS_LEXEM == LEX_COMMA)) // ПРОВЕРКА НА ТО ЧТО ПРЕД ЭТО ПАРАМЕТР
 		{
+			int parentId = GetParentID(lexTable, idTable, true);
 			for (int i = 0; i < idTable.currentSize; i++)
-				if (!strcmp(idTable.GetEntry(i).id, token) && 
-					(idTable.GetEntry(i).parentId == GetParentID(lexTable, idTable, true)))
-					for (int i = 0; i < lexTable.currentSize; i++)
-					{
-						std::cout << lexTable.GetEntry(i).lexem;
-					}
-					//throw ERROR_THROW(143);
-			idTable.Add({ lexTable.currentSize, (char*)token, getType(PREVIOUS_LEXEM), IT::P, GetParentID(lexTable, idTable, true) });
+				if (!strcmp(idTable.GetEntry(i).id, token) &&
+					(idTable.GetEntry(i).parentId == parentId))
+				{
+					std::cout << idTable.GetEntry(i).parentId << std::endl;
+					std::cout << GetParentID(lexTable, idTable, true) << std::endl;
+					std::cout << idTable.GetEntry(GetParentID(lexTable, idTable, true)).id << std::endl;
+					throw ERROR_THROW(143);
+				}
+						
+					//
+			idTable.Add({ lexTable.currentSize, (char*)token, getType(PREVIOUS_LEXEM), IT::P, parentId });
 			lexTable.Add({ LEX_ID, strNumber, idTable.currentSize - 1 });
 			idWasFounded = true;
 		}
@@ -289,7 +304,7 @@ bool isIdentificator(const char* token, const int strNumber, LT::LexTable& lexTa
 					lexTable.Add({ LEX_ID, strNumber, i});
 				idWasFounded = true;
 			}
-		}	
+		}
 	}
 	DELETE_AUTOMAT
 	return idWasFounded;
