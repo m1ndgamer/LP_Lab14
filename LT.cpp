@@ -1,7 +1,9 @@
 #include "LT.h"
 #include "Error.h"
 #include "In.h"
+#include "Log.h"
 #include <fstream>
+#include <iomanip>
 
 namespace LT
 {
@@ -27,5 +29,53 @@ namespace LT
 	{
 		delete[] table;
 		table = nullptr;
+	}
+}
+namespace Log
+{
+	void PrintLexTable(LOG& log, LT::LexTable& lexTable)
+	{
+		if ((*log.stream).is_open())
+		{
+			*log.stream << "+================================+" << std::endl;
+			*log.stream << "|         ÒÀÁËÈÖÀ ËÅÊÑÅÌ         |" << std::endl;
+			*log.stream << "+================================+" << std::endl;
+			*log.stream << '|' << std::setw(10) << "Ëåêñåìà" << "|"
+				<< std::setw(10) << "¹ ñòð." << "|"
+				<< std::setw(10) << "¹ â ÒÈ" << "|" << std::endl;
+
+			*log.stream << "+================================+" << std::endl;
+			LT::Entry entry;
+			for (int i = 0; i < lexTable.currentSize; i++)
+			{
+				entry = lexTable.GetEntry(i);
+				std::string idTI = "";
+				if (entry.idxTI != -1)
+				{
+					idTI = std::to_string(entry.idxTI);
+				}
+				else
+					idTI = "-";
+				*log.stream << '|' << std::setw(10) << entry.lexem
+							<< "|" << std::setw(10) << entry.lineNumber
+							<< '|' << std::setw(10) << idTI
+							<< '|' << std::endl;
+			}
+			*log.stream << "+================================+" << std::endl;
+			*log.stream << std::endl << std::endl;
+			int line = 0;
+			for (int i = 0; i < lexTable.currentSize; i++)
+			{			
+				entry = lexTable.GetEntry(i);
+				if (entry.lineNumber != line)
+				{
+					*log.stream << std::endl;
+					line++;
+					*log.stream << std::setw(4) << entry.lineNumber << " | ";
+				}
+				*log.stream << entry.lexem;
+			}
+		}
+		else ERROR_THROW(112)
 	}
 }

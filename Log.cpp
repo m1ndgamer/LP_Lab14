@@ -32,7 +32,6 @@ namespace Log
 			wcstombs(temp, *ptr++, sizeof(temp));
 			*log.stream << temp << std::endl;
 		}
-		delete temp;
 	}
 #pragma endregion
 	

@@ -26,14 +26,15 @@ int _tmain(int argc, _TCHAR* argv[])
 		Parm::PARM parm = Parm::getparm(argc, argv);
 		log = Log::getlog(parm.log);
 		In::IN in = In::getIn(parm.in);
-		Log::WriteInsideOutFile(parm, in);
 		lexTable = lexTable.Create();
 		parsingIntoLexems(in, lexTable, idTable);
 		Log::WriteInsideOutFile(parm, in);
-		Log::WriteLine(log, (wchar_t*)L"Тест: ", (wchar_t*)L"без ошибок ", L"");
-		Log::WriteLog(log);
-		Log::WriteParm(log, parm);
-		Log::WriteIn(log, in);
+		WriteLine(log, (wchar_t*)L"Тест: ", (wchar_t*)L"без ошибок ", L"");
+		WriteLog(log);
+		WriteParm(log, parm);
+		WriteIn(log, in);
+		PrintIdTable(log, idTable);
+		PrintLexTable(log, lexTable);
 		//for (int i = 0; i < lexTable.currentSize; i++)
 		//{
 		//	LT::Entry entry = lexTable.GetEntry(i);
@@ -41,54 +42,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		//	
 		//}
 
-		for (int i = 0; i < idTable.currentSize; i++)
-		{
-			IT::Entry entry = idTable.GetEntry(i);
-			std::string idDataType = "";
-			std::string idType = "";
-#pragma region Type
 
-			switch (entry.iddatatype)
-			{
-			case 1:
-				idDataType = "integer";
-				break;
-			case 2:
-				idDataType = "string";
-				break;
-			default:
-				idDataType = "undef";
-				break;
-			}
-
-			switch (entry.idtype)
-			{
-			case 1:
-				idType = "переменная";
-				break;
-			case 2:
-				idType = "функция";
-				break;
-			case 3:
-				idType = "параметр";
-				break;
-			case 4:
-				idType = "лексема";
-				break;
-			default:
-				idType = "undef";
-				break;
-			}
-#pragma endregion
-
-			Log::WriteLine(log, (char*)std::to_string(i).c_str(),
-				(char*)entry.id, 
-				(char*)idType.c_str(), 
-				(char*)idDataType.c_str(), 
-				(char*)(std::to_string(entry.idxfirstLE)).c_str(),
-				(char*)(std::to_string(entry.parentId)).c_str(), "");
-
-		}
 		
 		Log::Close(log);
 		std::wcout

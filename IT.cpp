@@ -71,48 +71,69 @@ namespace IT
 }
 namespace Log
 {
-	void PrintIdTable(LOG log, IT::IdTable in)
+	void PrintIdTable(LOG& log, IT::IdTable& idTable)
 	{
-		log.stream->write()
-		idStream->open(id);
-		if (idStream->is_open())
+		if ((*log.stream).is_open())
 		{
-			*(idStream) << "====================================================================================" << std::endl;
-			*(idStream) << "|								ÒÀÁËÈÖÀ ÈÍÄÅÒÈÔÈÊÀÒÎÐÎÂ		                       |" << std::endl;
-			*(idStream) << "====================================================================================" << std::endl;
-			*(idStream) << '|' << std::setw(3) << "¹: " << "|" << std::setw(8) << "ID: " << '|' << std::setw(10) << "Ðîä. áëîê" << '|'
-				<< std::setw(18) << "¹ â òàáë. ëåêñ." << '|' << std::setw(10) << "Òèï çíà÷." << '|'
+			*log.stream << "+============================================================+" << std::endl;
+			*log.stream << "|                   ÒÀÁËÈÖÀ ÈÍÄÅÒÈÔÈÊÀÒÎÐÎÂ                  |" << std::endl;
+			*log.stream << "+============================================================+" << std::endl;
+			*log.stream << '|' << std::setw(3) << "¹: " << "|" << std::setw(8) << "ID: " << '|' << std::setw(10) << "Ðîä. áëîê" << '|'
+				<< std::setw(8) << "¹ â ÒË." << '|' << std::setw(10) << "Òèï çíà÷." << '|'
 				<< std::setw(16) << "Òèï ID" << '|' << std::endl;
 
-			*(idStream) << "====================================================================================" << std::endl;
-
-			for (int i = 0; i < currentSize; i++)
+			*log.stream << "+============================================================+" << std::endl;
+			for (int i = 0; i < idTable.currentSize; i++)
 			{
-				if (this->table[i].idtype == IT::IDTYPE::L)
+				IT::Entry entry = idTable.GetEntry(i);
+				std::string idDataType = "";
+				std::string idType = "";
+				std::string parentBlock = "";
+#pragma region Type
+				switch (entry.iddatatype)
 				{
-					if (flagForFirst)
-						*(idStream) << "------------------------------------------------------------------------------------" << std::endl;
-
-					switch (this->table[i].iddatatype)
-					{
-					case 1:
-					{
-						*(idStream) << '|' << std::setw(15) << "INT  " << '|' << std::setw(50) << this->table[i].value.vint << '|' << std::setw(15) << "-" << '|' << std::endl;
-						break;
-					}
-					case 2:
-					{
-						*(idStream) << '|' << std::setw(15) << "STR  " << '|' << std::setw(50) << this->table[i].value.vstr.str << '|' << std::setw(15) << (int)this->table[i].value.vstr.len << '|' << std::endl;
-						break;
-					}
-					}
-
-					flagForFirst = true;
+				case 1:
+					idDataType = "integer";
+					break;
+				case 2:
+					idDataType = "string";
+					break;
+				default:
+					idDataType = "undef";
+					break;
 				}
+
+				switch (entry.idtype)
+				{
+				case 1:
+					idType = "ïåðåìåííàÿ";
+					break;
+				case 2:
+					idType = "ôóíêöèÿ";
+					break;
+				case 3:
+					idType = "ïàðàìåòð";
+					break;
+				case 4:
+					idType = "ëåêñåìà";
+					break;
+				default:
+					idType = "undef";
+					break;
+				}
+
+				if (entry.parentId >= 0 && entry.parentId < idTable.currentSize)
+					parentBlock = idTable.GetEntry(entry.parentId).id;
+				else
+					parentBlock = "-";
+#pragma endregion
+				*log.stream << '|' << std::setw(3) << i << "|" << std::setw(8) << entry.id << '|' << std::setw(10) << parentBlock << '|'
+					<< std::setw(8) << entry.idxfirstLE << '|' << std::setw(10) << idDataType << '|'
+					<< std::setw(16) << idType << '|' << std::endl;
 			}
 
-			*(idStream) << "====================================================================================" << std::endl;
-
+			*log.stream << "+============================================================+" << std::endl;
 		}
+		else ERROR_THROW(112)
 	}
 }
