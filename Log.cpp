@@ -3,9 +3,6 @@
 #include <fstream>
 #include <ctime>
 
-#define EOL	log.stream->write((char*)"\n", 1);
-#define LABEL(parm) log.stream->write((char*)parm, strlen(parm));
-
 namespace Log
 {
 	// Открыть поток для записи.
@@ -19,26 +16,30 @@ namespace Log
 	}
 
 #pragma region WriteLine
-	void WriteLine(LOG log, char* c, ...)
+	void WriteLine(LOG& log, char* c, ...)
 	{
-		for (char** ptr = &c; *ptr != ""; ptr++) {
-			*log.stream << *ptr;
-		}
-		*log.stream << std::endl;
+		if ((*log.stream).is_open()) ERROR_THROW(112)
+		for (char** ptr = &c; *ptr != ""; ptr++)
+			*log.stream << *ptr << std::endl;
 	}
 
-	void WriteLine(LOG log, wchar_t* c, ...)
+	void WriteLine(LOG& log, wchar_t* c, ...)
 	{
-		char* str = new char[IN_MAX_LEN_TEXT];
-		for (wchar_t** ptr = &c; *ptr != L""; ptr++) log.stream->write((const char*)str, wcstombs(str, *ptr, wcslen(*ptr) + 1));
-		EOL
-			delete[] str;
+		if ((*log.stream).is_open()) ERROR_THROW(112)
+		char temp[256];
+		for (wchar_t** ptr = &c; *ptr != L""; ptr++)
+		{
+			wcstombs(temp, *ptr++, sizeof(temp));
+			*log.stream << temp << std::endl;
+		}
+		delete temp;
 	}
 #pragma endregion
 	
 	// Записть время в лог-файл.
-	void WriteLog(LOG log)
+	void WriteLog(LOG& log)
 	{
+		if ((*log.stream).is_open()) ERROR_THROW(112)
 		time_t rawtime;
 		struct tm* timeinfo;
 		char buffer[128];
@@ -46,29 +47,27 @@ namespace Log
 		timeinfo = localtime(&rawtime);
 		strftime(buffer, strlen(buffer), 
 			"------- Протокол -------\nДата: %d.%m.%Y %H:%M:%S\n------------------------", timeinfo);
-		LABEL(buffer) EOL
+		*log.stream << buffer << std::endl;
 	}
 
 	// Записть ключи в лог-файл.
-	void WriteParm(LOG log, Parm::PARM parm)
+	void WriteParm(LOG& log, Parm::PARM parm)
 	{
+		if ((*log.stream).is_open()) ERROR_THROW(112)
 		char result[300];
-		wcstombs(result, parm.in, wcslen(parm.in) + 1);
-		LABEL("-in: ") log.stream->write(result, strlen(result)); EOL
-		wcstombs(result, parm.out, wcslen(parm.out) + 1);
-		LABEL("-out: ") log.stream->write(result, strlen(result)); EOL
-		wcstombs(result, parm.log, wcslen(parm.log) + 1);
-		LABEL("-log: ") log.stream->write(result, strlen(result)); EOL
+		wcstombs(result, parm.in, wcslen(parm.in) + 1); *log.stream << "-in: " << result << std::endl;
+		wcstombs(result, parm.out, wcslen(parm.out) + 1); *log.stream << "-out: " << result << std::endl;
+		wcstombs(result, parm.log, wcslen(parm.log) + 1); *log.stream << "-log: " << result << std::endl;
 	}
 
 	// Записать информацию об обработке в лог-файл.
-	void WriteIn(LOG log, In::IN in)
+	void WriteIn(LOG& log, In::IN in)
 	{
-		char buffer[8];
-		LABEL("------- Исходные данные -------") EOL
-		LABEL("Количество символов: ") log.stream->write(buffer, strlen(_itoa(in.size, buffer, 10))); EOL
-		LABEL("Количество строк: ") log.stream->write(buffer, strlen(_itoa(in.lines, buffer, 10))); EOL
-		LABEL("Проигнорировано: ")log.stream->write(buffer, strlen(_itoa(in.ignor, buffer, 10))); EOL
+		if ((*log.stream).is_open()) ERROR_THROW(112)
+		*log.stream << "------- Исходные данные -------" << std::endl;
+		*log.stream << "Количество символов: " << in.size << std::endl;
+		*log.stream << "Количество строк: " << in.lines << std::endl;
+		*log.stream << "Проигнорировано: " << in.ignor << std::endl;
 	}
 
 	// Записать в выходной файл.
@@ -82,14 +81,14 @@ namespace Log
 	}
 
 	// Записать ошибку в лог-файл.
-	void WriteError(LOG log, Error::ERROR error)
+	void WriteError(LOG& log, Error::ERROR error)
 	{
-		log.stream->write(error.message, strlen(error.message));
+		*log.stream << error.message;
 	}
 
 	// Закрыть поток записи.
-	void Close(LOG log)
+	void Close(LOG& log)
 	{
-		if (log.stream != NULL && log.stream->is_open()) log.stream->close();
+		if (log.stream != NULL && (*log.stream).is_open()) (*log.stream).close();
 	}
 }

@@ -28,83 +28,68 @@ int _tmain(int argc, _TCHAR* argv[])
 		In::IN in = In::getIn(parm.in);
 		Log::WriteInsideOutFile(parm, in);
 		lexTable = lexTable.Create();
-		
 		parsingIntoLexems(in, lexTable, idTable);
-
-		int current = 0;
-		for (int i = 0; i < lexTable.currentSize; i++)
-		{
-			LT::Entry entry = lexTable.GetEntry(i);
-			if (entry.lineNumber != current)
-			{
-				std::cout << '\n';
-				current++;
-				std::cout << std::setw(4) << entry.lineNumber << " | ";
-			}
-			std::cout << entry.lexem;
-		}
-		std::cout << std::endl;
-		for (int i = 0; i < idTable.currentSize; i++)
-		{
-			IT::Entry e = idTable.GetEntry(i);
-			std::cout << std::setw(4) << e.idxfirstLE << "  ";
-			std::cout << std::setw(10) << e.id << "  ";
-			if (e.iddatatype == 1)
-			{
-				std::cout << std::setw(4) << "INT";
-			}
-			if (e.iddatatype == 2)
-			{
-				std::cout << std::setw(4) << "STR";
-			}
-			if (e.idtype == 1)
-			{
-				std::cout << std::setw(12) << "переменная";
-			}
-			if (e.idtype == 2)
-			{
-				std::cout << std::setw(12) << "функция";
-			}
-			if (e.idtype == 3)
-			{
-				std::cout << std::setw(12) << "параметр";
-			}
-			if (e.idtype == 4)
-			{
-				std::cout << std::setw(12) << "лексема";
-			}
-			if (e.parentId != TI_NULLIDX)
-				std::cout << std::setw(12) << idTable.GetEntry(e.parentId).id;
-			else
-				std::cout << std::setw(12) << "-";
-			if (e.iddatatype == 1)
-				std::cout << std::setw(24) << e.value.vint;
-			else
-			{
-				//std::cout << " [" << std::setw(4) << e.value.vstr->len << "] ";
-				std::cout << std::setw(24) << e.value.vstr->str;
-			}
-				
-			std::cout << std::setw(4) << i << std::endl;
-		}
-		
-		for (int i = 0; i < lexTable.currentSize; i++)
-		{
-			LT::Entry entry = lexTable.GetEntry(i);
-			std::cout << std::setw(4) << entry.lineNumber << std::setw(14) << entry.lexem;
-			if (entry.idxTI != TI_NULLIDX)
-				std::cout << std::setw(12) << entry.idxTI;
-			else
-				std::cout << std::setw(12) << "-";
-			std::cout << std::endl;
-		}
-
-		std::cout << std::endl;
 		Log::WriteInsideOutFile(parm, in);
 		Log::WriteLine(log, (wchar_t*)L"Тест: ", (wchar_t*)L"без ошибок ", L"");
 		Log::WriteLog(log);
 		Log::WriteParm(log, parm);
 		Log::WriteIn(log, in);
+		//for (int i = 0; i < lexTable.currentSize; i++)
+		//{
+		//	LT::Entry entry = lexTable.GetEntry(i);
+		//	Log::WriteLine(log, (char*)entry, "");
+		//	
+		//}
+
+		for (int i = 0; i < idTable.currentSize; i++)
+		{
+			IT::Entry entry = idTable.GetEntry(i);
+			std::string idDataType = "";
+			std::string idType = "";
+#pragma region Type
+
+			switch (entry.iddatatype)
+			{
+			case 1:
+				idDataType = "integer";
+				break;
+			case 2:
+				idDataType = "string";
+				break;
+			default:
+				idDataType = "undef";
+				break;
+			}
+
+			switch (entry.idtype)
+			{
+			case 1:
+				idType = "переменная";
+				break;
+			case 2:
+				idType = "функция";
+				break;
+			case 3:
+				idType = "параметр";
+				break;
+			case 4:
+				idType = "лексема";
+				break;
+			default:
+				idType = "undef";
+				break;
+			}
+#pragma endregion
+
+			Log::WriteLine(log, (char*)std::to_string(i).c_str(),
+				(char*)entry.id, 
+				(char*)idType.c_str(), 
+				(char*)idDataType.c_str(), 
+				(char*)(std::to_string(entry.idxfirstLE)).c_str(),
+				(char*)(std::to_string(entry.parentId)).c_str(), "");
+
+		}
+		
 		Log::Close(log);
 		std::wcout
 			<< L"--------------- Результат -------------" << std::endl

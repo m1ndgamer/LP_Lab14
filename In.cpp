@@ -48,9 +48,13 @@ namespace In
 		int position = 0;
 		for (int i = 0; i < in->size; i++)
 		{
-			if (!(in->text[i] == IN_CODE_SPACE && (in->code[in->text[i - 1]] == IN::A || in->code[in->text[i + 1]] == IN::A)))
+			if (!(in->text[i] == IN_CODE_SPACE && (in->code[in->text[i - 1]] == IN::A || in->code[in->text[i + 1]] == IN::A)) &&
+			!(in->text[i] == '|' && in->text[i + 1] == '|'))
+			{
 				in->text[position++] = in->text[i];
+			}
 		}
+		if (in->text[position - 1] == '|') position--;
 		in->text[position] = IN_CODE_ENDSTRING;
 		in->size = position;
 	}

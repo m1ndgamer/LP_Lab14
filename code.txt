@@ -13,8 +13,8 @@ declare integer strlen(string p);
 c = substr(a, 1,3)+ b;
 return c;
 };
-main
-{
+main	
+{		
 declare integer test = 243;
 declare integer x;
 declare integer y;
@@ -35,3 +35,15 @@ print sc;
 print strlen(sc);
 return 0;
 };
+
+
+
+
+
+
+
+
+
+
+
+
