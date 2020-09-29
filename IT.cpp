@@ -29,7 +29,6 @@ namespace IT
 
 	IdTable::IdTable(int size)
 	{
-		if (size > ID_MAXSIZE); // исключение
 		maxsize = TI_MAXSIZE;
 		currentSize = 0;
 		table = new Entry[TI_MAXSIZE];
@@ -52,8 +51,8 @@ namespace IT
 
 	Entry IdTable::GetEntry(int n)
 	{
-		if (n < maxsize && n >= 0)
-			return table[n];
+		if (n < maxsize && n >= 0) return table[n];
+		else throw ERROR_THROW(122);
 	}
 
 	int IdTable::IsId(char* id)

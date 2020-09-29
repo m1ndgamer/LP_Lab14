@@ -26,6 +26,7 @@
 #define IS_MAIN strcmp(token, "main") == 0 
 #define PREVIOUS_LEXEM lexTable.GetEntry(lexTable.currentSize - 1).lexem
 #define BEFORE_PREVIOUS_LEXEM lexTable.GetEntry(lexTable.currentSize - 2).lexem
+#define ADD_SIGN_IN_ID_TABLE idTable.Add({ lexTable.currentSize, (char*)token, IT::INT, IT::L, -1 });
 
 /// <summary>
 /// Получить тип лексемы.
@@ -36,9 +37,9 @@ IT::IDDATATYPE getType(char lexem)
 {
 	switch (lexem)
 	{
-		case 't': return IT::INT;
-		case 's': return IT::STR;
-		default: return IT::INT;
+	case 't': return IT::INT;
+	case 's': return IT::STR;
+	default: return IT::INT;
 	}
 }
 
@@ -60,8 +61,8 @@ int GetParentID(LT::LexTable& lexTable, IT::IdTable& idTable, bool isParm = fals
 		if (lexTable.GetEntry(i).lexem == startFunction) startSymbolFounded = true;
 		if (startSymbolFounded && lexTable.GetEntry(i).lexem == LEX_ID &&
 			(idTable.GetEntry(lexTable.GetEntry(i).idxTI).idtype == IT::IDTYPE::F ||
-			idTable.GetEntry(lexTable.GetEntry(i).idxTI).idtype == IT::IDTYPE::V))
-				return lexTable.GetEntry(i).idxTI;
+				idTable.GetEntry(lexTable.GetEntry(i).idxTI).idtype == IT::IDTYPE::V))
+			return lexTable.GetEntry(i).idxTI;
 	}
 	return TI_NULLIDX;
 }
@@ -72,7 +73,7 @@ char* deleteBacktick(char* source)
 	int currentSize = 0;
 	for (int i = 0; i < length; i++)
 	{
-		if(i != 0 && i != length - 1) source[currentSize++] = source[i];
+		if (i != 0 && i != length - 1) source[currentSize++] = source[i];
 	}
 	source[currentSize] = IN_CODE_ENDSTRING;
 	return source;
@@ -91,83 +92,71 @@ bool LexemAnalysis(const char* token, int strNumber, LT::LexTable& lexTable, IT:
 	// Проверка на зараезервированное слово языка и литерал.
 	switch (*token)
 	{
-		case LEX_SEMICOLON: ADD_LEXEM(LEX_SEMICOLON, LT_TI_NULLXDX)
-		case LEX_COMMA: ADD_LEXEM(LEX_COMMA, LT_TI_NULLXDX)
-		case LEX_LEFTBRACE: ADD_LEXEM(LEX_LEFTBRACE, LT_TI_NULLXDX)
-		case LEX_RIGHTBRACE: ADD_LEXEM(LEX_RIGHTBRACE, LT_TI_NULLXDX)
-		case LEX_LEFTHESIS: ADD_LEXEM(LEX_LEFTHESIS, LT_TI_NULLXDX)
-		case LEX_RIGHTHESIS: ADD_LEXEM(LEX_RIGHTHESIS, LT_TI_NULLXDX)
-		case '+':
-			idTable.Add({ lexTable.currentSize, (char*)token, IT::INT, IT::L, -1 });
-			ADD_LEXEM(LEX_PLUS, LT_TI_NULLXDX)
-		case '-':
-			idTable.Add({ lexTable.currentSize, (char*)token, IT::INT, IT::L, -1 });
-			ADD_LEXEM(LEX_MINUS, LT_TI_NULLXDX)
-		case '*':
-			idTable.Add({ lexTable.currentSize, (char*)token, IT::INT, IT::L, -1 });
-			ADD_LEXEM(LEX_STAR, LT_TI_NULLXDX)
-		case '/':
-			idTable.Add({ lexTable.currentSize, (char*)token, IT::INT, IT::L, -1 });
-			ADD_LEXEM(LEX_DIRSLASH, LT_TI_NULLXDX)
-		case LEX_EQUAL_SIGN: ADD_LEXEM(LEX_EQUAL_SIGN, LT_TI_NULLXDX)
-		case LEX_FUNCTION: { TOKEN_PROCESS(A_FUNCTION, LEX_FUNCTION) }
-		case LEX_DECLARE: { TOKEN_PROCESS(A_DECLARE, LEX_DECLARE) }
-		case LEX_RETURN: { TOKEN_PROCESS(A_RETURN, LEX_RETURN) }
-		case LEX_PRINT: { TOKEN_PROCESS(A_PRINT, LEX_PRINT) }
-		case LEX_MAIN: { TOKEN_PROCESS(A_MAIN, LEX_MAIN) }
-		case BACKTICK: 
+	case LEX_SEMICOLON: ADD_LEXEM(LEX_SEMICOLON, LT_TI_NULLXDX)
+	case LEX_COMMA: ADD_LEXEM(LEX_COMMA, LT_TI_NULLXDX)
+	case LEX_LEFTBRACE: ADD_LEXEM(LEX_LEFTBRACE, LT_TI_NULLXDX)
+	case LEX_RIGHTBRACE: ADD_LEXEM(LEX_RIGHTBRACE, LT_TI_NULLXDX)
+	case LEX_LEFTHESIS: ADD_LEXEM(LEX_LEFTHESIS, LT_TI_NULLXDX)
+	case LEX_RIGHTHESIS: ADD_LEXEM(LEX_RIGHTHESIS, LT_TI_NULLXDX)
+	case '+': ADD_SIGN_IN_ID_TABLE ADD_LEXEM(LEX_PLUS, LT_TI_NULLXDX)
+	case '-': ADD_SIGN_IN_ID_TABLE ADD_LEXEM(LEX_MINUS, LT_TI_NULLXDX)
+	case '*': ADD_SIGN_IN_ID_TABLE ADD_LEXEM(LEX_STAR, LT_TI_NULLXDX)
+	case '/': ADD_SIGN_IN_ID_TABLE ADD_LEXEM(LEX_DIRSLASH, LT_TI_NULLXDX)
+	case LEX_EQUAL_SIGN: ADD_LEXEM(LEX_EQUAL_SIGN, LT_TI_NULLXDX)
+	case LEX_FUNCTION: { TOKEN_PROCESS(A_FUNCTION, LEX_FUNCTION) }
+	case LEX_DECLARE: { TOKEN_PROCESS(A_DECLARE, LEX_DECLARE) }
+	case LEX_RETURN: { TOKEN_PROCESS(A_RETURN, LEX_RETURN) }
+	case LEX_PRINT: { TOKEN_PROCESS(A_PRINT, LEX_PRINT) }
+	case LEX_MAIN: { TOKEN_PROCESS(A_MAIN, LEX_MAIN) }
+	case BACKTICK:
+	{
+		CREATE_AUTOMAT(A_STRING_LITERAL)
+			IS_CORRECT
 		{
-			CREATE_AUTOMAT(A_STRING_LITERAL)
+			DELETE_AUTOMAT
+				idTable.Add({ lexTable.currentSize, (char*)"L", IT::STR, IT::L, GetParentID(lexTable, idTable) });
+			strcpy(idTable.table[idTable.currentSize - 1].value.vstr->str, deleteBacktick((char*)token));
+			idTable.table[idTable.currentSize - 1].value.vstr->len = strlen(token);
+			ADD_LEXEM(LEX_LITERAL, idTable.currentSize)
+				return true;
+		}
+		DELETE_AUTOMAT
+	}
+	/// ПУСТОЕ ЗНАЧЕНИЕ СТРОКОВЫХ ИНДЕТИФИКАТОРОВ
+	/// ДОБАВИТЬ.
+	case LEX_STRING:
+	{
+		CREATE_AUTOMAT(A_STRING);
+		IS_CORRECT
+		{
+			DELETE_AUTOMAT
+			ADD_LEXEM(LEX_STRING, LT_TI_NULLXDX)
+		}
+	}
+	case 'i':
+	{
+		CREATE_AUTOMAT(A_INTEGER);
+		IS_CORRECT
+		{
+			DELETE_AUTOMAT
+			ADD_LEXEM(LEX_INTEGER, LT_TI_NULLXDX)
+		}
+	}
+	default:
+	{
+		if (isdigit(*token))
+		{
+			CREATE_AUTOMAT(A_INTEGER_LITERAL);
 			IS_CORRECT
 			{
 				DELETE_AUTOMAT
-					idTable.Add({ lexTable.currentSize, (char*)"L", IT::STR, IT::L, GetParentID(lexTable, idTable) });
-					strcpy(idTable.table[idTable.currentSize - 1].value.vstr->str, deleteBacktick((char*)token));
-					idTable.table[idTable.currentSize - 1].value.vstr->len = strlen(token);
-					ADD_LEXEM(LEX_LITERAL, idTable.currentSize)
-						
-					/*	strcpy(idTable.table[identificator].value.vstr->str, token);
-					idTable.table[identificator].value.vstr->len = strlen(token);
-					ADD_LEXEM(LEX_LITERAL, LT_TI_NULLXDX)		*/			
-				// else throw
-					return true;
+				idTable.Add({ lexTable.currentSize, (char*)"L", IT::INT, IT::L, GetParentID(lexTable, idTable) });
+				idTable.table[idTable.currentSize - 1].value.vint = atoi(token);
+				ADD_LEXEM(LEX_LITERAL, idTable.currentSize - 1)
 			}
+			DELETE_AUTOMAT return false;
 		}
-		/// ПУСТОЕ ЗНАЧЕНИЕ СТРОКОВЫХ ИНДЕТИФИКАТОРОВ
-		/// ДОБАВИТЬ.
-		case LEX_STRING:
-		{
-			CREATE_AUTOMAT(A_STRING);
-			IS_CORRECT
-			{
-				DELETE_AUTOMAT
-				ADD_LEXEM(LEX_STRING, LT_TI_NULLXDX)
-			}
-		}
-		case 'i':
-		{
-			CREATE_AUTOMAT(A_INTEGER);
-			IS_CORRECT
-			{
-				DELETE_AUTOMAT
-				ADD_LEXEM(LEX_INTEGER, LT_TI_NULLXDX)
-			}
-		}
-		default:
-		{
-			if (isdigit(*token))
-			{
-				CREATE_AUTOMAT(A_INTEGER_LITERAL);
-				IS_CORRECT
-				{
-					DELETE_AUTOMAT
-					idTable.Add({ lexTable.currentSize, (char*)"L", IT::INT, IT::L, GetParentID(lexTable, idTable) });
-					idTable.table[idTable.currentSize - 1].value.vint = atoi(token);
-					ADD_LEXEM(LEX_LITERAL, idTable.currentSize - 1)
-				}
-				DELETE_AUTOMAT return false;
-			}
-		}
+	}
 	}
 	// Проверка на идентификатор
 	IS_IDENTIFICATOR
@@ -181,7 +170,7 @@ bool LexemAnalysis(const char* token, int strNumber, LT::LexTable& lexTable, IT:
 /// <param name="idTable">ТИ.</param>
 void parsingIntoLexems(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTable)
 {
-	char* buffer = new char[512]{}; // буфер для анализуремого текста
+	char* buffer = new char[TI_STR_MAXSIZE] {}; // буфер для анализуремого текста
 	int lineNumber = 1;				// номер строки в исходном тексте
 	int positionInLine = 1;			// номер символа в строке исходного текста
 
@@ -190,6 +179,8 @@ void parsingIntoLexems(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTa
 	// j позиция в буффере.
 	for (int i = 0, j = 0; i < source.size; i++)
 	{
+		// Проверка на превышение максимального размера лексемы.
+		if (j >= TI_STR_MAXSIZE) throw ERROR_THROW_IN(137, lineNumber, positionInLine);
 		// Еимволы допустимые в идентификаторе и зарезервированном слове.
 		if (source.code[source.text[i]] == In::IN::N)
 		{
@@ -222,20 +213,20 @@ void parsingIntoLexems(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTa
 						// Читать строку в буффер, если не превышен макс. размер строкового литерала.
 						if (c <= TI_STR_MAXSIZE) buffer[j++] = source.text[i++];
 						else throw ERROR_THROW_IN(139, lineNumber, positionInLine);
-					}	
+					}
 					// Добавление в конец буффера закрывающей кавычки.
 					if (source.text[i] == BACKTICK) { buffer[j] = source.text[i]; LEXEM_ANALYSIS }
 					else throw ERROR_THROW_IN(130, lineNumber, positionInLine);
 				}
 				if (source.text[i] != ANALYSIS_ENDLINE)
-				{ 
+				{
 					// Обработка пробельных символов.
-					if (source.text[i] == IN_CODE_SPACE || source.text[i] == IN_CODE_TAB ) { positionInLine++; continue; }
+					if (source.text[i] == IN_CODE_SPACE || source.text[i] == IN_CODE_TAB) { positionInLine++; continue; }
 					// Обработка знаковых операторов.
-					buffer[0] = source.text[i]; 
+					buffer[0] = source.text[i];
 					buffer[1] = IN_CODE_ENDSTRING;
 					LEXEM_ANALYSIS
-					RESET_BUFFER
+						RESET_BUFFER
 				}
 				// Переход на следующую строку исхожного текста.
 				else { NEXT_LINE }
@@ -256,7 +247,7 @@ void parsingIntoLexems(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTa
 bool isIdentificator(const char* token, const int strNumber, LT::LexTable& lexTable, IT::IdTable& idTable)
 {
 	CREATE_AUTOMAT(A_IDENTIFICATOR)
-	bool idWasFounded = false; // Идентификатор найден?
+		bool idWasFounded = false; // Идентификатор найден?
 	IS_CORRECT
 	{
 		// Это main или функция?
@@ -269,55 +260,53 @@ bool isIdentificator(const char* token, const int strNumber, LT::LexTable& lexTa
 				if (!strcmp(idTable.GetEntry(i).id, token)) throw ERROR_THROW(140);
 			}
 			idTable.Add({ lexTable.currentSize, (char*)token, getType(BEFORE_PREVIOUS_LEXEM), IT::F, GetParentID(lexTable, idTable) });
-			lexTable.Add({ LEX_ID, strNumber, idTable.currentSize - 1 });		
-			idWasFounded = true;
-			
-		}
-		// Это объявление переменной?
-		if (!idWasFounded && (BEFORE_PREVIOUS_LEXEM == LEX_DECLARE))
-		{
-			for (int i = 0; i < idTable.currentSize; i++)
-				if (!strcmp(idTable.GetEntry(i).id, token) && idTable.GetEntry(i).parentId == GetParentID(lexTable, idTable))
-					throw ERROR_THROW(142);
-			idTable.Add({ lexTable.currentSize, (char*)token, getType(PREVIOUS_LEXEM), IT::V, GetParentID(lexTable, idTable)});
 			lexTable.Add({ LEX_ID, strNumber, idTable.currentSize - 1 });
 			idWasFounded = true;
 
 		}
-		// Это параметр функции?
-		if	(!idWasFounded &&
-			(BEFORE_PREVIOUS_LEXEM == LEX_LEFTHESIS || 
-			 BEFORE_PREVIOUS_LEXEM == LEX_COMMA)) // ПРОВЕРКА НА ТО ЧТО ПРЕД ЭТО ПАРАМЕТР
+	// Это объявление переменной?
+	if (!idWasFounded && (BEFORE_PREVIOUS_LEXEM == LEX_DECLARE))
+	{
+		for (int i = 0; i < idTable.currentSize; i++)
+			if (!strcmp(idTable.GetEntry(i).id, token) && idTable.GetEntry(i).parentId == GetParentID(lexTable, idTable))
+				throw ERROR_THROW(142);
+		idTable.Add({ lexTable.currentSize, (char*)token, getType(PREVIOUS_LEXEM), IT::V, GetParentID(lexTable, idTable)});
+		lexTable.Add({ LEX_ID, strNumber, idTable.currentSize - 1 });
+		idWasFounded = true;
+
+	}
+	// Это параметр функции?
+	if (!idWasFounded &&
+		(BEFORE_PREVIOUS_LEXEM == LEX_LEFTHESIS ||
+		 BEFORE_PREVIOUS_LEXEM == LEX_COMMA)) // ПРОВЕРКА НА ТО ЧТО ПРЕД ЭТО ПАРАМЕТР
+	{
+		int parentId = GetParentID(lexTable, idTable, true);
+		for (int i = 0; i < idTable.currentSize; i++)
+			if (!strcmp(idTable.GetEntry(i).id, token) &&
+				(idTable.GetEntry(i).parentId == parentId))
+			{
+				std::cout << idTable.GetEntry(i).parentId << std::endl;
+				std::cout << GetParentID(lexTable, idTable, true) << std::endl;
+				std::cout << idTable.GetEntry(GetParentID(lexTable, idTable, true)).id << std::endl;
+				throw ERROR_THROW(143);
+			}
+		idTable.Add({ lexTable.currentSize, (char*)token, getType(PREVIOUS_LEXEM), IT::P, parentId });
+		lexTable.Add({ LEX_ID, strNumber, idTable.currentSize - 1 });
+		idWasFounded = true;
+	}
+	// Для обявленной ранее переменной.
+	if (!idWasFounded)
+	{
+		if (BEFORE_PREVIOUS_LEXEM == LEX_DECLARE) throw ERROR_THROW(142);
+		for (int i = idTable.currentSize; i >= 0; i--)
 		{
-			int parentId = GetParentID(lexTable, idTable, true);
-			for (int i = 0; i < idTable.currentSize; i++)
-				if (!strcmp(idTable.GetEntry(i).id, token) &&
-					(idTable.GetEntry(i).parentId == parentId))
-				{
-					std::cout << idTable.GetEntry(i).parentId << std::endl;
-					std::cout << GetParentID(lexTable, idTable, true) << std::endl;
-					std::cout << idTable.GetEntry(GetParentID(lexTable, idTable, true)).id << std::endl;
-					throw ERROR_THROW(143);
-				}
-						
-					//
-			idTable.Add({ lexTable.currentSize, (char*)token, getType(PREVIOUS_LEXEM), IT::P, parentId });
-			lexTable.Add({ LEX_ID, strNumber, idTable.currentSize - 1 });
+			int parentElement = GetParentID(lexTable, idTable);
+			if (!strcmp(token, idTable.GetEntry(i).id) && parentElement == idTable.GetEntry(i).parentId)
+				lexTable.Add({ LEX_ID, strNumber, i});
 			idWasFounded = true;
 		}
-		// Для обявленной ранее переменной.
-		if (!idWasFounded)
-		{
-			if (BEFORE_PREVIOUS_LEXEM == LEX_DECLARE) throw ERROR_THROW(142);
-			for (int i = idTable.currentSize; i >= 0; i--)
-			{
-				int parentElement = GetParentID(lexTable, idTable);
-				if(!strcmp(token, idTable.GetEntry(i).id) && parentElement == idTable.GetEntry(i).parentId)
-					lexTable.Add({ LEX_ID, strNumber, i});
-				idWasFounded = true;
-			}
-		}
 	}
-	DELETE_AUTOMAT
-	return idWasFounded;
+	}
+		DELETE_AUTOMAT
+		return idWasFounded;
 }

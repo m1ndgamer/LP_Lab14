@@ -14,12 +14,12 @@ namespace LT
 	// добавить запись
 	void LexTable::Add(Entry entry)
 	{
-		(currentSize < maxSize) ? table[currentSize++] = entry : throw ERROR_THROW(121);
+		(currentSize < maxSize) ? table[currentSize++] = entry : throw ERROR_THROW(113);
 	}
 	// получить запись
 	Entry LexTable::GetEntry(int n)
 	{
-		if (n >= maxSize || n < 0) throw ERROR_THROW(121); // to do error;
+		if (n >= maxSize || n < 0) throw ERROR_THROW(121);
 		return table[n];
 	}
 	// удалить таблицу

@@ -26,6 +26,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		Parm::PARM parm = Parm::getparm(argc, argv);
 		log = Log::getlog(parm.log);
 		In::IN in = In::getIn(parm.in);
+		Log::WriteInsideOutFile(parm, in);
 		lexTable = lexTable.Create();
 		
 		parsingIntoLexems(in, lexTable, idTable);
