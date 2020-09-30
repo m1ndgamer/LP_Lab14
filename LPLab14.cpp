@@ -29,21 +29,13 @@ int _tmain(int argc, _TCHAR* argv[])
 		lexTable = lexTable.Create();
 		parsingIntoLexems(in, lexTable, idTable);
 		Log::WriteInsideOutFile(parm, in);
-		WriteLine(log, (wchar_t*)L"Тест: ", (wchar_t*)L"без ошибок ", L"");
+		WriteLine(log, (wchar_t*)L"Тест: ", (wchar_t*)L"без ошибок", L"");
 		WriteLog(log);
 		WriteParm(log, parm);
 		WriteIn(log, in);
 		PrintIdTable(log, idTable);
 		PrintLexTable(log, lexTable);
-		//for (int i = 0; i < lexTable.currentSize; i++)
-		//{
-		//	LT::Entry entry = lexTable.GetEntry(i);
-		//	Log::WriteLine(log, (char*)entry, "");
-		//	
-		//}
 
-
-		
 		Log::Close(log);
 		std::wcout
 			<< L"--------------- Результат -------------" << std::endl

@@ -7,10 +7,11 @@
 #include "IT.h"
 #include "Error.h"
 
+
+/////////////////  LEXEM ANALYSIS  /////////////////
 // Анализ лексемы.
 #define LEXEM_ANALYSIS	if (LexemAnalysis(buffer, lineNumber, lexTable, idTable)) { RESET_BUFFER continue; } \
 						else throw ERROR_THROW_IN(130, lineNumber, positionInLine);
-/////////////////  LEXEM ANALYSIS  /////////////////
 #define RESET_BUFFER *buffer = '\0'; j = 0;
 #define NEXT_LINE lineNumber++; positionInLine = 0;
 #define CREATE_AUTOMAT(expression) FST::FST* automat = new FST::FST(expression(token));
@@ -23,7 +24,7 @@
 											IS_CORRECT{ DELETE_AUTOMAT ADD_LEXEM(lexem, LT_TI_NULLXDX) } \
 											else DELETE_AUTOMAT
 /////////////////  IDENTIFICATOR ANALYSIS  /////////////////
-#define IS_MAIN strcmp(token, "main") == 0 
+#define IS_MAIN strcmp(token, "main") == 0
 #define PREVIOUS_LEXEM lexTable.GetEntry(lexTable.currentSize - 1).lexem
 #define BEFORE_PREVIOUS_LEXEM lexTable.GetEntry(lexTable.currentSize - 2).lexem
 #define ADD_SIGN_IN_ID_TABLE idTable.Add({ lexTable.currentSize, (char*)token, IT::INT, IT::L, -1 });
@@ -67,6 +68,11 @@ int GetParentID(LT::LexTable& lexTable, IT::IdTable& idTable, bool isParm = fals
 	return TI_NULLIDX;
 }
 
+/// <summary>
+/// Удаление кавычек в строковом литерале.
+/// </summary>
+/// <param name="source">Строка.</param>
+/// <returns>Строка без кавычек.</returns>
 char* deleteBacktick(char* source)
 {
 	int length = strlen(source);
@@ -122,8 +128,6 @@ bool LexemAnalysis(const char* token, int strNumber, LT::LexTable& lexTable, IT:
 		}
 		DELETE_AUTOMAT
 	}
-	/// ПУСТОЕ ЗНАЧЕНИЕ СТРОКОВЫХ ИНДЕТИФИКАТОРОВ
-	/// ДОБАВИТЬ.
 	case LEX_STRING:
 	{
 		CREATE_AUTOMAT(A_STRING);
@@ -220,13 +224,14 @@ void parsingIntoLexems(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTa
 				}
 				if (source.text[i] != ANALYSIS_ENDLINE)
 				{
+					positionInLine++;
 					// Обработка пробельных символов.
-					if (source.text[i] == IN_CODE_SPACE || source.text[i] == IN_CODE_TAB) { positionInLine++; continue; }
+					if (source.text[i] == IN_CODE_SPACE || source.text[i] == IN_CODE_TAB) { continue; }
 					// Обработка знаковых операторов.
 					buffer[0] = source.text[i];
 					buffer[1] = IN_CODE_ENDSTRING;
 					LEXEM_ANALYSIS
-						RESET_BUFFER
+					RESET_BUFFER
 				}
 				// Переход на следующую строку исхожного текста.
 				else { NEXT_LINE }
@@ -307,6 +312,6 @@ bool isIdentificator(const char* token, const int strNumber, LT::LexTable& lexTa
 		}
 	}
 	}
-		DELETE_AUTOMAT
-		return idWasFounded;
+	DELETE_AUTOMAT
+	return idWasFounded;
 }

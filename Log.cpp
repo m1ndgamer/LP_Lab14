@@ -19,19 +19,22 @@ namespace Log
 	void WriteLine(LOG& log, char* c, ...)
 	{
 		if ((*log.stream).is_open()) ERROR_THROW(112)
-		for (char** ptr = &c; *ptr != ""; ptr++)
-			*log.stream << *ptr << std::endl;
+			for (char** ptr = &c; *ptr != ""; ptr++)
+				*log.stream << *ptr;
+		*log.stream << std::endl;
 	}
 
 	void WriteLine(LOG& log, wchar_t* c, ...)
 	{
-		if ((*log.stream).is_open()) ERROR_THROW(112)
-		char temp[256];
+
+		char* str = new char[1024];
 		for (wchar_t** ptr = &c; *ptr != L""; ptr++)
 		{
-			wcstombs(temp, *ptr++, sizeof(temp));
-			*log.stream << temp << std::endl;
-		}
+			wcstombs(str, *ptr, wcslen(*ptr) + 1);
+			*log.stream << str;
+		}		
+		*log.stream << std::endl;
+		delete[] str;
 	}
 #pragma endregion
 	
