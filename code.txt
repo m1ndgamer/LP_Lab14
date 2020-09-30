@@ -19,6 +19,7 @@ declare integer test = 243;
 declare integer x;
 declare integer y;
 declare integer z;
+declare integer polish = ((3 + x) / (4 - 2)) * y;
 declare string sa;
 declare string sb;
 declare string sc;

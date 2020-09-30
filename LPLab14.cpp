@@ -12,6 +12,7 @@
 #include "Analysis.h"
 #include "LT.h"
 #include "IT.h"
+#include "PolishNotation.h"
 
 static flagForTypeOfVar FlagForTypeOfVar;
 
@@ -30,6 +31,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		in = In::getIn(parm.in);
 		lexTable = lexTable.Create();
 		parsingIntoLexems(in, lexTable, idTable);
+		PolishNotation::polishNotation(110, lexTable, idTable);
 		Log::WriteInsideOutFile(parm, in);
 		WriteLine(log, (wchar_t*)L"Тест: ", (wchar_t*)L"без ошибок", L"");
 		WriteLog(log);

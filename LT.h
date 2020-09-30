@@ -22,6 +22,7 @@
 #define	LEX_MINUS		'v'			// -
 #define	LEX_STAR		'v'			// *
 #define	LEX_DIRSLASH	'v'			// /
+#define LEX_SIGN		'v'			// any sign
 #define	LEX_EQUAL_SIGN	'='			// =
 #define	BACKTICK		'\''		// =
 
