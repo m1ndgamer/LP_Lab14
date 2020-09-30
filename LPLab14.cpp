@@ -21,11 +21,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	Log::LOG log = Log::INITLOG;
 	IT::IdTable idTable;
 	LT::LexTable lexTable;
+	Parm::PARM parm;
+	In::IN in;
 	try 
 	{
-		Parm::PARM parm = Parm::getparm(argc, argv);
+		parm = Parm::getparm(argc, argv);
 		log = Log::getlog(parm.log);
-		In::IN in = In::getIn(parm.in);
+		in = In::getIn(parm.in);
 		lexTable = lexTable.Create();
 		parsingIntoLexems(in, lexTable, idTable);
 		Log::WriteInsideOutFile(parm, in);
@@ -52,6 +54,13 @@ int _tmain(int argc, _TCHAR* argv[])
 			Log::WriteLine(log, (wchar_t*)L"Тест: ", L"обнаружна ошибка ", L"");
 			Log::WriteLine(log, (char*)getErrorInfo(e).c_str(), "");
 			Log::Close(log);
+			try
+			{
+				strcpy((char*)in.text, (const char*)"");
+				Log::WriteInsideOutFile(parm, in);
+			}
+			catch(Error::ERROR e)
+			{ }
 		}
 		// Вывод информации об ошибке в консоль.
 		std::cout << getErrorInfo(e);

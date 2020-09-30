@@ -115,7 +115,7 @@ namespace Log
 					idType = "параметр";
 					break;
 				case 4:
-					idType = "лексема";
+					idType = "литерал";
 					break;
 				default:
 					idType = "undef";
