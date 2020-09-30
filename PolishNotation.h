@@ -7,5 +7,5 @@ namespace PolishNotation
 	int getPriority(char sign);
 	bool isOperation(char symbol);
 	bool isBrace(char symbol);
-	bool isLitOrId(char symbol);
+	bool isOperand(char symbol);
 }

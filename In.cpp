@@ -46,10 +46,12 @@ namespace In
 	void InHandler(IN *in)
 	{
 		int position = 0;
+		bool isLit = false;
 		for (int i = 0; i < in->size; i++)
 		{
-			if (!(in->text[i] == IN_CODE_SPACE && (in->code[in->text[i - 1]] == IN::A || in->code[in->text[i + 1]] == IN::A)) &&
-			!(in->text[i] == '|' && in->text[i + 1] == '|'))
+			if (in->text[i] == '\'') isLit = !isLit; // Это строковый литерал?
+			if (isLit || (!(in->text[i] == IN_CODE_SPACE && (in->code[in->text[i - 1]] == IN::A || in->code[in->text[i + 1]] == IN::A)) &&
+			!(in->text[i] == '|' && in->text[i + 1] == '|')))
 			{
 				in->text[position++] = in->text[i];
 			}

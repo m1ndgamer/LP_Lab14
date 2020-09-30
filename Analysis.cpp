@@ -120,7 +120,7 @@ bool LexemAnalysis(const char* token, int strNumber, LT::LexTable& lexTable, IT:
 			IS_CORRECT
 		{
 			DELETE_AUTOMAT
-				idTable.Add({ lexTable.currentSize, (char*)"L", IT::STR, IT::L, GetParentID(lexTable, idTable) });
+			idTable.Add({ lexTable.currentSize, (char*)"L", IT::STR, IT::L, GetParentID(lexTable, idTable) });
 			strcpy(idTable.table[idTable.currentSize - 1].value.vstr->str, deleteBacktick((char*)token));
 			idTable.table[idTable.currentSize - 1].value.vstr->len = strlen(token);
 			ADD_LEXEM(LEX_LITERAL, idTable.currentSize)
@@ -219,7 +219,7 @@ void parsingIntoLexems(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTa
 						else throw ERROR_THROW_IN(139, lineNumber, positionInLine);
 					}
 					// Добавление в конец буффера закрывающей кавычки.
-					if (source.text[i] == BACKTICK) { buffer[j] = source.text[i]; LEXEM_ANALYSIS }
+					if (source.text[i] == BACKTICK) { buffer[j++] = source.text[i]; buffer[j++] = IN_CODE_ENDSTRING; LEXEM_ANALYSIS }
 					else throw ERROR_THROW_IN(130, lineNumber, positionInLine);
 				}
 				if (source.text[i] != ANALYSIS_ENDLINE)

@@ -15,7 +15,7 @@ return c;
 };
 main	
 {		
-declare integer test = 243;
+declare string test = '1           23  ';
 declare integer x;
 declare integer y;
 declare integer z;
