@@ -25,16 +25,18 @@ namespace PolishNotation
 
 	bool polishNotation(int lextable_pos, LT::LexTable& lextable, IT::IdTable& idTable)
 	{
-		// стек операторов
+		// выражение.
 		std::vector<int> expression;
+		// стек операторов и скобок.
 		std::vector<int> stack;
-		LT::Entry entry;
-		LT::Entry bufferEntry;
+		LT::Entry entry, bufferEntry;
+		// позиция первой лексемы выражения в ТЛ.
 		int startInLT = lextable_pos;
-		int lexPosition = lextable_pos;
-		char prev = '=';
+		// предыдущий символ выражения.
+		char prev = '@';
 		for (lextable_pos; lextable_pos < lextable.currentSize; lextable_pos++)
 		{
+			// запись ТЛ.
 			entry = lextable.GetEntry(lextable_pos);
 			// операнд
 			if (isOperand(entry.lexem) && (prev != LEX_LITERAL || prev != LEX_ID))
@@ -63,6 +65,7 @@ namespace PolishNotation
 				stack.push_back(lextable_pos);
 				prev = lextable.GetEntry(lextable_pos).lexem;
 			}
+			// правая скобка скобка.
 			else if (entry.lexem == LEX_RIGHTHESIS)
 			{
 				prev = lextable.GetEntry(lextable_pos).lexem;
@@ -76,17 +79,32 @@ namespace PolishNotation
 					else { stack.erase(i.base() - 1); break; }
 				}
 			}
+			// конец выражения.
 			else if (entry.lexem == LEX_COMMA || entry.lexem == LEX_SEMICOLON) break;
+			// выражение.
 			else return false;
 		}
+		// запись оставшихся операторов в выражение.
 		for (std::vector<int>::const_reverse_iterator i = stack.crbegin(); i != stack.crend(); ++i)
 			expression.push_back(*i);
+		// установка позиций в ТЛ и ТИ исходя из польской записи.
+#pragma region SortElems
 		for (int i = 0; i < expression.size(); i++)
 		{
+			entry = lextable.GetEntry(expression[i]);
+			if (expression[i] == idTable.GetEntry(entry.idxTI).idxfirstLE)
+			{
+				idTable.GetEntry(entry.idxTI).idxfirstLE == startInLT;
+			}
 			bufferEntry = lextable.GetEntry(startInLT);
-			lextable.table[startInLT++] = lextable.GetEntry(expression[i]);
+			lextable.table[startInLT++] = entry;
 			lextable.table[expression[i]] = bufferEntry;
 		}
+		for (startInLT; startInLT < lextable_pos; startInLT++)
+		{
+			lextable.table[startInLT] = { '@', -1, -1 };
+		}
+#pragma endregion
 		return true;
 	}
 }

@@ -19,7 +19,7 @@ namespace In
 			while (fileReader.get(symbol))
 			{
 				un_symbol = (unsigned char)symbol;
-				if (in.code[un_symbol] == IN::T || in.code[un_symbol] == IN::A || in.code[un_symbol] == IN::N)
+				if (in.code[un_symbol] == IN::T || in.code[un_symbol] == IN::A || in.code[un_symbol] == IN::L)
 				{
 					in.text[in.size++] = un_symbol; position++;
 				}
@@ -50,6 +50,7 @@ namespace In
 		for (int i = 0; i < in->size; i++)
 		{
 			if (in->text[i] == '\'') isLit = !isLit; // Это строковый литерал?
+			if (!isLit ) // литерал
 			if (isLit || (!(in->text[i] == IN_CODE_SPACE && (in->code[in->text[i - 1]] == IN::A || in->code[in->text[i + 1]] == IN::A)) &&
 			!(in->text[i] == '|' && in->text[i + 1] == '|')))
 			{

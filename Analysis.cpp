@@ -104,10 +104,10 @@ bool LexemAnalysis(const char* token, int strNumber, LT::LexTable& lexTable, IT:
 	case LEX_RIGHTBRACE: ADD_LEXEM(LEX_RIGHTBRACE, LT_TI_NULLXDX)
 	case LEX_LEFTHESIS: ADD_LEXEM(LEX_LEFTHESIS, LT_TI_NULLXDX)
 	case LEX_RIGHTHESIS: ADD_LEXEM(LEX_RIGHTHESIS, LT_TI_NULLXDX)
-	case '+': ADD_SIGN_IN_ID_TABLE ADD_LEXEM(LEX_PLUS, LT_TI_NULLXDX)
-	case '-': ADD_SIGN_IN_ID_TABLE ADD_LEXEM(LEX_MINUS, LT_TI_NULLXDX)
-	case '*': ADD_SIGN_IN_ID_TABLE ADD_LEXEM(LEX_STAR, LT_TI_NULLXDX)
-	case '/': ADD_SIGN_IN_ID_TABLE ADD_LEXEM(LEX_DIRSLASH, LT_TI_NULLXDX)
+	case '+': ADD_SIGN_IN_ID_TABLE ADD_LEXEM(LEX_PLUS, idTable.currentSize - 1)
+	case '-': ADD_SIGN_IN_ID_TABLE ADD_LEXEM(LEX_MINUS, idTable.currentSize - 1)
+	case '*': ADD_SIGN_IN_ID_TABLE ADD_LEXEM(LEX_STAR, idTable.currentSize - 1)
+	case '/': ADD_SIGN_IN_ID_TABLE ADD_LEXEM(LEX_DIRSLASH, idTable.currentSize - 1)
 	case LEX_EQUAL_SIGN: ADD_LEXEM(LEX_EQUAL_SIGN, LT_TI_NULLXDX)
 	case LEX_FUNCTION: { TOKEN_PROCESS(A_FUNCTION, LEX_FUNCTION) }
 	case LEX_DECLARE: { TOKEN_PROCESS(A_DECLARE, LEX_DECLARE) }
@@ -186,7 +186,9 @@ void parsingIntoLexems(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTa
 		// Проверка на превышение максимального размера лексемы.
 		if (j >= TI_STR_MAXSIZE) throw ERROR_THROW_IN(137, lineNumber, positionInLine);
 		// Еимволы допустимые в идентификаторе и зарезервированном слове.
-		if (source.code[source.text[i]] == In::IN::N)
+		if ((source.text[i] >= 'A' && source.text[i] <= 'Z') ||
+			(source.text[i] >= 'a' && source.text[i] <= 'z') ||
+			(source.text[i] >= '0' && source.text[i] <= '9'))
 		{
 			buffer[j++] = source.text[i];
 			positionInLine++;
