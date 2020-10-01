@@ -13,7 +13,7 @@
 #define LEXEM_ANALYSIS	if (LexemAnalysis(buffer, lineNumber, lexTable, idTable)) { RESET_BUFFER continue; } \
 						else throw ERROR_THROW_IN(130, lineNumber, positionInLine);
 #define RESET_BUFFER *buffer = '\0'; j = 0;
-#define NEXT_LINE lineNumber++; positionInLine = 0;
+#define NEXT_LINE i++; lineNumber++; positionInLine = 0;
 #define CREATE_AUTOMAT(expression) FST::FST* automat = new FST::FST(expression(token));
 #define ADD_LEXEM(lexem, index)  lexTable.Add({ lexem, strNumber, index }); \
 		return true;
@@ -186,9 +186,7 @@ void parsingIntoLexems(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTa
 		// Проверка на превышение максимального размера лексемы.
 		if (j >= TI_STR_MAXSIZE) throw ERROR_THROW_IN(137, lineNumber, positionInLine);
 		// Еимволы допустимые в идентификаторе и зарезервированном слове.
-		if ((source.text[i] >= 'A' && source.text[i] <= 'Z') ||
-			(source.text[i] >= 'a' && source.text[i] <= 'z') ||
-			(source.text[i] >= '0' && source.text[i] <= '9'))
+		if (IS_UPPER_CASE_ENG((char)source.text[i]) || IS_LOWER_CASE_ENG((char)source.text[i]) || isdigit(source.text[i]))
 		{
 			buffer[j++] = source.text[i];
 			positionInLine++;

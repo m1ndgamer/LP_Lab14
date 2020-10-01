@@ -47,7 +47,7 @@ namespace LT
 		Entry* table;					// строки таблицы
 
 		// создать таблицу
-		LexTable Create(int size = LT_MAXSIZE);
+		LexTable(int size = LT_MAXSIZE);
 		void Add(Entry entry);	// добавить строку
 		Entry GetEntry(int n);	// получить строку по номеру
 		void Delete();			// удалить таблицу

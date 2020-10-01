@@ -8,10 +8,12 @@
 namespace LT
 {
 	// Создать таблицу
-	LexTable LexTable::Create(int size)
+	LexTable::LexTable(int size)
 	{
 		if (size > LT_MAXSIZE) throw ERROR_THROW(113);
-		return { size, 0, new Entry[size] };
+		maxSize = size;
+		currentSize = 0;
+		table = new Entry[size];
 	}
 	// добавить запись
 	void LexTable::Add(Entry entry)
