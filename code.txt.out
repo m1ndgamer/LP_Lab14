@@ -9,7 +9,7 @@ string function fs(string a, string b)|
 declare string c;|
 declare string function substr(string a, integer p,|
  integer n);|
-declare integer strlen(string p);|
+declare integer substr(string p);|
 c= substr(a, 1,3)+ b;|
 return c;|
 };|
@@ -19,11 +19,11 @@ declare string test= '1           23  ';|
 declare integer x;|
 declare integer y;|
 declare integer z;|
-declare integer polish=((3+ x)/(4- 2))* y;|
+declare integer pl=((3+ x)/(4- 2))* y;|
 declare string sa;|
 declare string sb;|
 declare string sc;|
-declare integer strlen(string p);|
+declare integer function strlen(string p);|
 x= 1;|
 y= 5;|
 sa= '1234567890';|

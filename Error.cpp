@@ -40,7 +40,7 @@ namespace Error
 		ERROR_ENTRY_NODEF(133),
 		ERROR_ENTRY_NODEF(134),
 		ERROR_ENTRY_NODEF(135),
-		ERROR_ENTRY_NODEF(136),
+		ERROR_ENTRY(136, "Превышен допустимый размер индетификатора."),
 		ERROR_ENTRY(137, "Превышен допустимый размер лексемы."),
 		ERROR_ENTRY(138, "Непредвиденный конец файла."),
 		ERROR_ENTRY(139, "Превышен допустимый размер строки."),

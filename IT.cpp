@@ -14,7 +14,7 @@ namespace IT
 	{
 		idxfirstLE = 0;
 		*id = IN_CODE_ENDSTRING;
-		strcpy(id, "undef");
+		strcpy(id, "null");
 		iddatatype = INT;
 		idtype = V;
 	}

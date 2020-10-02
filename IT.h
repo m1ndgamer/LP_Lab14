@@ -7,6 +7,9 @@
 #define TI_NULLIDX		0xffffffff		// нет элемента таблицы идентификаторов
 #define TI_STR_MAXSIZE	255
 
+#define ID_SUBSTR "$s1"
+#define ID_STRLEN "$s2"
+
 #define PARM_ID_DEFAULT_EXT L".id.txt" // расширение файла с итогами лексического анализa
 
 namespace IT	// таблица идентификатов
