@@ -290,8 +290,9 @@ bool isIdentificator(const char* token, const int strNumber, LT::LexTable& lexTa
 	}
 	// щРН ОЮПЮЛЕРП ТСМЙЖХХ?
 	if (!idWasFounded &&
-		(BEFORE_PREVIOUS_LEXEM == LEX_LEFTHESIS ||
-		 BEFORE_PREVIOUS_LEXEM == LEX_COMMA && IS_TYPE(1))) // опнбепйю мю рн врн опед щрн оюпюлерп
+		(BEFORE_PREVIOUS_LEXEM == LEX_LEFTHESIS ||  BEFORE_PREVIOUS_LEXEM == LEX_COMMA && IS_TYPE(1)) ||
+		(PREVIOUS_LEXEM == LEX_LEFTHESIS || PREVIOUS_LEXEM == LEX_COMMA))
+		// опнбепйю мю рн врн яйнайх дкъ тсмйжхх
 	{
 		int parentId = GetParentID(lexTable, idTable, true);
 		for (int i = 0; i < idTable.currentSize; i++)

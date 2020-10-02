@@ -74,6 +74,7 @@ namespace Log
 				entry = lexTable.GetEntry(i);
 				if (entry.lineNumber != line)
 				{
+					if (entry.lineNumber == -1) continue;
 					*log.stream << std::endl;
 					line++;
 					*log.stream << std::setw(4) << entry.lineNumber << " | ";
