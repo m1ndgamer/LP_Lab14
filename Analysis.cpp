@@ -62,7 +62,7 @@ int GetParentID(LT::LexTable& lexTable, IT::IdTable& idTable, bool isParm = fals
 	{
 		if (lexTable.GetEntry(i).lexem == LEX_RIGHTBRACE) break;
 		if (lexTable.GetEntry(i).lexem == startFunction) startSymbolFounded = true;
-		if (startSymbolFounded && lexTable.GetEntry(i).lexem == LEX_ID &&
+		if (startSymbolFounded && (lexTable.GetEntry(i).lexem == LEX_ID || lexTable.GetEntry(i).lexem == LEX_MAIN) &&
 			(idTable.GetEntry(lexTable.GetEntry(i).idxTI).idtype == IT::IDTYPE::F ||
 				idTable.GetEntry(lexTable.GetEntry(i).idxTI).idtype == IT::IDTYPE::V))
 			return lexTable.GetEntry(i).idxTI;
@@ -115,7 +115,16 @@ bool LexemAnalysis(const char* token, int strNumber, LT::LexTable& lexTable, IT:
 	case LEX_DECLARE: { TOKEN_PROCESS(A_DECLARE, LEX_DECLARE) }
 	case LEX_RETURN: { TOKEN_PROCESS(A_RETURN, LEX_RETURN) }
 	case LEX_PRINT: { TOKEN_PROCESS(A_PRINT, LEX_PRINT) }
-	case LEX_MAIN: { TOKEN_PROCESS(A_MAIN, LEX_MAIN) }
+	case LEX_MAIN: 
+	{ 
+		CREATE_AUTOMAT(A_MAIN); 
+		IS_CORRECT
+		{
+		DELETE_AUTOMAT
+		return isIdentificator(token, strNumber, lexTable, idTable, 1);
+		}
+		else DELETE_AUTOMAT 
+	}
 	case BACKTICK:
 	{
 		CREATE_AUTOMAT(A_STRING_LITERAL)
@@ -159,7 +168,7 @@ bool LexemAnalysis(const char* token, int strNumber, LT::LexTable& lexTable, IT:
 			IS_CORRECT
 			{
 				DELETE_AUTOMAT
-				idTable.Add({ lexTable.currentSize, (char*)"L", IT::INT, IT::L, GetParentID(lexTable, idTable) });
+				idTable.Add({ lexTable.currentSize, (char*)"L", IT::INT, IT::L, LT_TI_NULLXDX });
 				idTable.table[idTable.currentSize - 1].value.vint = atoi(token);
 				ADD_LEXEM(LEX_LITERAL, idTable.currentSize - 1)
 			}
@@ -257,6 +266,7 @@ void parsingIntoLexems(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTa
 /// <returns>Лексема распознана?</returns>
 bool isIdentificator(const char* token, const int strNumber, LT::LexTable& lexTable, IT::IdTable& idTable, bool isKeyword)
 {
+	IT::Entry entry;
 	bool idWasFounded = false; // Идентификатор найден?
 	CREATE_AUTOMAT(A_IDENTIFICATOR)
 	if (isKeyword || FST::execute(*automat))
@@ -267,12 +277,15 @@ bool isIdentificator(const char* token, const int strNumber, LT::LexTable& lexTa
 		{
 			for (int i = 0; i < idTable.currentSize; i++)
 			{
+
 				// проверка на переопредение
 				// to do: main over
 				if (!strcmp(idTable.GetEntry(i).id, token) && idTable.GetEntry(i).idtype == IT::F) throw ERROR_THROW(140);
 			}
 			idTable.Add({ lexTable.currentSize, (char*)token, getType(BEFORE_PREVIOUS_LEXEM), IT::F, GetParentID(lexTable, idTable) });
-			lexTable.Add({ LEX_ID, strNumber, idTable.currentSize - 1 });
+			char lex = LEX_ID;
+			if (!strcmp(token, "main")) lex = LEX_MAIN;
+			lexTable.Add({ lex, strNumber, idTable.currentSize - 1 });
 			idWasFounded = true;
 
 		}
@@ -281,7 +294,7 @@ bool isIdentificator(const char* token, const int strNumber, LT::LexTable& lexTa
 	{
 		for (int i = 0; i < idTable.currentSize; i++)
 			if (!strcmp(idTable.GetEntry(i).id, token) && idTable.GetEntry(i).parentId == GetParentID(lexTable, idTable) 
-				&& idTable.GetEntry(i).idtype == IT::V)
+				&& (idTable.GetEntry(i).idtype == IT::V))
 				throw ERROR_THROW(142);
 		idTable.Add({ lexTable.currentSize, (char*)token, getType(PREVIOUS_LEXEM), IT::V, GetParentID(lexTable, idTable)});
 		lexTable.Add({ LEX_ID, strNumber, idTable.currentSize - 1 });
@@ -289,21 +302,13 @@ bool isIdentificator(const char* token, const int strNumber, LT::LexTable& lexTa
 
 	}
 	// Это параметр функции?
-	if (!idWasFounded &&
-		(BEFORE_PREVIOUS_LEXEM == LEX_LEFTHESIS ||  BEFORE_PREVIOUS_LEXEM == LEX_COMMA && IS_TYPE(1)) ||
-		(PREVIOUS_LEXEM == LEX_LEFTHESIS || PREVIOUS_LEXEM == LEX_COMMA))
-		// ПРОВЕРКА НА ТО ЧТО СКОБКИ ДЛЯ ФУНКЦИИ
+	if (!idWasFounded && (	BEFORE_PREVIOUS_LEXEM == LEX_LEFTHESIS && IS_TYPE(1) ||
+							BEFORE_PREVIOUS_LEXEM == LEX_COMMA && IS_TYPE(1)))
 	{
 		int parentId = GetParentID(lexTable, idTable, true);
 		for (int i = 0; i < idTable.currentSize; i++)
-			if (!strcmp(idTable.GetEntry(i).id, token) &&
-				(idTable.GetEntry(i).parentId == parentId))
-			{
-				std::cout << idTable.GetEntry(i).parentId << std::endl;
-				std::cout << GetParentID(lexTable, idTable, true) << std::endl;
-				std::cout << idTable.GetEntry(GetParentID(lexTable, idTable, true)).id << std::endl;
-				throw ERROR_THROW(143);
-			}
+			if (!strcmp(idTable.GetEntry(i).id, token) && (idTable.GetEntry(i).parentId == parentId)) 
+			{ throw ERROR_THROW(143); }
 		idTable.Add({ lexTable.currentSize, (char*)token, getType(PREVIOUS_LEXEM), IT::P, parentId });
 		lexTable.Add({ LEX_ID, strNumber, idTable.currentSize - 1 });
 		idWasFounded = true;
@@ -315,7 +320,8 @@ bool isIdentificator(const char* token, const int strNumber, LT::LexTable& lexTa
 		for (int i = idTable.currentSize; i >= 0; i--)
 		{
 			int parentElement = GetParentID(lexTable, idTable);
-			if (!strcmp(token, idTable.GetEntry(i).id) && parentElement == idTable.GetEntry(i).parentId && idTable.GetEntry(i).idtype == IT::V)
+			if (!strcmp(token, idTable.GetEntry(i).id) && parentElement == idTable.GetEntry(i).parentId &&
+				idTable.GetEntry(i).idtype != IT::L)
 				lexTable.Add({ LEX_ID, strNumber, i});
 			idWasFounded = true;
 		}

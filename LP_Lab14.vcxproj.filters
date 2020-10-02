@@ -51,6 +51,9 @@
     <ClCompile Include="PolishNotation.cpp">
       <Filter>Исходные файлы\Namespaces</Filter>
     </ClCompile>
+    <ClCompile Include="GRB.cpp">
+      <Filter>Исходные файлы\Namespaces</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Error.h">
@@ -84,6 +87,12 @@
       <Filter>Файлы заголовков\Namespaces</Filter>
     </ClInclude>
     <ClInclude Include="PolishNotation.h">
+      <Filter>Файлы заголовков\Namespaces</Filter>
+    </ClInclude>
+    <ClInclude Include="GRB.h">
+      <Filter>Файлы заголовков\Namespaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Rule.h">
       <Filter>Файлы заголовков\Namespaces</Filter>
     </ClInclude>
   </ItemGroup>

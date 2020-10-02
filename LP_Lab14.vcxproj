@@ -22,6 +22,7 @@
     <ClCompile Include="Analysis.cpp" />
     <ClCompile Include="Error.cpp" />
     <ClCompile Include="FST.cpp" />
+    <ClCompile Include="GRB.cpp" />
     <ClCompile Include="In.cpp" />
     <ClCompile Include="IT.cpp" />
     <ClCompile Include="Log.cpp" />
@@ -34,6 +35,7 @@
     <ClInclude Include="Analysis.h" />
     <ClInclude Include="Error.h" />
     <ClInclude Include="FST.h" />
+    <ClInclude Include="GRB.h" />
     <ClInclude Include="In.h" />
     <ClInclude Include="IT.h" />
     <ClInclude Include="Log.h" />
@@ -41,6 +43,7 @@
     <ClInclude Include="Parm.h" />
     <ClInclude Include="PolishNotation.h" />
     <ClInclude Include="RegularExpessions.h" />
+    <ClInclude Include="Rule.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -71,7 +71,11 @@ namespace In
 				else throw ERROR_THROW_IN(111, in.lines, position, un_symbol);
 			}
 		else throw ERROR_THROW(110);
-		if (in.text[in.size - 1] == IN_CODE_ENDLINE) in.size--;
+		if (in.text[in.size - 1] == IN_CODE_ENDLINE)
+		{
+			in.size--;
+			in.lines--;
+		}
 		in.text[in.size] = IN_CODE_ENDSTRING;
 		fileReader.close();
 		return in;
