@@ -2,9 +2,11 @@
 #include "stdafx.h"
 #include <vector>
 #include <string>
+#include <stack>
 #include <iostream>
 #include <iomanip>
 #include "GRB.h"
+#include "Rule.h"
 
 
 #define MFST_DIAGN_MAXSIZE 2*ERROR_MAXSIZE_MESSAGE

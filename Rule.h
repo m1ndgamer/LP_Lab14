@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "stdafx.h"
+#include "GRB.h"
 #define GRB_ERROR_SERIES 600
 #define NS(n)	GRB::Rule::Chain::N(n)
 #define TS(n)	GRB::Rule::Chain::T(n)
@@ -11,9 +11,7 @@ namespace GRB
 		NS('S'), // стартовый символ
 		TS('$'), //дно стека      
 		6,									  // количество правил
-		Rule(
-			NS('S'),
-			GRB_ERROR_SERIES + 0,    // неверная структура программы
+		Rule( NS('S'), GRB_ERROR_SERIES + 0,    // неверная структура программы
 			4,
 			Rule::Chain(8, TS('m'), TS('{'), NS('N'), TS('r'), NS('E'), TS(';'), TS('}'), TS(';')),
 			Rule::Chain(14, TS('t'), TS('f'), TS('i'), TS('('), NS('F'), TS(')'), TS('{'), NS('N'), TS('r'), NS('E'), TS(';'), TS('}'), TS(';'), NS('S')),

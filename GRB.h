@@ -1,5 +1,6 @@
 #pragma once
 #include "Rule.h"
+#include "Error.h"
 typedef short GRBALPHABET; // символы алфавита грамматики терминалы > 0, нетерминалы < 0
 
 namespace GRB
