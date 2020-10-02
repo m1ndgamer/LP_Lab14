@@ -44,5 +44,4 @@ namespace In
 		int code[256];
 	};
 	IN getIn(wchar_t infile[]);
-	void InHandler(IN* in);
 }

@@ -6,10 +6,12 @@
 #include <ctype.h>
 #include <mbstring.h>
 
-#define	IS_EMPTY_LINE (in->text[i] == '|' && (in->text[i - 1] == IN_CODE_ENDLINE))
-#define	IS_UNNECESSARY_SPACE	((in->text[i] == IN_CODE_SPACE || in->text[i] == IN_CODE_TAB) && \
-								(in->code[in->text[i - 1]] == IN::S || in->code[in->text[i + 1]] == IN::S || in->text[i + 1] == '|'))
-
+#define	IS_EMPTY_LINE			(in->text[i] == '|' && (in->text[i - 1] == IN_CODE_ENDLINE))
+#define	IS_UNNECESSARY_SPACE	((in.text[in.size] == IN_CODE_SPACE || in.text[in.size] == IN_CODE_TAB) && \
+								(in.text[in.size - 1] == IN::S))
+#define	PREVIOUS_IS_SPACE		(in.code[un_symbol] == IN::S && \
+								(in.text[in.size - 1] == IN_CODE_SPACE || in.text[in.size - 1] == IN_CODE_TAB))
+#define NEW_LINE 				in.lines++; position = 1;
 namespace In
 {
 	IN getIn(wchar_t infile[])
@@ -24,33 +26,45 @@ namespace In
 				un_symbol = (unsigned char)symbol;
 				if (in.code[un_symbol] == IN::T || in.code[un_symbol] == IN::S)
 				{
-					if (un_symbol == IN_CODE_ENDLINE)
-					{
-						if (in.text[in.size - 1] != IN_CODE_ENDLINE)
-						{
-							in.text[in.size++] = '|';
-							in.text[in.size++] = IN_CODE_ENDLINE;
-							in.lines++;
-							position = 1;
-						}
-					}
-					else if (un_symbol == '\'')
+					// конец/начало строкового литерала
+					if (un_symbol == '\'')
 					{
 						in.text[in.size++] = un_symbol;
 						isLit = !isLit;
 					}
-					else if ((	IS_UPPER_CASE_ENG((char)un_symbol) || 
-								IS_UPPER_CASE_RUS((char)un_symbol) ||
-								IS_LOWER_CASE_RUS((char)un_symbol) )
-								&& !isLit)
+					// если не строковый литерал
+					else if (!isLit)
 					{
-						throw ERROR_THROW_IN(111, in.lines, position, un_symbol);
-					}						
+						if (un_symbol == IN_CODE_ENDLINE)
+						{
+							// удаление пустых строк
+							if (in.text[in.size - 1] != IN_CODE_ENDLINE)
+							{
+								PREVIOUS_IS_SPACE ? in.text[in.size - 1] = '|' : in.text[in.size++] = '|';
+								in.text[in.size++] = IN_CODE_ENDLINE;
+								NEW_LINE
+							}
+						}
+#pragma region Удаление лишних пробелов
+						else if (PREVIOUS_IS_SPACE) in.text[in.size - 1] = un_symbol;
+						else if (IS_UNNECESSARY_SPACE) continue;
+#pragma endregion		
+						// запрещенные символы
+						else if (IS_UPPER_CASE_ENG((char)un_symbol) ||
+							IS_UPPER_CASE_RUS((char)un_symbol) ||
+							IS_LOWER_CASE_RUS((char)un_symbol))
+						{
+							throw ERROR_THROW_IN(111, in.lines, position, un_symbol);
+						}
+						else in.text[in.size++] = un_symbol;
+					}
+					// если строковый литерал
 					else
 					{
+						if (un_symbol == IN_CODE_ENDLINE) { NEW_LINE }
 						in.text[in.size++] = un_symbol;
-						position++;
 					}
+					position++;
 				}
 				else if (in.code[un_symbol] == IN::I) in.ignor++;
 				else if (in.code[un_symbol] == IN::F) { throw ERROR_THROW_IN(111, in.lines, position, un_symbol); }
@@ -60,30 +74,6 @@ namespace In
 		if (in.text[in.size - 1] == IN_CODE_ENDLINE) in.size--;
 		in.text[in.size] = IN_CODE_ENDSTRING;
 		fileReader.close();
-		InHandler(&in);
 		return in;
-	}
-		
-
-
-
-	// удаление лишних пробелов строки строки
-	void InHandler(IN *in)
-	{
-		int position = 0;
-		bool isLit = false;
-		for (int i = 0; i < in->size; i++)
-		{
-			// Это строковый литерал?
-			if (in->text[i] == '\'')
-			{
-				in->text[position++] = in->text[i];
-				isLit = !isLit;
-			}
-			else if (isLit || !IS_UNNECESSARY_SPACE)
-				in->text[position++] = in->text[i];				
-		}
-		in->text[position] = IN_CODE_ENDSTRING;
-		in->size = position;
 	}
 }
