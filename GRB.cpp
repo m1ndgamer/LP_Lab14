@@ -1,5 +1,6 @@
 ﻿#include "stdafx.h"
 #include "Rule.h"
+#include "GRB.h"
 
 namespace GRB
 {

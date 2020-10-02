@@ -1,17 +1,18 @@
 #include "stdafx.h"
+#include "MFST.h"
 #define NS(n)	GRB::Rule::Chain::N(n)
 #define TS(n)	GRB::Rule::Chain::T(n)
 #define ISNS(n)	GRB::Rule::Chain::isN(n)
 int FST_TRACE_n = -1;
 char rbuf[205],		// для правила
-	 sbuf[205],		// для стека
-	 lbuf[1024];	// для ленты
+sbuf[205],		// для стека
+lbuf[1024];	// для ленты
 
 namespace MFST
 {
 	MfstState::MfstState() //конструктор
 	{
-		lenta_position = 0; 
+		lenta_position = 0;
 		nrule = -1;
 		nrulechain = -1;
 	};
@@ -75,7 +76,7 @@ namespace MFST
 					if ((nrulechain = rule.getNextChain(lenta[lenta_position], chain, nrulechain + 1)) >= 0)	// получаем следующую цепочку по терминалу из ленты и заполяем цепочку
 					{
 						MFST_TRACE1			// вывод ++номера шага автомата, правила, ленты и стека
-						savestate();		// сохраняем состояние
+							savestate();		// сохраняем состояние
 						st.pop();			// извлекаем из стека символ
 						push_chain(chain);	// помещаем цепочку в стек
 						rc = NS_OK;			// найдено правило и цепочка, цепочка записана в стек
@@ -84,7 +85,7 @@ namespace MFST
 					else		// не найдена подходящая цепочка
 					{
 						MFST_TRACE4("TNS_NORULECHAIN/NS_NORULE")
-						savediagnosis(NS_NORULECHAIN);
+							savediagnosis(NS_NORULECHAIN);
 						rc = reststate() ? NS_NORULECHAIN : NS_NORULE;	// восстановить состояние автомата
 					};
 				}
@@ -98,15 +99,16 @@ namespace MFST
 				rc = TS_OK;
 				MFST_TRACE3			// вывод ++номера шага автомата, ленты и стека
 			}
-			else 
+			else
 			{
 				MFST_TRACE4("TS_NOK/NS_NORULECHAIN")		// вывод ++номера шага автомата и сообщения
-				rc = reststate() ? TS_NOK : NS_NORULECHAIN;
+					rc = reststate() ? TS_NOK : NS_NORULECHAIN;
 			};
 		}
 		else {
-			rc = LENTA_END; 
-			MFST_TRACE4("LENTA_END") };
+			rc = LENTA_END;
+			MFST_TRACE4("LENTA_END")
+		};
 		return rc;
 	};
 
@@ -148,7 +150,7 @@ namespace MFST
 	{
 		bool rc = false;
 		short k = 0;
-		while (k < MFST_DIAGN_NUMBER && lenta_position <= diagnosis[k].lenta_position) 
+		while (k < MFST_DIAGN_NUMBER && lenta_position <= diagnosis[k].lenta_position)
 			k++;
 		if (rc = (k < MFST_DIAGN_NUMBER))
 		{
@@ -165,7 +167,7 @@ namespace MFST
 		RC_STEP rc_step = SURPRISE;
 		char buf[MFST_DIAGN_MAXSIZE];
 		rc_step = step();
-		while (rc_step == NS_OK || rc_step == NS_NORULECHAIN || rc_step == TS_OK || rc_step == TS_NOK) 
+		while (rc_step == NS_OK || rc_step == NS_NORULECHAIN || rc_step == TS_OK || rc_step == TS_NOK)
 			rc_step = step();
 
 		switch (rc_step)

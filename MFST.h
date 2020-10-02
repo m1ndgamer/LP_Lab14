@@ -1,5 +1,11 @@
 #pragma once
 #include "stdafx.h"
+#include <vector>
+#include <string>
+#include <iostream>
+#include <iomanip>
+#include "GRB.h"
+
 
 #define MFST_DIAGN_MAXSIZE 2*ERROR_MAXSIZE_MESSAGE
 #define MFST_DIAGN_NUMBER 3
