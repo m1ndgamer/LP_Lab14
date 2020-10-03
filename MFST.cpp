@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "MFST.h"
+#include "Analysis.h"
 #define NS(n)	GRB::Rule::Chain::N(n)
 #define TS(n)	GRB::Rule::Chain::T(n)
 #define ISNS(n)	GRB::Rule::Chain::isN(n)
@@ -49,13 +50,12 @@ namespace MFST
 	};
 
 	Mfst::Mfst() { lenta = 0; lenta_size = lenta_position = 0; }; //конструктор
-	Mfst::Mfst(Lex::LEX plex, GRB::Greibach pgrebach) //конструктор
+	Mfst::Mfst(LEX plex, GRB::Greibach pgrebach) //конструктор
 	{
 		grebach = pgrebach;
 		lex = plex;
-		lenta = new short[lenta_size = lex.lextable.size];		// массив для ленты, состоящией из символов таблицы лексем
-		for (int k = 0; k < lenta_size; k++)
-			lenta[k] = TS(lex.lextable.table[k].lexema);	// заполнение массива терминалами
+		lenta = new short[lenta_size = lex.lextable.currentSize];		// массив для ленты, состоящией из символов таблицы лексем
+		for (int k = 0; k < lenta_size; k++) lenta[k] = TS(lex.lextable.table[k].lexem);	// заполнение массива терминалами
 		lenta_position = 0;
 		st.push(grebach.stbottomT);		// дно стека в стек
 		st.push(grebach.startN);		// стартовый символ в стек
@@ -94,28 +94,22 @@ namespace MFST
 			else if ((st.top() == lenta[lenta_position]))	// если на вершине стека терминал и он совпадает 
 			{
 				lenta_position++;	// сдвигаем ленту
-				st.pop();
-				nrulechain = -1;
-				rc = TS_OK;
+				st.pop(); nrulechain = -1; rc = TS_OK;
 				MFST_TRACE3			// вывод ++номера шага автомата, ленты и стека
 			}
 			else
 			{
-				MFST_TRACE4("TS_NOK/NS_NORULECHAIN")		// вывод ++номера шага автомата и сообщения
-					rc = reststate() ? TS_NOK : NS_NORULECHAIN;
+				// вывод ++номера шага автомата и сообщения
+				MFST_TRACE4("TS_NOK/NS_NORULECHAIN") rc = reststate() ? TS_NOK : NS_NORULECHAIN; 
 			};
 		}
-		else {
-			rc = LENTA_END;
-			MFST_TRACE4("LENTA_END")
-		};
+		else { rc = LENTA_END; MFST_TRACE4("LENTA_END") };
 		return rc;
 	};
 
 	bool Mfst::push_chain(GRB::Rule::Chain chain) //цепочка в стек с обратной стороны
 	{
-		for (int k = chain.size - 1; k >= 0; k--)
-			st.push(chain.nt[k]);
+		for (int k = chain.size - 1; k >= 0; k--) st.push(chain.nt[k]);
 		return true;
 	};
 
@@ -142,7 +136,6 @@ namespace MFST
 			MFST_TRACE5("RESSTATE");
 			MFST_TRACE2
 		};
-
 		return rc;
 	};
 

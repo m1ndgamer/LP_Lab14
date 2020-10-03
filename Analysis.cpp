@@ -31,6 +31,19 @@
 							lexTable.GetEntry(lexTable.currentSize - value).lexem == LEX_INTEGER)
 #define ADD_SIGN_IN_ID_TABLE idTable.Add({ lexTable.currentSize, (char*)token, IT::INT, IT::L, -1 });
 
+LEX::LEX()
+{
+	lextable = LT::LexTable();
+	idTable = IT::IdTable();
+}
+
+
+LEX::LEX(LT::LexTable lt, IT::IdTable it)
+{
+	lextable = lt;
+	idTable = it;
+}
+
 /// <summary>
 /// Получить тип лексемы.
 /// </summary>

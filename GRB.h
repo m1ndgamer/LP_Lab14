@@ -2,10 +2,9 @@
 #include "Rule.h"
 #include "Error.h"
 typedef short GRBALPHABET; // символы алфавита грамматики терминалы > 0, нетерминалы < 0
-
 namespace GRB
 {
-	struct Rule		// правило в грамматике Грейбах
+	struct Rule					// правило в грамматике Грейбах
 	{
 		GRBALPHABET nn;			// нетерминал (левый символ правила) < 0
 		int iderror;			// идентификатор диагностического сообщения

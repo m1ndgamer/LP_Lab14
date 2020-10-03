@@ -13,8 +13,7 @@
 #include "LT.h"
 #include "IT.h"
 #include "PolishNotation.h"
-
-static flagForTypeOfVar FlagForTypeOfVar;
+#include "MFST.h"
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -31,6 +30,11 @@ int _tmain(int argc, _TCHAR* argv[])
 		in = In::getIn(parm.in);
 		parsingIntoLexems(in, lexTable, idTable);
 		PolishNotation::polishNotation(102, lexTable, idTable);
+		LEX lex(lexTable, idTable);
+		MFST::Mfst mfst(lex, GRB::getGreibach());
+		mfst.start();
+		mfst.savededucation();
+		mfst.printrules();
 		Log::WriteInsideOutFile(parm, in);
 		WriteLine(log, (wchar_t*)L"Тест: ", (wchar_t*)L"без ошибок", L"");
 		WriteLog(log);

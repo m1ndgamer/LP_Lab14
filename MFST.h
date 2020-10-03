@@ -8,8 +8,9 @@
 #include "GRB.h"
 #include "Rule.h"
 
+#pragma region cout
 
-#define MFST_DIAGN_MAXSIZE 2*ERROR_MAXSIZE_MESSAGE
+#define MFST_DIAGN_MAXSIZE 2 * ERROR_MAXSIZE_MESSAGE
 #define MFST_DIAGN_NUMBER 3
 #define MFST_TRACE_START	std::cout << std::setfill(' ')  << std::setw(4)<< std::left << "Ўаг" << ": " \
 									  << std::setw(20) << std::left << "ѕравило" \
@@ -42,8 +43,9 @@
 								  << std::setw(20) << std::left << rule.getCRule(rbuf, state.nrulechain) \
 								  << std::endl;
 
-typedef std::stack<short> MFSTSTACK;		// стек автомата
+#pragma endregion
 
+typedef std::stack<short> MFSTSTACK;		// стек автомата
 namespace MFST
 {
 	struct MfstState				// состо€ние автомата (дл€ сохранени€)
@@ -52,7 +54,7 @@ namespace MFST
 		short nrule;					// номер текущего правила
 		short nrulechain;				// номер текущей цепочки, текущего правила
 		MFSTSTACK st;					// стек автомата
-		MfstState();
+		MfstState();	
 		MfstState(
 			short pposition,			// позици€ на ленте
 			MFSTSTACK pst,				// стек автомата
@@ -100,12 +102,12 @@ namespace MFST
 		short nrulechain;				// номер текущей цепочки, текущего правила
 		short lenta_size;				// размер ленты
 		GRB::Greibach grebach;			// грамматика √рейбах
-		Lex::LEX lex;					// результат работы лексического анализатора
+		LEX lex;					// результат работы лексического анализатора
 		MFSTSTACK st;					// стек автомата
 		std::stack<MfstState> storestate;	// стек дл€ сохранени€ состо€ний 
 		Mfst();
 		Mfst(
-			Lex::LEX plex,				// результат работы лексического анализатора
+			LEX plex,				// результат работы лексического анализатора
 			GRB::Greibach pgrebach		// грамматика √рейбах
 		);
 		char* getCSt(char* buf);		// получить содержимое стека
