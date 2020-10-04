@@ -31,19 +31,6 @@
 							lexTable.GetEntry(lexTable.currentSize - value).lexem == LEX_INTEGER)
 #define ADD_SIGN_IN_ID_TABLE idTable.Add({ lexTable.currentSize, (char*)token, IT::INT, IT::L, -1 });
 
-LEX::LEX()
-{
-	lextable = LT::LexTable();
-	idTable = IT::IdTable();
-}
-
-
-LEX::LEX(LT::LexTable lt, IT::IdTable it)
-{
-	lextable = lt;
-	idTable = it;
-}
-
 /// <summary>
 /// Получить тип лексемы.
 /// </summary>
@@ -144,7 +131,7 @@ bool LexemAnalysis(const char* token, int strNumber, LT::LexTable& lexTable, IT:
 			IS_CORRECT
 		{
 			DELETE_AUTOMAT
-				idTable.Add({ lexTable.currentSize, (char*)"L", IT::STR, IT::L, GetParentID(lexTable, idTable) });
+				idTable.Add({ lexTable.currentSize, (char*)"$L", IT::STR, IT::L, GetParentID(lexTable, idTable) });
 			strcpy(idTable.table[idTable.currentSize - 1].value.vstr->str, deleteBacktick((char*)token));
 			idTable.table[idTable.currentSize - 1].value.vstr->len = strlen(token);
 			ADD_LEXEM(LEX_LITERAL, idTable.currentSize)
@@ -181,7 +168,7 @@ bool LexemAnalysis(const char* token, int strNumber, LT::LexTable& lexTable, IT:
 			IS_CORRECT
 			{
 				DELETE_AUTOMAT
-				idTable.Add({ lexTable.currentSize, (char*)"L", IT::INT, IT::L, LT_TI_NULLXDX });
+				idTable.Add({ lexTable.currentSize, (char*)"$L", IT::INT, IT::L, LT_TI_NULLXDX });
 				idTable.table[idTable.currentSize - 1].value.vint = atoi(token);
 				ADD_LEXEM(LEX_LITERAL, idTable.currentSize - 1)
 			}
@@ -280,6 +267,7 @@ void parsingIntoLexems(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTa
 bool isIdentificator(const char* token, const int strNumber, LT::LexTable& lexTable, IT::IdTable& idTable, bool isKeyword)
 {
 	IT::Entry entry;
+	int parentElement;
 	bool idWasFounded = false; // Идентификатор найден?
 	CREATE_AUTOMAT(A_IDENTIFICATOR)
 	if (isKeyword || FST::execute(*automat))
@@ -290,10 +278,8 @@ bool isIdentificator(const char* token, const int strNumber, LT::LexTable& lexTa
 		{
 			for (int i = 0; i < idTable.currentSize; i++)
 			{
-
-				// проверка на переопредение
-				// to do: main over
-				if (!strcmp(idTable.GetEntry(i).id, token) && idTable.GetEntry(i).idtype == IT::F) throw ERROR_THROW(140);
+				entry = idTable.GetEntry(i);
+				if (!strcmp(entry.id, token) && entry.idtype == IT::F) throw ERROR_THROW(140);
 			}
 			idTable.Add({ lexTable.currentSize, (char*)token, getType(BEFORE_PREVIOUS_LEXEM), IT::F, GetParentID(lexTable, idTable) });
 			char lex = LEX_ID;
@@ -305,11 +291,15 @@ bool isIdentificator(const char* token, const int strNumber, LT::LexTable& lexTa
 	// Это объявление переменной?
 	if (!idWasFounded && (BEFORE_PREVIOUS_LEXEM == LEX_DECLARE && IS_TYPE(1)))
 	{
+		parentElement = GetParentID(lexTable, idTable);
 		for (int i = 0; i < idTable.currentSize; i++)
-			if (!strcmp(idTable.GetEntry(i).id, token) && idTable.GetEntry(i).parentId == GetParentID(lexTable, idTable) 
-				&& (idTable.GetEntry(i).idtype == IT::V))
+		{
+			entry = idTable.GetEntry(i);
+			if (!strcmp(entry.id, token) && entry.parentId == parentElement
+				&& (entry.idtype == IT::V))
 				throw ERROR_THROW(142);
-		idTable.Add({ lexTable.currentSize, (char*)token, getType(PREVIOUS_LEXEM), IT::V, GetParentID(lexTable, idTable)});
+		}	
+		idTable.Add({ lexTable.currentSize, (char*)token, getType(PREVIOUS_LEXEM), IT::V, parentElement});
 		lexTable.Add({ LEX_ID, strNumber, idTable.currentSize - 1 });
 		idWasFounded = true;
 
@@ -320,8 +310,11 @@ bool isIdentificator(const char* token, const int strNumber, LT::LexTable& lexTa
 	{
 		int parentId = GetParentID(lexTable, idTable, true);
 		for (int i = 0; i < idTable.currentSize; i++)
-			if (!strcmp(idTable.GetEntry(i).id, token) && (idTable.GetEntry(i).parentId == parentId)) 
-			{ throw ERROR_THROW(143); }
+		{
+			entry = idTable.GetEntry(i);
+			if (!strcmp(entry.id, token) && (entry.parentId == parentId))
+				throw ERROR_THROW(143);
+		}
 		idTable.Add({ lexTable.currentSize, (char*)token, getType(PREVIOUS_LEXEM), IT::P, parentId });
 		lexTable.Add({ LEX_ID, strNumber, idTable.currentSize - 1 });
 		idWasFounded = true;
@@ -329,14 +322,16 @@ bool isIdentificator(const char* token, const int strNumber, LT::LexTable& lexTa
 	// Для обявленной ранее переменной.
 	if (!idWasFounded)
 	{
-		if (BEFORE_PREVIOUS_LEXEM == LEX_DECLARE) throw ERROR_THROW(142);
 		for (int i = idTable.currentSize; i >= 0; i--)
 		{
-			int parentElement = GetParentID(lexTable, idTable);
-			if (!strcmp(token, idTable.GetEntry(i).id) && parentElement == idTable.GetEntry(i).parentId &&
-				idTable.GetEntry(i).idtype != IT::L)
-				lexTable.Add({ LEX_ID, strNumber, i});
-			idWasFounded = true;
+			entry = idTable.GetEntry(i);
+			parentElement = GetParentID(lexTable, idTable);
+			if (!strcmp(token, entry.id) && (parentElement == entry.parentId || entry.idtype == IT::F))
+			{
+				lexTable.Add({ LEX_ID, strNumber, i });
+				idWasFounded = true;
+				break;
+			}
 		}
 	}
 	}

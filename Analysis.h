@@ -7,11 +7,3 @@
 
 void parsingIntoLexems(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTable);
 bool isIdentificator(const char* token, const int strNumber, LT::LexTable& lexTable, IT::IdTable& idTable, bool isKeyword = 0);
-
-struct LEX
-{
-	LT::LexTable lextable;
-	IT::IdTable idTable;
-	LEX();
-	LEX(LT::LexTable lt, IT::IdTable it);
-};
