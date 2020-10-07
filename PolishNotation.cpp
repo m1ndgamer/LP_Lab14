@@ -41,11 +41,8 @@ namespace PolishNotation
 			entry = lextable.GetEntry(lextable_pos);
 			// операнд
 			if (isOperand(entry.lexem) && (prev != LEX_LITERAL || prev != LEX_ID))
-			{
 				// добавить в стек операторов и скобок.
 				expression.push_back(lextable_pos);
-				prev = lextable.GetEntry(lextable_pos).lexem;
-			}
 			// операция
 			else if (isOperation(entry.lexem) && prev != LEX_SIGN)
 			{
@@ -61,35 +58,27 @@ namespace PolishNotation
 						}
 						else { break; }
 					stack.push_back(lextable_pos);
-					prev = lextable.GetEntry(lextable_pos).lexem;
 				}
 				else return false;
 			}
 			// левая скобка
 			else if (entry.lexem == LEX_LEFTHESIS)
-			{
 				stack.push_back(lextable_pos);
-				prev = lextable.GetEntry(lextable_pos).lexem;
-			}
 			// правая скобка скобка.
 			else if (entry.lexem == LEX_RIGHTHESIS)
-			{
-				prev = lextable.GetEntry(lextable_pos).lexem;
 				for (std::vector<int>::reverse_iterator i = stack.rbegin(); i != stack.rend();)
-				{
-					// 
+					// запись 
 					if (GET_LEXEM(*i) != LEX_LEFTHESIS)
 					{
 						expression.push_back(*i);
 						i = std::vector<int>::reverse_iterator(stack.erase(i.base() - 1));
 					}
 					else { stack.erase(i.base() - 1); break; }
-				}
-			}
 			// конец выражения.
 			else if (entry.lexem == LEX_COMMA || entry.lexem == LEX_SEMICOLON) break;
 			// выражение.
 			else return false;
+			prev = lextable.GetEntry(lextable_pos).lexem;
 		}
 		// запись оставшихся операторов в выражение.
 		for (std::vector<int>::const_reverse_iterator i = stack.crbegin(); i != stack.crend(); ++i)
