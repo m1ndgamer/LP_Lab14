@@ -34,30 +34,36 @@ namespace PolishNotation
 		int startInLT = lextable_pos;
 		// предыдущий символ выражения.
 		char prev = '@';
+		// 
 		for (lextable_pos; lextable_pos < lextable.currentSize; lextable_pos++)
 		{
-			// запись ТЛ.
+			// получение записи из ТЛ.
 			entry = lextable.GetEntry(lextable_pos);
 			// операнд
 			if (isOperand(entry.lexem) && (prev != LEX_LITERAL || prev != LEX_ID))
 			{
+				// добавить в стек операторов и скобок.
 				expression.push_back(lextable_pos);
 				prev = lextable.GetEntry(lextable_pos).lexem;
 			}
 			// операция
 			else if (isOperation(entry.lexem) && prev != LEX_SIGN)
 			{
+				// если стек пустой или пред. элем. '(', то добавляем лексему в стек операторов
 				if (stack.empty() || BACK_LEXEM == LEX_LEFTHESIS) stack.push_back(lextable_pos);
 				else if (!stack.empty() && isOperation(BACK_LEXEM))
 				{
 					for (std::vector<int>::reverse_iterator i = stack.rbegin(); i != stack.rend();)
 						if ((isOperation(GET_LEXEM(*i)) || isBrace(GET_LEXEM(*i))) && getPriority(entry.lexem) <= getPriority(*i))
+						{
+							expression.push_back(*i);
 							i = std::vector<int>::reverse_iterator(stack.erase(i.base() - 1));
+						}
 						else { break; }
 					stack.push_back(lextable_pos);
 					prev = lextable.GetEntry(lextable_pos).lexem;
 				}
-				else {}
+				else return false;
 			}
 			// левая скобка
 			else if (entry.lexem == LEX_LEFTHESIS)
@@ -71,6 +77,7 @@ namespace PolishNotation
 				prev = lextable.GetEntry(lextable_pos).lexem;
 				for (std::vector<int>::reverse_iterator i = stack.rbegin(); i != stack.rend();)
 				{
+					// 
 					if (GET_LEXEM(*i) != LEX_LEFTHESIS)
 					{
 						expression.push_back(*i);
