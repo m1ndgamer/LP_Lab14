@@ -79,8 +79,8 @@ namespace Log
 			*log.stream << "|                   ÒÀÁËÈÖÀ ÈÍÄÅÒÈÔÈÊÀÒÎÐÎÂ                  |" << std::endl;
 			*log.stream << "+============================================================+" << std::endl;
 			*log.stream << '|' << std::setw(3) << "¹: " << "|" << std::setw(8) << "ID: " << '|' << std::setw(10) << "Ðîä. áëîê" << '|'
-				<< std::setw(8) << "¹ â ÒË." << '|' << std::setw(10) << "Òèï çíà÷." << '|'
-				<< std::setw(16) << "Òèï ID" << '|' << std::endl;
+				<< std::setw(8) << "¹ â ÒË." << '|'  << std::setw(16) << "Òèï ID" << '|' << 
+				std::setw(10) << "Òèï çíà÷." << '|'  << std::endl; //<< std::setw(24) << "Çíà÷." << '|'
 
 			*log.stream << "+============================================================+" << std::endl;
 			for (int i = 0; i < idTable.currentSize; i++)
@@ -127,13 +127,23 @@ namespace Log
 				else
 					parentBlock = "-";
 #pragma endregion
-				*log.stream << '|' << std::setw(3) << i << "|" << std::setw(8) << entry.id << '|' << std::setw(10) << parentBlock << '|'
-					<< std::setw(8) << entry.idxfirstLE << '|' << std::setw(10) << idDataType << '|'
-					<< std::setw(16) << idType << '|' << std::endl;
+				* log.stream << '|' << std::setw(3) << i << "|" << std::setw(8) << entry.id << '|' << std::setw(10) << parentBlock << '|'
+					<< std::setw(8) << entry.idxfirstLE << '|' << std::setw(16) << idType << '|' 
+					<< std::setw(10) << idDataType << '|';
+				// OUTPUT VALUE? 
+				//if (entry.iddatatype == IT::INT)
+				//{
+				//	*log.stream << std::setw(24) << entry.value.vint << '|';
+				//}
+				//else
+				//{
+				//	*log.stream << std::setw(24) << entry.value.vstr->str << '|';
+				//}
+				*log.stream << std::endl;
 			}
 
 			*log.stream << "+============================================================+" << std::endl;
-		}
+		}	
 		else ERROR_THROW(112)
 	}
 }

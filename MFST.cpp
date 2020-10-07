@@ -1,5 +1,5 @@
 //#include "stdafx.h"
-//#include "MFST.h"
+#include "MFST.h"
 //#define NS(n)	GRB::Rule::Chain::N(n)
 //#define TS(n)	GRB::Rule::Chain::T(n)
 //#define ISNS(n)	GRB::Rule::Chain::isN(n)
@@ -8,45 +8,45 @@
 //sbuf[205],		// для стека
 //lbuf[1024];	// для ленты
 //
-//namespace MFST
-//{
-//	MfstState::MfstState() //конструктор
-//	{
-//		lenta_position = 0;
-//		nrule = -1;
-//		nrulechain = -1;
-//	};
-//
-//	MfstState::MfstState(short pposition, MFSTSTACK pst, short pnrulechain) //конструктор
-//	{
-//		lenta_position = pposition;
-//		st = pst;
-//		nrulechain = pnrulechain;
-//	};
-//
-//	MfstState::MfstState(short pposition, MFSTSTACK pst, short pnrule, short pnrulechain)		// конструктор запоминаем правило
-//	{
-//		lenta_position = pposition;
-//		st = pst;
-//		nrule = pnrule;
-//		nrulechain = pnrulechain;
-//	};
-//
-//	Mfst::MfstDiagnosis::MfstDiagnosis() //конструктор
-//	{
-//		lenta_position = -1;
-//		rc_step = SURPRISE;
-//		nrule = -1;
-//		nrule_chain = -1;
-//	};
-//
-//	Mfst::MfstDiagnosis::MfstDiagnosis(short plenta_position, RC_STEP prc_step, short pnrule, short pnrule_chain) //конструктор
-//	{
-//		lenta_position = plenta_position;
-//		rc_step = prc_step;
-//		nrule = pnrule;
-//		nrule_chain = pnrule_chain;
-//	};
+namespace MFST
+{
+	MfstState::MfstState() //конструктор
+	{
+		lenta_position = 0;
+		nrule = -1;
+		nrulechain = -1;
+	};
+
+	MfstState::MfstState(short pposition, MFSTSTACK pst, short pnrulechain) //конструктор
+	{
+		lenta_position = pposition;
+		st = pst;
+		nrulechain = pnrulechain;
+	};
+
+	MfstState::MfstState(short pposition, MFSTSTACK pst, short pnrule, short pnrulechain)		// конструктор запоминаем правило
+	{
+		lenta_position = pposition;
+		st = pst;
+		nrule = pnrule;
+		nrulechain = pnrulechain;
+	};
+
+	Mfst::MfstDiagnosis::MfstDiagnosis() //конструктор
+	{
+		lenta_position = -1;
+		rc_step = SURPRISE;
+		nrule = -1;
+		nrule_chain = -1;
+	};
+
+	Mfst::MfstDiagnosis::MfstDiagnosis(short plenta_position, RC_STEP prc_step, short pnrule, short pnrule_chain) //конструктор
+	{
+		lenta_position = plenta_position;
+		rc_step = prc_step;
+		nrule = pnrule;
+		nrule_chain = pnrule_chain;
+	};
 //
 //	Mfst::Mfst() { lenta = 0; lenta_size = lenta_position = 0; }; //конструктор
 //	Mfst::Mfst(Lex::LEX plex, GRB::Greibach pgrebach) //конструктор
@@ -252,4 +252,4 @@
 //		};
 //		return true;
 //	};
-//}
+}

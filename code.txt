@@ -12,9 +12,9 @@ declare string function substr(string a, integer p,
 c = substr(a, 1,3)+ b;
 return c;
 };
-main	
+main
 {		
-declare string test = '1           23  ';
+declare string test = '1         23  ';
 declare integer x;
 declare integer y;
 declare integer z;

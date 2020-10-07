@@ -1,11 +1,23 @@
-LEX::LEX()
+#include "Lex.h"
+namespace LEX
 {
-	lextable = LT::LexTable();
-	idTable = IT::IdTable();
+	Lex::Lex()
+	{
+		lextable;
+		idTable;
+	}
+
+	Lex::Lex(LT::LexTable& lt, IT::IdTable& it)
+	{
+		lextable = &lt;
+		idTable = &it;
+	}
+	void Lex::Delete()
+	{
+		idTable->Delete();
+		lextable->Delete();
+		lextable = nullptr;
+		idTable = nullptr;
+	}
 }
 
-LEX::LEX(LT::LexTable lt, IT::IdTable it)
-{
-	lextable = lt;
-	idTable = it;
-}

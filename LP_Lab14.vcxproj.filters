@@ -57,6 +57,9 @@
     <ClCompile Include="MFST.cpp">
       <Filter>Исходные файлы\Namespaces</Filter>
     </ClCompile>
+    <ClCompile Include="Lex.cpp">
+      <Filter>Исходные файлы\Namespaces</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Error.h">
@@ -99,6 +102,9 @@
       <Filter>Файлы заголовков\Namespaces</Filter>
     </ClInclude>
     <ClInclude Include="MFST.h">
+      <Filter>Файлы заголовков\Namespaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Lex.h">
       <Filter>Файлы заголовков\Namespaces</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,8 +1,14 @@
 #pragma once
-struct LEX
+#include "IT.h"
+#include "LT.h"
+namespace LEX
 {
-	LT::LexTable lextable;
-	IT::IdTable idTable;
-	LEX();
-	LEX(LT::LexTable lt, IT::IdTable it);
-};
+	struct Lex
+	{
+		LT::LexTable* lextable;
+		IT::IdTable* idTable;
+		Lex();
+		Lex(LT::LexTable& lt, IT::IdTable& it);
+		void Delete();
+	};
+}

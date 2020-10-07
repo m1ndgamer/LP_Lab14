@@ -13,6 +13,7 @@
 #include "LT.h"
 #include "IT.h"
 #include "PolishNotation.h"
+#include "Lex.h"
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -20,6 +21,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	Log::LOG log = Log::INITLOG;
 	IT::IdTable idTable;
 	LT::LexTable lexTable;
+	LEX::Lex lex(lexTable, idTable);
 	Parm::PARM parm;
 	In::IN in;
 	try 
@@ -53,20 +55,12 @@ int _tmain(int argc, _TCHAR* argv[])
 			Log::WriteLine(log, (wchar_t*)L"Тест: ", L"обнаружна ошибка ", L"");
 			Log::WriteLine(log, (char*)getErrorInfo(e).c_str(), "");
 			Log::Close(log);
-			//try
-			//{
-			//	strcpy((char*)in.text, (const char*)"",);
-			//	Log::WriteInsideOutFile(parm, in);
-			//}
-			//catch(Error::ERROR e)
-			//{ }
 		}
 		// Вывод информации об ошибке в консоль.
 		std::cout << getErrorInfo(e);
 	}
-	lexTable.Delete();
-	idTable.Delete();
-	system("pause");	
+	lex.Delete();
+	system("pause");
 	return 0;
 }
 #pragma region test keys
