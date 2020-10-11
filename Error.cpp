@@ -48,7 +48,7 @@ namespace Error
 		ERROR_ENTRY(141, "Переопределение main."),
 		ERROR_ENTRY(142, "Переопределение переменной."),
 		ERROR_ENTRY(143, "Переопределение параметра функции."),
-		ERROR_ENTRY_NODEF(144),
+		ERROR_ENTRY(144, "Не обнаружена функция main."),
 		ERROR_ENTRY_NODEF(145),
 		ERROR_ENTRY_NODEF(146),
 		ERROR_ENTRY_NODEF(147),

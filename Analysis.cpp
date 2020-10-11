@@ -131,10 +131,10 @@ bool LexemAnalysis(const char* token, int strNumber, LT::LexTable& lexTable, IT:
 			IS_CORRECT
 		{
 			DELETE_AUTOMAT
-				idTable.Add({ lexTable.currentSize, (char*)"$L", IT::STR, IT::L, GetParentID(lexTable, idTable) });
+				idTable.Add({ lexTable.currentSize, (char*)"$L", IT::STR, IT::L, LT_TI_NULLXDX });
 			strcpy(idTable.table[idTable.currentSize - 1].value.vstr->str, deleteBacktick((char*)token));
 			idTable.table[idTable.currentSize - 1].value.vstr->len = strlen(token);
-			ADD_LEXEM(LEX_LITERAL, idTable.currentSize)
+			ADD_LEXEM(LEX_LITERAL, idTable.currentSize - 1)
 				return true;
 		}
 		DELETE_AUTOMAT
@@ -180,6 +180,12 @@ bool LexemAnalysis(const char* token, int strNumber, LT::LexTable& lexTable, IT:
 	if (strlen(token) > 5) throw ERROR_THROW(136);
 	IS_IDENTIFICATOR
 }
+bool isMain(IT::IdTable& idTable)
+{
+	for (int i = 0; i < idTable.currentSize; i++)
+		if (!strcmp(idTable.GetEntry(i).id, "main")) return true;
+	return false;
+}
 
 /// <summary>
 /// Последовательный анализ исходного текста.
@@ -192,7 +198,7 @@ void parsingIntoLexems(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTa
 	char* buffer = new char[TI_STR_MAXSIZE] {}; // буфер для анализуремого текста
 	int lineNumber = 1;				// номер строки в исходном тексте
 	int positionInLine = 1;			// номер символа в строке исходного текста
-
+	backtickPosition pos;
 	// Последовательная обработка исходного текста.
 	// i позиция в исходном тексте.
 	// j позиция в буффере.
@@ -223,6 +229,7 @@ void parsingIntoLexems(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTa
 				{
 					// Добавление в начало буффера открывающией кавычки.
 					buffer[j++] = source.text[i++];
+					pos = { lineNumber, positionInLine };
 					// Чтение в буффер до закрывающей кавычики.
 					// c длина строкового литерала.
 					for (int c = 0; source.text[i] != BACKTICK; c++)
@@ -231,7 +238,7 @@ void parsingIntoLexems(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTa
 						if (c == source.size - 1) throw ERROR_THROW_IN(138, lineNumber, positionInLine);
 						// Читать строку в буффер, если не превышен макс. размер строкового литерала.
 						if (c <= TI_STR_MAXSIZE) buffer[j++] = source.text[i++];
-						else throw ERROR_THROW_IN(139, lineNumber, positionInLine);
+						else throw ERROR_THROW_IN(139, pos.col, pos.row);
 					}
 					// Добавление в конец буффера закрывающей кавычки.
 					if (source.text[i] == BACKTICK) { buffer[j++] = source.text[i]; buffer[j++] = IN_CODE_ENDSTRING; LEXEM_ANALYSIS }
@@ -254,6 +261,8 @@ void parsingIntoLexems(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTa
 		}
 	}
 	delete[] buffer;
+	if (!isMain(idTable)) throw ERROR_THROW(144);
+
 }
 
 /// <summary>

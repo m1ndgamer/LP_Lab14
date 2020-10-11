@@ -7,3 +7,9 @@
 
 void parsingIntoLexems(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTable);
 bool isIdentificator(const char* token, const int strNumber, LT::LexTable& lexTable, IT::IdTable& idTable, bool isKeyword = 0);
+
+struct backtickPosition
+{
+	int row;
+	int col;
+};
