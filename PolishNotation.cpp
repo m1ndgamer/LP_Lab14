@@ -39,9 +39,12 @@ namespace PolishNotation
 		std::vector<int> expression;
 		// стек операторов и скобок.
 		std::vector<int> stack;
-		LT::Entry entry, bufferEntry;
+		LT::Entry entry;
 		// скобка была найдена?
 		bool braceWasFounded = false;
+		// TO DO
+		// ожидаются лексемы принадлеж. функции
+		bool isFunction = false;
 		// позиция первой лексемы выражения в ТЛ.
 		int startInLT = lextable_pos;
 		// предыдущий символ выражения.
@@ -51,12 +54,30 @@ namespace PolishNotation
 		{
 			// получение записи из ТЛ.
 			entry = lextable.GetEntry(lextable_pos);
+
+			std::cout << "СТЕК: ";
+			for (int i = 0; i < stack.size(); i++)
+				std::cout << lextable.GetEntry(stack[i]).lexem;
+			std::cout << std::endl;
+			std::cout << "ВЫРАЖЕНИЕ: ";
+			for (int i = 0; i < expression.size(); i++)
+				std::cout << lextable.GetEntry(expression[i]).lexem;
+			std::cout << std::endl;
+			std::cout << std::endl;
 			// операнд
-			if (isOperand(entry.lexem) && 
-				prev != LEX_LITERAL && prev != LEX_ID && 
-				idTable.GetEntry(entry.idxTI).iddatatype != IT::STR)
-				// добавить в стек операторов и скобок.
-				expression.push_back(lextable_pos);
+			if (isOperand(entry.lexem) && prev != LEX_LITERAL && prev != LEX_ID)
+			{
+				if (entry.idxTI != LT_TI_NULLXDX && idTable.GetEntry(entry.idxTI).idtype == IT::F)
+				{			
+					stack.push_back(lextable_pos);
+				}
+				else
+				{
+					// добавить в стек операторов и скобок.
+					expression.push_back(lextable_pos);
+				}
+			}
+				
 			// операция
 			else if (isOperation(entry.lexem) && prev != LEX_SIGN)
 			{
@@ -94,9 +115,15 @@ namespace PolishNotation
 					}
 					else { braceWasFounded = true; stack.erase(i.base() - 1); break; }
 				if (!braceWasFounded) return false;
+				if (!stack.empty() && lextable.GetEntry(stack.back()).lexem == LEX_ID)
+				{
+					expression.push_back(stack.back());
+					stack.pop_back();
+				}
 			}
+			else if (entry.lexem == LEX_COMMA && prev == LEX_ID || prev == LEX_LITERAL) prev = LEX_COMMA;
 			// конец выражения.
-			else if (entry.lexem == LEX_COMMA || entry.lexem == LEX_SEMICOLON) break;
+			else if (entry.lexem == LEX_SEMICOLON) break;
 			// выражение.
 			else return false;
 			prev = entry.lexem;
@@ -107,19 +134,27 @@ namespace PolishNotation
 			if (lextable.GetEntry(*i).lexem == LEX_LEFTHESIS) return false;
 			expression.push_back(*i);
 		}
-		
+		std::cout << "СТЕК: ";
+		for (int i = 0; i < stack.size(); i++)
+			std::cout << lextable.GetEntry(stack[i]).lexem;
+		std::cout << std::endl;
+		std::cout << "ВЫРАЖЕНИЕ: ";
+		for (int i = 0; i < expression.size(); i++)
+			std::cout << lextable.GetEntry(expression[i]).lexem;
+		std::cout << std::endl;
+		std::cout << std::endl;
 		// установка позиций в ТЛ и ТИ исходя из польской записи.
 #pragma region SortElems
 		for (int i = 0; i < expression.size(); i++)
 		{
 			entry = lextable.GetEntry(expression[i]);
+			// !!!!!!!!!если это первое вхождение ид УДАЛИТЬ УДАЛИТЬ
 			if (expression[i] == idTable.GetEntry(entry.idxTI).idxfirstLE)
 			{
 				idTable.GetEntry(entry.idxTI).idxfirstLE == startInLT;
 			}
-			bufferEntry = lextable.GetEntry(startInLT);
+			lextable.table[expression[i]] = lextable.GetEntry(startInLT);
 			lextable.table[startInLT++] = entry;
-			lextable.table[expression[i]] = bufferEntry;
 		}
 		for (startInLT; startInLT < lextable_pos; startInLT++)
 		{
