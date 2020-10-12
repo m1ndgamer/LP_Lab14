@@ -32,7 +32,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		log = Log::getlog(parm.log);
 		in = In::getIn(parm.in);
 		parsingIntoLexems(in, lexTable, idTable);
-		if (!PolishNotation::polishNotation(62, lexTable, idTable)) throw ERROR_THROW(161);
+		if (!PolishNotation::convertExpressions(lexTable, idTable)) throw ERROR_THROW(161);
 		Log::WriteInsideOutFile(parm, in);
 		WriteLine(log, (wchar_t*)L"Тест: ", (wchar_t*)L"без ошибок", L"");
 		WriteLog(log);

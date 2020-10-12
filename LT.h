@@ -12,6 +12,7 @@
 #define	LEX_DECLARE		'd'			// declare
 #define	LEX_RETURN		'r'			// return
 #define	LEX_PRINT		'p'			// print
+//#define LEX_LANGFUNC	'$'			// substr/strlen
 #define	LEX_SEMICOLON	';'			// ;
 #define	LEX_COMMA		','			// ,
 #define	LEX_LEFTBRACE	'{'			// {

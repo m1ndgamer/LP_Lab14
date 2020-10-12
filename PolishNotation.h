@@ -3,7 +3,8 @@
 #include "IT.h"
 namespace PolishNotation
 {
-	bool polishNotation(int lextable_pos, LT::LexTable& lextable, IT::IdTable& idTable);
+	bool convertExpressions(LT::LexTable& lextable, IT::IdTable& idTable);
+	bool polishNotation(int& lextable_pos, LT::LexTable& lextable, IT::IdTable& idTable);
 	int getPriority(char sign);
 	bool isOperation(char symbol);
 	bool isBrace(char symbol);
