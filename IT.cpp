@@ -30,6 +30,7 @@ namespace IT
 
 	IdTable::IdTable(int size)
 	{
+		if (size > TI_MAXSIZE) throw ERROR_THROW(114);
 		maxsize = TI_MAXSIZE;
 		currentSize = 0;
 		table = new Entry[TI_MAXSIZE];

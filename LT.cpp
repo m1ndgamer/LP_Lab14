@@ -47,7 +47,6 @@ namespace Log
 				<< std::setw(10) << "Лексема" << "|"
 				<< std::setw(10) << "№ стр." << "|"
 				<< std::setw(10) << "№ в ТИ" << "|" << std::endl;
-
 			*log.stream << "+=====================================+" << std::endl;
 			LT::Entry entry;
 			for (int i = 0; i < lexTable.currentSize; i++)

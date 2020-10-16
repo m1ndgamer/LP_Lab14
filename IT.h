@@ -43,8 +43,8 @@ namespace IT	// таблица идентификатов
 	{
 		int maxsize;				// максимальный размер таблицы
 		int currentSize;			// текущий размер таблицы
-		Entry* table;				// массив строк таблицы
-	
+		Entry* table;				// массив строк таблицы	
+		//IdTable(int size = TI_MAXSIZE);
 		IdTable(int size = TI_MAXSIZE);
 		void Add(Entry entry);
 		Entry GetEntry(int n);

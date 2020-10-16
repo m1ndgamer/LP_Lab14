@@ -262,7 +262,6 @@ void parsingIntoLexems(In::IN& source, LT::LexTable& lexTable, IT::IdTable& idTa
 	}
 	delete[] buffer;
 	if (!isMain(idTable)) throw ERROR_THROW(144);
-
 }
 
 /// <summary>

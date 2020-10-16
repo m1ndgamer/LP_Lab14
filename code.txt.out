@@ -17,7 +17,9 @@ main|
 declare integer x;|
 declare integer y;|
 declare integer z;|
-declare integer pl=((3+x)/(x-2))*y;|
+declare integer pl=(3/(x-2))*y*2;|
+declare integer pm=((3+x)/(x-2))*y*2;|
+declare integer pz=y+x;|
 declare string sa;|
 declare string sb;|
 declare string sc;|

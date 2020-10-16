@@ -13,10 +13,8 @@ namespace PolishNotation
 	// 3. Отсутствие строкового литерала
 	// 4. Отсутствие двойных знаков
 	// 5. Отсутствие двойных опрандов 
-	// 6.
-	// СВАПНУТЬ ЗАПИСИ ...
-	//
-	//
+	// 6. - literal/id
+	// 7. СВАПНУТЬ ЗАПИСИ ...
 	// Получить приоритет операции.
 	int getPriority(char sign)
 	{
@@ -32,17 +30,12 @@ namespace PolishNotation
 	// Это индетификатор или литерал?
 	bool isOperand(char symbol) { return symbol == LEX_ID || symbol == LEX_LITERAL; }
 
+	// преобразование выражений в обратную польскую запись
 	bool convertExpressions(LT::LexTable& lextable, IT::IdTable& idTable)
 	{
 		for (int entryInLT = 0; entryInLT < lextable.currentSize; entryInLT++)
-		{
 			if (lextable.GetEntry(entryInLT).lexem == LEX_EQUAL_SIGN && !polishNotation(++entryInLT, lextable, idTable))
-			{
-				std::cout << lextable.GetEntry(entryInLT).lexem;
 				return false;
-			}
-				
-		}
 		return true;
 	}
 
@@ -56,6 +49,8 @@ namespace PolishNotation
 		LT::Entry entry;
 		// скобка была найдена?
 		bool braceWasFounded = false;
+		bool lastWasOperand = false;
+		bool isFunction = false;
 		// позиция первой лексемы выражения в ТЛ.
 		int startInLT = lextable_pos;
 		// предыдущий символ выражения.
@@ -65,10 +60,11 @@ namespace PolishNotation
 		{
 			// получение записи из ТЛ.
 			entry = lextable.GetEntry(lextable_pos);
-			if (isOperand(entry.lexem) && prev != LEX_LITERAL && prev != LEX_ID)
+			if (isOperand(entry.lexem) && prev != LEX_LITERAL && prev != LEX_ID && (!lastWasOperand || isFunction))
 			{
 				if (entry.idxTI != LT_TI_NULLXDX && idTable.GetEntry(entry.idxTI).idtype == IT::F)
 				{			
+					isFunction = true;
 					stack.push_back(entry);
 				}
 				else
@@ -76,9 +72,10 @@ namespace PolishNotation
 					// добавить в стек операторов и скобок.
 					expression.push_back(entry);
 				}
+				lastWasOperand = true;
 			}				
 			// операция
-			else if (isOperation(entry.lexem) && prev != LEX_SIGN)
+			else if (isOperation(entry.lexem) && prev != LEX_SIGN && (lastWasOperand || isFunction))
 			{
 				// если стек пустой или пред. элем. '(', то добавляем лексему в стек операторов
 				if (stack.empty() || BACK_LEXEM == LEX_LEFTHESIS);
@@ -89,6 +86,7 @@ namespace PolishNotation
 					for (std::vector<LT::Entry>::reverse_iterator i = stack.rbegin(); i != stack.rend();)
 						if ((isOperation(GET_LEXEM(*i)) || isBrace(GET_LEXEM(*i))) && getPriority(entry.lexem) <= getPriority((*i).lexem))
 						{
+							// запись из стека в выражение
 							expression.push_back(*i);
 							// удаление элементов стека
 							i = std::vector<LT::Entry>::reverse_iterator(stack.erase(i.base() - 1));
@@ -96,6 +94,8 @@ namespace PolishNotation
 						else { break; }
 				}
 				else return false;
+				// запись оператора в стек на необходимую позицию
+				lastWasOperand = false;
 				stack.push_back(entry);
 			}
 			// левая скобка
@@ -137,6 +137,7 @@ namespace PolishNotation
 		int currentPos = startInLT;
 		for (int i = 0; i < expression.size(); i++)
 		{
+			
 			int id = expression[i].idxTI;
 			if (idTable.GetEntry(id).idxfirstLE >= startInLT && idTable.GetEntry(id).idxfirstLE < lextable_pos)
 			{
@@ -144,10 +145,9 @@ namespace PolishNotation
 			}
 			lextable.table[currentPos++] = expression[i];
 		}
+		// очистка удаленных записей
 		for (currentPos; currentPos < lextable_pos; currentPos++)
-		{
 			lextable.table[currentPos] = { '@', -1, -1 };
-		}
 #pragma endregion
 		return true;
 	}

@@ -19,20 +19,25 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+
 	setlocale(LC_ALL, "rus");
 	Log::LOG log = Log::INITLOG;
-	IT::IdTable idTable;
-	LT::LexTable lexTable;
-	LEX::Lex lex(lexTable, idTable);
 	Parm::PARM parm;
 	In::IN in;
 	try 
 	{
+		IT::IdTable idTable;
+		LT::LexTable lexTable;
+		//LEX::Lex lex(lexTable, idTable);
 		parm = Parm::getparm(argc, argv);
 		log = Log::getlog(parm.log);
 		in = In::getIn(parm.in);
 		parsingIntoLexems(in, lexTable, idTable);
 		if (!PolishNotation::convertExpressions(lexTable, idTable)) throw ERROR_THROW(161);
+		// Lab 16 
+		// create mfst
+		// start grb
+		// analysis 
 		Log::WriteInsideOutFile(parm, in);
 		WriteLine(log, (wchar_t*)L"Тест: ", (wchar_t*)L"без ошибок", L"");
 		WriteLog(log);
@@ -61,7 +66,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		// Вывод информации об ошибке в консоль.
 		std::cout << getErrorInfo(e);
 	}
-	lex.Delete();
+	//lex.Delete();
 	system("pause");
 	return 0;
 }
