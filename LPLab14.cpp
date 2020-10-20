@@ -16,6 +16,7 @@
 #include "IT.h"
 #include "PolishNotation.h"
 #include "Lex.h"
+#include "MFST.h"
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -28,12 +29,12 @@ int _tmain(int argc, _TCHAR* argv[])
 	{
 		IT::IdTable idTable;
 		LT::LexTable lexTable;
-		//LEX::Lex lex(lexTable, idTable);
+		LEX::Lex lex(lexTable, idTable);
 		parm = Parm::getparm(argc, argv);
 		log = Log::getlog(parm.log);
 		in = In::getIn(parm.in);
 		parsingIntoLexems(in, lexTable, idTable);
-		if (!PolishNotation::convertExpressions(lexTable, idTable)) throw ERROR_THROW(161);
+		//if (!PolishNotation::convertExpressions(lexTable, idTable)) throw ERROR_THROW(161);
 		// Lab 16 
 		// create mfst
 		// start grb
@@ -45,7 +46,13 @@ int _tmain(int argc, _TCHAR* argv[])
 		WriteIn(log, in);
 		PrintIdTable(log, idTable);
 		PrintLexTable(log, lexTable);
+		MFST_TRACE_START;
+		// Создание магазинного автомата (результат 14, грамматика Грейбаха)
+		MFST::Mfst mfst(lex, GRB::getGreibach());
 
+		mfst.start();
+		mfst.savededucation();
+		mfst.printrules();
 		Log::Close(log);
 		std::wcout
 			<< L"--------------- Результат -------------" << std::endl

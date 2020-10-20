@@ -8,6 +8,7 @@ namespace LEX
 		LT::LexTable* lextable;
 		IT::IdTable* idTable;
 		Lex(LT::LexTable& lt, IT::IdTable& it);
+		Lex();
 		void Delete();
 	};
 }

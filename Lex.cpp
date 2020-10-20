@@ -6,6 +6,8 @@ namespace LEX
 		lextable = &lt;
 		idTable = &it;
 	}
+	Lex::Lex(){}
+
 	void Lex::Delete()
 	{
 		idTable->Delete();

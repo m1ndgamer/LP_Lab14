@@ -6,7 +6,7 @@
 #include <iostream>
 #include <iomanip>
 #include "GRB.h"
-#include "Rule.h"
+#include "Lex.h"
 
 
 #define MFST_DIAGN_MAXSIZE 2*ERROR_MAXSIZE_MESSAGE
@@ -98,42 +98,42 @@ namespace MFST
 			);
 		} diagnosis[MFST_DIAGN_NUMBER];		// последние самые глубокие сообщения
 
-	//	GRBALPHABET* lenta;				// перекодированная (TS/NS) лента (из LEX)
-	//	short lenta_position;			// текущая позиция на ленте
-	//	short nrule;					// номер текущего правила
-	//	short nrulechain;				// номер текущей цепочки, текущего правила
-	//	short lenta_size;				// размер ленты
-	//	GRB::Greibach grebach;			// грамматика Грейбах
-	//	Lex::LEX lex;					// результат работы лексического анализатора
-	//	MFSTSTACK st;					// стек автомата
-	//	std::stack<MfstState> storestate;	// стек для сохранения состояний 
-	//	Mfst();
-	//	Mfst(
-	//		Lex::LEX plex,				// результат работы лексического анализатора
-	//		GRB::Greibach pgrebach		// грамматика Грейбах
-	//	);
-	//	char* getCSt(char* buf);		// получить содержимое стека
-	//	char* getCLenta(char* buf, short pos, short n = 25);	// лента: n символов с pos
-	//	char* getDiagnosis(short n, char* buf);		// получить n-ю строку диагностики или 0х00
-	//	bool savestate();				// сохранить состояние автомата
-	//	bool reststate();				// восстановить состояние автомата
-	//	bool push_chain(				// поместить цепочку правила в стек
-	//		GRB::Rule::Chain chain		// цепочка правила
-	//	);
-	//	RC_STEP step();					// выполнить шаг автомата
-	//	bool start();					// запустить автомат
-	//	bool savediagnosis(
-	//		RC_STEP pprc_step			// код завершения шага
-	//	);
-	//	void printrules();				// вывести последовательность правил
+		GRBALPHABET* lenta;				// перекодированная (TS/NS) лента (из LEX)
+		short lenta_position;			// текущая позиция на ленте
+		short nrule;					// номер текущего правила
+		short nrulechain;				// номер текущей цепочки, текущего правила
+		short lenta_size;				// размер ленты
+		GRB::Greibach grebach;			// грамматика Грейбах
+		LEX::Lex lex;					// результат работы лексического анализатора
+		MFSTSTACK st;					// стек автомата
+		std::stack<MfstState> storestate;	// стек для сохранения состояний 
+		Mfst();
+		Mfst(
+			LEX::Lex plex,				// результат работы лексического анализатора
+			GRB::Greibach pgrebach		// грамматика Грейбах
+		);
+		char* getCSt(char* buf);		// получить содержимое стека
+		char* getCLenta(char* buf, short pos, short n = 25);	// лента: n символов с pos
+		char* getDiagnosis(short n, char* buf);		// получить n-ю строку диагностики или 0х00
+		bool savestate();				// сохранить состояние автомата
+		bool reststate();				// восстановить состояние автомата
+		bool push_chain(				// поместить цепочку правила в стек
+			GRB::Rule::Chain chain		// цепочка правила
+		);
+		RC_STEP step();					// выполнить шаг автомата
+		bool start();					// запустить автомат
+		bool savediagnosis(
+			RC_STEP pprc_step			// код завершения шага
+		);
+		void printrules();				// вывести последовательность правил
 
-	//	struct Deducation		// вывод
-	//	{
-	//		short size;			// количество шагов в выводе
-	//		short* nrules;		// номера правил грамматики
-	//		short* nrulechains;	// номера цепочек правик грамматики (nrules)
-	//		Deducation() { size = 0; nrules = 0; nrulechains = 0; };
-	//	} deducation;
+		struct Deducation		// вывод
+		{
+			short size;			// количество шагов в выводе
+			short* nrules;		// номера правил грамматики
+			short* nrulechains;	// номера цепочек правик грамматики (nrules)
+			Deducation() { size = 0; nrules = 0; nrulechains = 0; };
+		} deducation;
 
 	bool savededucation();	// сохранить дерево вывода
 	};

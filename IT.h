@@ -6,15 +6,20 @@
 #define TI_STR_DEFAULT	""			// значение по умолчанию для типа string 
 #define TI_NULLIDX		0xffffffff		// нет элемента таблицы идентификаторов
 #define TI_STR_MAXSIZE	255
+#define TI_TYPE  (char*)"$type"
 
 #define ID_SUBSTR "$s1"
 #define ID_STRLEN "$s2"
+
+#define TYPE_UNDEF {-1, TI_TYPE, UNDEF, L}
+#define TYPE_INT {-1, TI_TYPE, INT, L}
+#define TYPE_STR {-1, TI_TYPE, STR, L}
 
 #define PARM_ID_DEFAULT_EXT L".id.txt" // расширение файла с итогами лексического анализa
 
 namespace IT	// таблица идентификатов
 {
-	enum IDDATATYPE { INT = 1, STR = 2 };		// типы идентификаторов: integer, string
+	enum IDDATATYPE { UNDEF = 0, INT = 1, STR = 2 };		// типы идентификаторов: integer, string
 	enum IDTYPE { V = 1, F = 2, P = 3, L = 4 };	// типы идентификаторов: переменная, функция, параметр, лексема
 
 	// строка таблицы идентификаторов

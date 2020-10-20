@@ -18,7 +18,6 @@ main
 declare integer x;
 declare integer   y;
 declare integer    z;
-declare integer pl = ((3 + x) / (x - 2)) * y;
 declare string sa;   
 declare string sb;
 declare string sc;

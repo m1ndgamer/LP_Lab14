@@ -31,9 +31,12 @@ namespace IT
 	IdTable::IdTable(int size)
 	{
 		if (size > TI_MAXSIZE) throw ERROR_THROW(114);
-		maxsize = TI_MAXSIZE;
+		maxsize = size;
 		currentSize = 0;
-		table = new Entry[TI_MAXSIZE];
+		table = new Entry[size];
+		Add(TYPE_UNDEF);
+		Add(TYPE_INT);
+		Add(TYPE_STR);
 	}
 
 	void IdTable::Add(Entry entry)
@@ -42,13 +45,13 @@ namespace IT
 		{
 		case IT::STR:
 			strcpy(entry.value.vstr->str, "\0");
-			entry.value.vstr->len = TI_INT_DEFAULT;
+			entry.value.vstr->len = 0;
 			break;
 		default:
 			entry.value.vint = TI_INT_DEFAULT;
 			break;
 		}
-		(currentSize < maxsize) ? table[currentSize++] = entry : throw ERROR_THROW(121);
+		(currentSize < maxsize) ? table[currentSize++] = entry : throw ERROR_THROW(114);
 	}
 
 	Entry IdTable::GetEntry(int n)
