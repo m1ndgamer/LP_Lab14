@@ -25,20 +25,24 @@ int _tmain(int argc, _TCHAR* argv[])
 	Log::LOG log = Log::INITLOG;
 	Parm::PARM parm;
 	In::IN in;
+	LEX::Lex lex;
 	try 
 	{
 		IT::IdTable idTable;
 		LT::LexTable lexTable;
-		LEX::Lex lex(lexTable, idTable);
+		lex.idTable = &idTable;
+		lex.lextable = &lexTable;
 		parm = Parm::getparm(argc, argv);
 		log = Log::getlog(parm.log);
 		in = In::getIn(parm.in);
 		parsingIntoLexems(in, lexTable, idTable);
-		//if (!PolishNotation::convertExpressions(lexTable, idTable)) throw ERROR_THROW(161);
-		// Lab 16 
-		// create mfst
-		// start grb
-		// analysis 
+		MFST_TRACE_START;
+		// магазинный автомат(результат 14, грамматика Грейбах)
+		MFST::Mfst mfst(lex, GRB::getGreibach());
+		mfst.start();
+		mfst.savededucation();
+		mfst.printrules();
+		if (!PolishNotation::convertExpressions(lexTable, idTable)) throw ERROR_THROW(161);
 		Log::WriteInsideOutFile(parm, in);
 		WriteLine(log, (wchar_t*)L"Тест: ", (wchar_t*)L"без ошибок", L"");
 		WriteLog(log);
@@ -46,13 +50,6 @@ int _tmain(int argc, _TCHAR* argv[])
 		WriteIn(log, in);
 		PrintIdTable(log, idTable);
 		PrintLexTable(log, lexTable);
-		MFST_TRACE_START;
-		// Создание магазинного автомата (результат 14, грамматика Грейбаха)
-		MFST::Mfst mfst(lex, GRB::getGreibach());
-
-		mfst.start();
-		mfst.savededucation();
-		mfst.printrules();
 		Log::Close(log);
 		std::wcout
 			<< L"--------------- Результат -------------" << std::endl
@@ -73,7 +70,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		// Вывод информации об ошибке в консоль.
 		std::cout << getErrorInfo(e);
 	}
-	//lex.Delete();
+	lex.Delete();
 	system("pause");
 	return 0;
 }
